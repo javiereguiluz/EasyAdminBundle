@@ -43,7 +43,7 @@
 </head>
 
 {% block body %}
-    <body id="{% block body_id %}{% endblock %}" class="ea {% block body_class %}{% endblock %}">
+<body id="{% block body_id %}{% endblock %}" class="ea {% block body_class %}{% endblock %}">
     {% block javascript_page_layout %}
         <script>
             document.body.classList.add(
@@ -60,130 +60,111 @@
 
         <div class="wrapper">
             {% block wrapper %}
-                <header class="main-header">
-                    {% block header %}
-                        <nav class="navbar" role="navigation">
-                            {% block header_navbar %}
-                                <button id="navigation-toggler" type="button" aria-label="Toggle navigation">
-                                    <i class="fa fa-fw fa-bars"></i>
-                                </button>
+                <div class="page">
+                    <aside class="navbar navbar-vertical navbar-expand-lg navbar-transparent">
+                        <div class="container-fluid">
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
 
-                                <div id="header-logo">
-                                    {% block header_logo %}
-                                        <a class="logo {{ ea.dashboardTitle|length > 14 ? 'logo-long' }}" title="{{ ea.dashboardTitle|striptags }}" href="{{ path(ea.dashboardRouteName) }}">
-                                            {{ ea.dashboardTitle|raw }}
-                                        </a>
-                                    {% endblock header_logo %}
+                            {% block header_logo %}
+                                <a class="navbar-brand navbar-brand-autodark logo {{ ea.dashboardTitle|length > 14 ? 'logo-long' }}" title="{{ ea.dashboardTitle|striptags }}" href="{{ path(ea.dashboardRouteName) }}">
+                                    {{ ea.dashboardTitle|raw }}
+                                </a>
+                            {% endblock header_logo %}
+
+                            <div class="navbar-nav flex-row d-lg-none">
+                                <div class="nav-item dropdown d-none d-md-flex mr-3">
+                                    <a href="#" class="nav-link px-0" data-toggle="dropdown" tabindex="-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 5a2 2 0 0 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg>
+                                        <span class="badge bg-red"></span>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-card">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus ad amet consectetur exercitationem fugiat in ipsa ipsum, natus odio quidem quod repudiandae sapiente. Amet debitis et magni maxime necessitatibus ullam.
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            {% endblock header_navbar %}
-                        </nav>
 
-                        {% set _user_menu_content %}
-                            <div class="popover-content-section user-details {{ ea.userMenu.items|length > 0 ? 'user-has-actions' }}">
-                                <p class="small text-muted mb-0">{{ 'user.logged_in_as'|trans(domain = 'EasyAdminBundle') }}</p>
-                                <p class="user-details-name">
-                                    {{ ea.user is null ? 'user.anonymous'|trans(domain = 'EasyAdminBundle') : ea.userMenu.name }}
-                                </p>
+                                <div class="nav-item dropdown">
+                                    <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-toggle="dropdown">
+                                        <span class="avatar avatar-sm" style="background-image: url(./static/avatars/000m.jpg)"></span>
+                                        <div class="d-none d-xl-block pl-2">
+                                            <div>Paweł Kuna</div>
+                                            <div class="mt-1 small text-muted">UI Designer</div>
+                                        </div>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                        <a href="#" class="dropdown-item">Set status</a>
+                                        <a href="#" class="dropdown-item">Profile & account</a>
+                                        <a href="#" class="dropdown-item">Feedback</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a href="#" class="dropdown-item">Settings</a>
+                                        <a href="#" class="dropdown-item">Logout</a>
+                                    </div>
+                                </div>
                             </div>
 
-                            {% block user_menu %}
-                                {% if ea.userMenu.items|length > 0 %}
-                                    <div class="popover-content-section user-menu">
-                                        {% for item in ea.userMenu.items %}
-                                            <a href="{{ item.linkUrl }}" class="user-action {{ item.cssClass }}" target="{{ item.linkTarget }}" rel="{{ item.linkRel }}" referrerpolicy="origin-when-cross-origin">
-                                                {% if item.icon is not empty %}<i class="fa fa-fw {{ item.icon }}"></i>{% endif %}
-                                                <span>{{ item.label }}</span>
-                                            </a>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            {% endblock user_menu %}
-                        {% endset %}
-
-                        <div class="content-top navbar-custom-menu">
-                            {% block header_custom_menu %}
-                                {% if constant('Symfony\\Component\\Security\\Core\\Authorization\\Voter\\AuthenticatedVoter::IS_IMPERSONATOR') is defined %}
-                                    {% set impersonator_permission = 'IS_IMPERSONATOR' %}
-                                {% else %}
-                                    {% set impersonator_permission = 'ROLE_PREVIOUS_ADMIN' %}
-                                {% endif %}
-
-                                <div class="user user-menu-wrapper {{ is_granted(impersonator_permission) ? 'user-is-impersonated' }}" data-toggle="popover" data-placement="bottom" data-container=".user-menu-wrapper" data-content="{{ _user_menu_content|e('html_attr') }}" data-html="true">
-                                    {% if ea.userMenu.isAvatarDisplayed %}
-                                        {% if null == ea.userMenu.avatarUrl %}
-                                            <i class="fa fa-fw {{ ea.user is not null ? 'fa-user-circle' : 'fa-user-times' }} user-avatar"></i>
-                                        {% else %}
-                                            <img class="user-avatar" src="{{ ea.userMenu.avatarUrl }}" />
-                                        {% endif %}
-                                    {% endif %}
-                                    {% if ea.userMenu.isNameDisplayed %}
-                                        <span class="user-name">{{ ea.userMenu.name }}</span>
-                                    {% endif %}
-                                </div>
-                            {% endblock header_custom_menu %}
-                        </div>
-                    {% endblock header %}
-                </header>
-
-                <aside class="main-sidebar">
-                    {% block sidebar %}
-                        <section class="sidebar">
-                            {% block main_menu_wrapper %}
-                                {{ include(ea.templatePath('main_menu')) }}
-                            {% endblock main_menu_wrapper %}
-                        </section>
-
-                    {% endblock sidebar %}
-                </aside>
-
-                <div class="content-wrapper">
-                    <div id="sidebar-resizer-handler" class="resizer-handler resizer-handler-left"></div>
-
-                    {% block content %}
-                        <div class="content">
-                            {% block content_header_wrapper %}
-                                {% set has_help_message = (ea.crud.helpMessage ?? '') is not empty %}
-                                <section class="content-header">
-                                    {% block content_header %}
-                                        <div class="d-flex flex-row justify-content-between align-content-center w-100">
-                                            <div class="content-header-title">
-                                                <h1 class="title">
-                                                    {% block content_title %}{% endblock %}
-
-                                                    {% block content_help %}
-                                                        {% if has_help_message %}
-                                                            <span class="content-header-help">
-                                                                <i class="far fa-question-circle" data-toggle="tooltip" title="{{ ea.crud.helpMessage|e('html_attr') }}"></i>
-                                                            </span>
-                                                        {% endif %}
-                                                    {% endblock %}
-                                                </h1>
-                                            </div>
-
-                                            {% block page_actions_wrapper %}
-                                                <div class="page-actions">{% block page_actions %}{% endblock %}</div>
-                                            {% endblock %}
-                                        </div>
-                                    {% endblock content_header %}
+                            {% block sidebar %}
+                                <section class="sidebar">
+                                    {% block main_menu_wrapper %}
+                                        {{ include(ea.templatePath('main_menu')) }}
+                                    {% endblock main_menu_wrapper %}
                                 </section>
-                            {% endblock content_header_wrapper %}
-
-                            <section id="main" class="content-body">
-                                {% block main %}{% endblock %}
-                            </section>
-
-                            {% block content_footer_wrapper %}
-                                {% set content_footer = block('content_footer') is defined ? block('content_footer') : '' %}
-                                {% if content_footer is not empty %}
-                                    <section class="content-footer">
-                                        {{ content_footer }}
-                                    </section>
-                                {% endif %}
-                            {% endblock %}
+                            {% endblock sidebar %}
                         </div>
-                    {% endblock content %}
+                    </aside>
 
-                    <div id="content-resizer-handler" class="resizer-handler resizer-handler-right"></div>
+                    <div class="content-wrapper">
+                        {% block content %}
+                            <div class="content">
+                                <div class="container-xl">
+                                    {% block content_header_wrapper %}
+                                        <div class="page-header d-print-none">
+                                        {% set has_help_message = (ea.crud.helpMessage ?? '') is not empty %}
+                                        {% block content_header %}
+                                            <div class="row align-items-center">
+                                                <div class="col">
+                                                    <h2 class="page-title">
+                                                        {% block content_title %}{% endblock %}
+
+                                                        {% block content_help %}
+                                                            {% if has_help_message %}
+                                                                <span class="content-header-help">
+                                                                    <i class="far fa-question-circle" data-toggle="tooltip" title="{{ ea.crud.helpMessage|e('html_attr') }}"></i>
+                                                                </span>
+                                                            {% endif %}
+                                                        {% endblock %}
+                                                    </h2>
+                                                </div>
+
+                                                <div class="col-auto ml-auto d-print-none">
+                                                    <div class="btn-list">
+                                                        {% block page_actions_wrapper %}
+                                                            <div class="page-actions">{% block page_actions %}{% endblock %}</div>
+                                                        {% endblock %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endblock content_header %}
+                                    </div>
+                                    {% endblock content_header_wrapper %}
+
+                                    <div id="main" class="row row-cards">
+                                        {% block main %}{% endblock %}
+                                    </div>
+                                </div>
+
+                                <footer class="footer footer-transparent d-print-none">
+                                    <div class="container">
+                                        {% block footer %}{% endblock %}
+                                    </div>
+                                </footer>
+                            </div>
+                        {% endblock content %}
+                    </div>
                 </div>
             {% endblock wrapper %}
         </div>
@@ -202,6 +183,6 @@
             {{ htmlContent|raw }}
         {% endfor %}
     {% endblock %}
-    </body>
+</body>
 {% endblock body %}
 </html>

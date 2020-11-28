@@ -4,12 +4,15 @@ require('../css/app.scss');
 global.$ = global.jQuery = require('jquery');
 
 import 'bootstrap';
-
+/*
 import './adminlte.js';
 import 'jquery.are-you-sure';
 import 'featherlight';
 import 'jquery-highlight';
 import 'select2';
+*/
+
+import '@tabler/core';
 
 window.addEventListener('load', function() {
     $('[data-toggle="popover"]').popover();

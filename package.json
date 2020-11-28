@@ -2,6 +2,7 @@
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.8.1",
     "@symfony/webpack-encore": "^0.27",
+    "@tabler/core": "^1.0.0-alpha.14",
     "bootstrap": "^4.1.0",
     "codemirror": "^5.47.0",
     "featherlight": "^1.7.13",

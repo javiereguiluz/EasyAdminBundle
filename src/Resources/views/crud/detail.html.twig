@@ -83,11 +83,10 @@
 {% endblock %}
 
 {% macro open_empty_content_panel(field) %}
-
-<div class="{{ field.cssClass }}">
-    <div class="content-panel">
-        <div class="content-panel-body without-header without-footer without-padding">
-            <dl class="datalist">
+<div class="col-12 {{ field.cssClass }}">
+    <div class="card">
+        <div class="card-body">
+            <dl class="row ea-datalist">
 {% endmacro %}
 
 {% macro close_content_panel() %}
@@ -100,45 +99,49 @@
 {% macro open_content_panel_with_header(field) %}
     {% set collapsible = field.customOption('collapsible') %}
     {% set collapsed = field.customOption('collapsed') %}
-    <div class="{{ field.cssClass }}">
-        <div class="content-panel">
-            <div class="content-panel-header {{ collapsible ? 'collapsible' }} {{ field.help is not empty ? 'with-help' }}">
-                {% if collapsible %}
-                    <a href="#content-{{ field.property }}" data-toggle="collapse" class="content-panel-collapse {{ collapsed ? 'collapsed' }}" aria-expanded="{{ collapsed ? 'false' : 'true' }}" aria-controls="content-{{ field.property }}">
-                        <i class="fas fw fa-chevron-right collapse-icon"></i>
-                {% endif %}
+    <div class="col-12 {{ field.cssClass }}">
+        <div class="card">
+            <div class="card-header {{ collapsible ? 'collapsible' }}">
+                <h3 class="card-title">
+                    {% if collapsible %}
+                        <a href="#content-{{ field.property }}" data-toggle="collapse" class="ea-content-panel-collapse {{ collapsed ? 'collapsed' }}" aria-expanded="{{ collapsed ? 'false' : 'true' }}" aria-controls="content-{{ field.property }}">
+                            <i class="fas fw fa-chevron-right collapse-icon"></i>
+                    {% endif %}
 
-                        {% if field.customOption('icon') %}
-                            <i class="{{ field.customOption('icon') }}"></i>
-                        {% endif %}
-                        {{ field.label|raw }}
+                    {% if field.customOption('icon') %}
+                        <i class="{{ field.customOption('icon') }}"></i>
+                    {% endif %}
 
-                {% if collapsible %}
-                    </a>
-                {% endif %}
+                    {{ field.label|raw }}
+
+                    {% if collapsible %}
+                        </a>
+                    {% endif %}
+                </h3>
 
                 {% if field.help is not empty %}
-                    <div class="content-panel-header-help">{{ field.help|raw }}</div>
+                    <div class="card-subtitle">{{ field.help|raw }}</div>
                 {% endif %}
             </div>
 
-            <div id="content-{{ field.property }}" class="content-panel-body without-footer without-padding {{ collapsible ? 'collapse' }} {{ not collapsed ? 'show'}}">
-                <dl class="datalist">
+            <div id="content-{{ field.property }}" class="card-body {{ collapsible ? 'collapse' }} {{ not collapsed ? 'show'}}">
+                <dl class="row ea-datalist">
 {% endmacro %}
 
 {% macro render_field(entity, field, row_number) %}
-    <div class="data-row {{ row_number is even ? 'with-background' }} {{ field.cssClass }}">
-        <dd>
+    <div class="ea-data-row {{ row_number is even ? 'with-background' }} {{ field.cssClass }}">
+        <dt class="col">
             {{ field.label|raw }}
 
             {% if field.help is not empty %}
-                <span class="data-help">
+                <span class="ea-datalist-help">
                     <i class="far fa-question-circle" data-toggle="tooltip" title="{{ field.help|e('html_attr') }}"></i>
                 </span>
             {% endif %}
-        </dd>
-        <dt>
-            {{ include(field.templatePath, { field: field, entity: entity }, with_context = false) }}
         </dt>
+
+        <dd class="col">
+            {{ include(field.templatePath, { field: field, entity: entity }, with_context = false) }}
+        </dd>
     </div>
 {% endmacro %}
