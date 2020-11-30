@@ -73,6 +73,39 @@ final class EntityPaginator implements EntityPaginatorInterface
         return $this->currentPage;
     }
 
+    /**
+     * It returns the closest available pages around the current page.
+     * E.g. a paginator with 35 pages, if current page = 1, returns [1, 2, 3, 4, null, 35]
+     *      current page = 18, returns [1, null, 15, 16, 17, 18, 19, 20, 21, null, 35]
+     * NULL values mean a gap in the pagination (they can be represented as ellipsis in the templates)
+     *
+     * This code was inspired by https://github.com/django/django/blob/55fabc53373a8c7ef31d8c4cffd2a07be0a88c2e/django/core/paginator.py#L134
+     * (c) Django Project
+     * @return int[]
+     */
+    public function getPageRange(int $pagesOnEachSide = 3, int $pagesOnEdges = 1): iterable
+    {
+        if ($this->getLastPage() <= ($pagesOnEachSide + $pagesOnEdges) * 2) {
+            return yield from range(1, $this->getLastPage());
+        }
+
+        if ($this->getCurrentPage() > ($pagesOnEachSide + $pagesOnEdges + 1)) {
+            yield from range(1, $pagesOnEdges);
+            yield null;
+            yield from range($this->getCurrentPage() - $pagesOnEachSide, $this->getCurrentPage());
+        } else {
+            yield from range(1, $this->getCurrentPage());
+        }
+
+        if ($this->getCurrentPage() < ($this->getLastPage() - $pagesOnEachSide - $pagesOnEdges - 1)) {
+            yield from range($this->getCurrentPage() + 1, $this->getCurrentPage() + $pagesOnEachSide);
+            yield null;
+            yield from range($this->getLastPage() - $pagesOnEdges + 1, $this->getLastPage());
+        } elseif ($this->getCurrentPage() + 1 <= $this->getLastPage()) {
+            yield from range($this->getCurrentPage() + 1, $this->getLastPage());
+        }
+    }
+
     public function getLastPage(): int
     {
         return (int) ceil($this->numResults / $this->pageSize);

@@ -2,24 +2,30 @@
 {# @var paginator \EasyCorp\Bundle\EasyAdminBundle\Orm\EntityPaginator #}
 {% trans_default_domain 'EasyAdminBundle' %}
 
-<div class="list-pagination">
-    <div class="list-pagination-counter">
-        {{ 'paginator.results'|trans({'%count%': paginator.numResults})|raw }}
-    </div>
+<p class="m-0 text-muted">
+    {{ 'paginator.results'|trans({'%count%': paginator.numResults})|raw }}
+</p>
 
-    <nav class="pager list-pagination-paginator {{ not paginator.hasPreviousPage ? 'first-page' }} {{ not paginator.hasNextPage ? 'last-page' }}">
-        <ul class="pagination">
-            <li class="page-item {{ not paginator.hasPreviousPage ? 'disabled' }}">
-                <a class="page-link" href="{{ not paginator.hasPreviousPage ? '#' : paginator.generateUrlForPage(paginator.previousPage) }}">
-                    <i class="fa fa-angle-left mx-1"></i> <span class="btn-label">{{ 'paginator.previous'|trans }}</span>
-                </a>
-            </li>
+<ul class="pagination m-0 ml-auto">
+    <li class="page-item {{ not paginator.hasPreviousPage ? 'disabled' }}">
+        <a class="page-link" href="{{ not paginator.hasPreviousPage ? '#' : paginator.generateUrlForPage(paginator.previousPage) }}" tabindex="-1">
+            <i class="fa fa-angle-left mx-1"></i> <span class="btn-label">{{ 'paginator.previous'|trans }}</span>
+        </a>
+    </li>
 
-            <li class="page-item {{ not paginator.hasNextPage ? 'disabled' }}">
-                <a class="page-link" href="{{ not paginator.hasNextPage ? '#' : paginator.generateUrlForPage(paginator.nextPage) }}">
-                    <span class="btn-label">{{ 'paginator.next'|trans }}</span> <i class="fa fa-angle-right mx-1"></i>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</div>
+    {% for page in paginator.pageRange %}
+        <li class="page-item {{ page == paginator.currentPage ? 'active' }}">
+            {% if page is null %}
+                <span class="page-link">&#x22EF;</span>
+            {% else %}
+                <a class="page-link" href="{{ paginator.generateUrlForPage(page) }}">{{ page }}</a>
+            {% endif %}
+        </li>
+    {% endfor %}
+
+    <li class="page-item {{ not paginator.hasNextPage ? 'disabled' }}">
+        <a class="page-link" href="{{ not paginator.hasNextPage ? '#' : paginator.generateUrlForPage(paginator.nextPage) }}">
+            <span class="btn-label">{{ 'paginator.next'|trans }}</span> <i class="fa fa-angle-right mx-1"></i>
+        </a>
+    </li>
+</ul>
