@@ -1,6 +1,10 @@
 var Encore = require('@symfony/webpack-encore');
 const WebpackRTLPlugin = require('webpack-rtl-plugin');
 
+if (!Encore.isRuntimeEnvironmentConfigured()) {
+    Encore.configureRuntimeEnvironment(process.env.NODE_ENV || 'dev');
+}
+
 Encore
     .setOutputPath('./src/Resources/public/')
     .setPublicPath('./')
@@ -12,6 +16,9 @@ Encore
     .enableVersioning(false)
     .disableSingleRuntimeChunk()
     .autoProvidejQuery()
+
+    // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
+    .enableStimulusBridge('./assets/controllers.json')
 
     // copy FontAwesome fonts
     .copyFiles({

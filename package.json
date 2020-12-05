@@ -1,7 +1,8 @@
 {
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.8.1",
-    "@symfony/webpack-encore": "^0.27",
+    "@symfony/ux-lazy-image": "file:vendor/symfony/ux-lazy-image/Resources/assets",
+    "@symfony/webpack-encore": "^0.33",
     "bootstrap": "^4.1.0",
     "codemirror": "^5.47.0",
     "featherlight": "^1.7.13",
@@ -14,6 +15,7 @@
     "select2": "4.0.13",
     "select2-bootstrap-theme": "^0.1.0-beta.10",
     "slugify": "^1.4.0",
+    "stimulus": "^2.0.0",
     "trix": "^1.1.1",
     "webpack-rtl-plugin": "^2.0.0"
   },

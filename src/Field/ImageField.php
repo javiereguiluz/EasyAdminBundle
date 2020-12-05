@@ -13,6 +13,7 @@ final class ImageField implements FieldInterface
     use FieldTrait;
 
     public const OPTION_BASE_PATH = 'basePath';
+    public const OPTION_LAZY_LOAD = 'lazyLoad';
     public const OPTION_UPLOAD_DIR = 'uploadDir';
     public const OPTION_UPLOADED_FILE_NAME_PATTERN = 'uploadedFileNamePattern';
 
@@ -26,6 +27,7 @@ final class ImageField implements FieldInterface
             ->addCssClass('field-image')
             ->setTextAlign('center')
             ->setCustomOption(self::OPTION_BASE_PATH, null)
+            ->setCustomOption(self::OPTION_LAZY_LOAD, true)
             ->setCustomOption(self::OPTION_UPLOAD_DIR, null)
             ->setCustomOption(self::OPTION_UPLOADED_FILE_NAME_PATTERN, '[name].[extension]');
     }
@@ -65,6 +67,13 @@ final class ImageField implements FieldInterface
     public function setUploadedFileNamePattern($patternOrCallable): self
     {
         $this->setCustomOption(self::OPTION_UPLOADED_FILE_NAME_PATTERN, $patternOrCallable);
+
+        return $this;
+    }
+
+    public function lazyLoadImages(bool $lazyLoad = true): self
+    {
+        $this->setCustomOption(self::OPTION_LAZY_LOAD, $lazyLoad);
 
         return $this;
     }

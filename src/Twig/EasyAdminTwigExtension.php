@@ -4,6 +4,7 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Twig;
 
 use EasyCorp\Bundle\EasyAdminBundle\Router\CrudUrlBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Router\CrudUrlGenerator;
+use Symfony\UX\LazyImage\Twig\BlurHashExtension;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -17,6 +18,7 @@ use Twig\TwigFunction;
 class EasyAdminTwigExtension extends AbstractExtension
 {
     private $crudUrlGenerator;
+    private $blurHashExtension;
 
     public function __construct(CrudUrlGenerator $crudUrlGenerator)
     {
