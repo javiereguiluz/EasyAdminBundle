@@ -41,6 +41,11 @@
       "js": [
         "./form-type-textarea.js"
       ]
+    },
+    "form-type-file-upload": {
+      "js": [
+        "./form-type-file-upload.js"
+      ]
     }
   }
 }

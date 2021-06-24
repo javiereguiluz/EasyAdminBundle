@@ -79,14 +79,6 @@ table.datagrid {
   .action-icon { margin-right: 4px; }
 }
 
-.datagrid .ea-lightbox-thumbnail img {
-  box-shadow: 0 0 0 2px var(--white), 0 0 4px 1px var(--gray-600);
-  margin-bottom: 2px;
-  margin-top: 2px;
-  max-height: 50px;
-  max-width: 100px;
-}
-
 .datagrid mark {
   border-radius: var(--border-radius);
   background: var(--highlight-bg);

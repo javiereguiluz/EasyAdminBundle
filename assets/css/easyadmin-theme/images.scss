@@ -1,27 +1,45 @@
 // Images and lightbox
 // ----------------------------------------------------------------------------
-.detail .field-image .form-control {
-    background: transparent;
-    border: 0;
-    height: auto;
-    padding: 0;
+.ea-lightbox-thumbnail:hover {
+    cursor: zoom-in;
 }
 
-.detail .form-control .ea-lightbox-thumbnail img {
-    box-shadow: 0 0 0 4px var(--white), 0px 0px 8px 2px var(--gray-600);
+.datagrid .ea-lightbox-thumbnail {
+    border-radius: var(--border-radius);
+    border: 1px solid transparent;
+    display: inline-flex;
+    margin: 2px 0;
+    padding: 2px 4px;
+}
+.datagrid .ea-lightbox-thumbnail:hover {
+    background: var(--white);
+    border-color: var(--border-color);
+}
+.datagrid .ea-lightbox-thumbnail img {
+    max-height: 50px;
+    max-width: 100px;
+}
+
+.datalist .ea-lightbox-thumbnail img {
     margin: 10px 7px;
     max-height: 300px;
     max-width: 400px;
 }
 
-.ea-lightbox-thumbnail img:hover {
-    cursor: zoom-in;
+.form-widget .ea-lightbox-thumbnail img {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 0 0 1px rgba(43, 45, 80, .16), 0 0 0 1px rgba(6, 122, 184, 0), 0 0 0 2px rgba(6, 122, 184, 0), 0 1px 1px rgba(0, 0, 0, .08);
+    display: inline-block;
+    margin: 5px 5px 15px;
+    max-height: 200px;
+    max-width: 300px;
+    padding: 10px 15px;
 }
 
 .ea-lightbox {
     display: none;
 }
-
 .ea-lightbox img {
     max-width: 100%;
     width: 100%;

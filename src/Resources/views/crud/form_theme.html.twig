@@ -46,7 +46,7 @@
         {%- set type = type|default('file') -%}
         {{- block('form_widget_simple') -}}
     {% else %}
-        {{- block('form_widget_simple') -}}
+        {{ block('form_widget_simple') }}
     {% endif %}
 {%- endblock %}
 
@@ -557,27 +557,61 @@
                     {% set title = (currentFiles|first).mTime|date %}
                 {% endif %}
             {% endif %}
+
+            {% if not multiple and 'field-image' in row_attr.class|default('') %}
+                <div class="ea-fileupload-image-preview">
+                    {#
+                    https://codepen.io/mobifreaks/pen/LIbca
+                    https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input/file
+                    #}
+                    {% if download_path %}
+                        {% set image_path = download_path ~ currentFiles|first.filename %}
+                        {% set html_id = 'ea-lightbox-' ~ form.vars.id %}
+                        <a href="#" class="ea-lightbox-thumbnail" data-ea-lightbox-content-selector="#{{ html_id }}">
+                            <img src="{{ asset(image_path) }}" class="img-fluid">
+                        </a>
+
+                        <div id="{{ html_id }}" class="ea-lightbox">
+                            <img src="{{ asset(image_path) }}">
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
             {{ form_widget(form.file, { attr: form.file.vars.attr|merge({ placeholder: placeholder, title: title, 'data-files-label': filesLabel }) }) }}
+
+            <ul class="list-group">
+                {% for file in currentFiles %}
+                    <li class="list-group-item">
+                        {{ file.filename }} &bull; {{ file.size|ea_filesize }}
+                    </li>
+                {% endfor %}
+            </ul>
+
+
             <div class="input-group-append">
                 <span class="input-group-text" {% if currentFiles is empty %}style="display: none"{% endif %}>
-                    {%- if currentFiles -%}
+                    {% if currentFiles %}
                         {% if multiple %}
                             {{ (currentFiles|reduce((carry, file) => carry + file.size))|ea_filesize }}
                         {% else %}
                             {{ (currentFiles|first).size|ea_filesize }}
                         {% endif %}
-                    {%- endif -%}
+                    {% endif %}
                 </span>
+
                 {% if allow_delete %}
                     <label class="btn ea-fileupload-delete-btn" {% if currentFiles is empty %}style="display: none"{% endif %} for="{{ form.delete.vars.id }}">
                         <i class="fa fa-trash-o"></i>
                     </label>
                 {% endif %}
+
                 <label class="btn" for="{{ form.file.vars.id }}">
                     <i class="fa fa-folder-open-o"></i>
                 </label>
             </div>
         </div>
+
         {% if multiple and currentFiles %}
             <div class="form-control fileupload-list">
                 <table class="fileupload-table">
@@ -598,10 +632,12 @@
                 </table>
             </div>
         {% endif %}
+
         {% if allow_delete %}
             <div style="display: none">{{ form_widget(form.delete, { label: false }) }}</div>
         {% endif %}
     </div>
+
     {{ form_errors(form.file) }}
 {% endblock %}
 

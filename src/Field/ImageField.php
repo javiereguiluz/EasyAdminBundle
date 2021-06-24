@@ -29,6 +29,7 @@ final class ImageField implements FieldInterface
             ->setFormType(FileUploadType::class)
             ->addCssClass('field-image')
             ->setTextAlign(TextAlign::CENTER)
+            ->addJsFiles('bundles/easyadmin/form-type-file-upload.js')
             ->setCustomOption(self::OPTION_BASE_PATH, null)
             ->setCustomOption(self::OPTION_UPLOAD_DIR, null)
             ->setCustomOption(self::OPTION_UPLOADED_FILE_NAME_PATTERN, '[name].[extension]');
