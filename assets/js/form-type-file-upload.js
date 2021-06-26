@@ -2,64 +2,87 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.ea-fileupload input[type="file"]').forEach((fileUploadElement) => {
         new FileUpload(fileUploadElement);
     });
-
-        document.querySelectorAll('.ea-fileupload .ea-fileupload-delete-btn').forEach((fileUploadDeleteButton) => {
-            fileUploadDeleteButton.addEventListener('click', () => {
-                const fileUploadContainer = fileUploadDeleteButton.closest('.ea-fileupload');
-                const fileUploadInput = fileUploadContainer.querySelector('input');
-                const fileUploadCustomInput = fileUploadContainer.querySelector('.custom-file-label');
-                const fileUploadFileSizeLabel = fileUploadContainer.querySelector('.input-group-text');
-                const fileUploadListOfFiles = fileUploadContainer.querySelector('.fileupload-list');
-
-                fileUploadInput.value = '';
-                fileUploadCustomInput.innerHTML = '';
-                fileUploadFileSizeLabel.innerHTML = '';
-                fileUploadFileSizeLabel.style.display = 'none';
-                fileUploadDeleteButton.style.display = 'none';
-
-                if (null !== fileUploadListOfFiles) {
-                    fileUploadListOfFiles.style.display = 'none';
-                }
-            });
-        });
 });
 
 class FileUpload
 {
-    constructor(element) {
-        this.element = element;
-        this.#initialize();
+    constructor(fileUploadElement) {
+        this.#initialize(fileUploadElement);
     }
 
-    #initialize() {
-        this.element.addEventListener('change', () => {
-            const numberOfFiles = this.element.files.length;
+    #initialize(fileUploadElement) {
+        this.#createFileUploadCard(fileUploadElement);
+        this.#createFileMetadataUpdater(fileUploadElement);
+        this.#createImagePreview(fileUploadElement);
+        this.#createDeleteButton(fileUploadElement);
+    }
 
-            if (0 === numberOfFiles) {
+    #createFileUploadCard(fileUploadElement) {
+        fileUploadElement.addEventListener('change', () => {
+            const fileUploadContainer = fileUploadElement.closest('.ea-fileupload');
+            if (!fileUploadContainer.classList.contains('ea-fileupload-empty')) {
                 return;
             }
 
-            let filename = '';
-            if (1 === numberOfFiles) {
-                filename = this.element.files[0].name;
-            } else {
-                filename = numberOfFiles + ' ' + this.element.getAttribute('data-files-label');
+            const fileUploadSelectButton = fileUploadContainer.querySelector('.ea-fileupload-select-btn');
+            const fileUploadCardElement = fileUploadContainer.querySelector('.card');
+            fileUploadCardElement.style.display = 'block';
+            fileUploadSelectButton.parentNode.replaceChild(fileUploadCardElement, fileUploadSelectButton);
+        });
+    }
+
+    #createFileMetadataUpdater(fileUploadElement) {
+        fileUploadElement.addEventListener('change', () => {
+            if (fileUploadElement.files && fileUploadElement.files[0]) {
+                const fileUploadContainer = fileUploadElement.closest('.ea-fileupload');
+                const fileUploadFilenameElement = fileUploadContainer.querySelector('.ea-fileupload-filename');
+                const fileUploadFilesizeElement = fileUploadContainer.querySelector('.ea-fileupload-filesize');
+
+                fileUploadFilenameElement.innerHTML = fileUploadElement.files[0].name;
+                fileUploadFilesizeElement.innerHTML = this.#humanizeFileSize(fileUploadElement.files[0].size);
             }
+        });
+    }
 
-            let bytes = 0;
-            for (let i = 0; i < numberOfFiles; i++) {
-                bytes += this.element.files[i].size;
+    #createImagePreview(fileUploadElement) {
+        fileUploadElement.addEventListener('change', () => {
+            if (fileUploadElement.files && fileUploadElement.files[0]) {
+                const reader = new FileReader();
+
+                reader.addEventListener('load', () => {
+                    const imagePreviewElement = fileUploadElement.closest('.ea-fileupload').querySelector('.ea-fileupload-image-preview img');
+                    imagePreviewElement.src = reader.result;
+                });
+
+                reader.readAsDataURL(fileUploadElement.files[0]);
             }
+        });
+    }
 
-            const fileUploadContainer = this.element.closest('.ea-fileupload');
-            const fileUploadCustomInput = fileUploadContainer.querySelector('.custom-file-label');
-            const fileUploadFileSizeLabel = fileUploadContainer.querySelector('.input-group-text');
-            const fileUploadDeleteButton = fileUploadContainer.querySelector('.ea-fileupload-delete-btn');
+    #createDeleteButton(fileUploadElement) {
+        const fileUploadContainer = fileUploadElement.closest('.ea-fileupload');
+        const fileUploadDeleteButton = fileUploadContainer.querySelector('.ea-fileupload-delete-btn');
+        if (null === fileUploadDeleteButton) {
+            return;
+        }
 
-            fileUploadCustomInput.value = filename;
-            //fileUploadFileSizeLabel.innerHTML = '***' + this.#humanizeFileSize(bytes);
-            fileUploadFileSizeLabel.style.display = 'inherit';
-            fileUploadDeleteButton.style.display = 'block';
+        fileUploadDeleteButton.addEventListener('click', () => {
+            const fileUploadInput = fileUploadContainer.querySelector('input[type="file"]');
+            const fileUploadCard = fileUploadContainer.querySelector('.card');
+            const selectFilesButton = fileUploadContainer.querySelector('.ea-fileupload-select-btn');
+
+            fileUploadCard.outerHTML = selectFilesButton.outerHTML;
+
+            // Problem 1: this should work to "remove" the file when clicking on the delete button. But it doesn't work
+            fileUploadInput.value = '';
+            // Problem 2: if the above doesn't work, the following should definitely work ... but it doesn't work either
+            const emptyFileUploadElement = document.createElement('input');
+            emptyFileUploadElement.type = 'file';
+            emptyFileUploadElement.value = '';
+            emptyFileUploadElement.name = fileUploadInput.name;
+            emptyFileUploadElement.className = fileUploadInput.className;
+            emptyFileUploadElement.style.display = 'none';
+            fileUploadInput.parentNode.replaceChild(emptyFileUploadElement, fileUploadInput);
         });
     }
 

@@ -543,99 +543,103 @@
     {{ block('ea_numeric_filter_widget') }}
 {% endblock ea_datetime_filter_widget %}
 
+{% macro render_file_upload_card(hidden = false, filename = '', filesize = '', download_path = true, field_id = '', select_files_label = '', allow_delete = true, current_files = []) %}
+    <div class="card" {{ hidden ? 'style="display: none"' }}>
+    <div class="card-header">
+        <div class="ea-fileupload-file-metadata">
+            <span class="ea-fileupload-filename">{{ filename }}</span>
+            <span class="ea-fileupload-filesize">{{ filesize }}</span>
+        </div>
+    </div>
+
+    {% if download_path %}
+        <div class="card-body ea-fileupload-image-preview">
+            <img src="{{ asset(download_path ~ filename) }}">
+        </div>
+    {% endif %}
+
+    <div class="card-footer d-flex justify-content-between">
+        <label class="btn ea-fileupload-select-btn" for="{{ field_id }}">
+            <i class="fa fa-folder-open-o"></i> {{ select_files_label }}
+        </label>
+
+        {% if allow_delete %}
+            <label class="btn ea-fileupload-delete-btn">
+                <i class="fa fa-trash-o"></i>
+            </label>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
+
 {% block ea_fileupload_widget %}
-    <div class="ea-fileupload">
-        <div class="input-group">
-            {% set placeholder = '' %}
-            {% set title = '' %}
-            {% set filesLabel = 'files'|trans({}, 'EasyAdminBundle') %}
-            {% if currentFiles %}
-                {% if multiple %}
-                    {% set placeholder = currentFiles|length ~ ' ' ~ filesLabel %}
+    <div class="ea-fileupload {{ not currentFiles ? 'ea-fileupload-empty' }} {{ multiple ? 'ea-file-upload-multiple' : 'ea-file-upload-single' }}">
+            {% set selectFilesLabel = 'Seleccionar archivo'|trans({}, 'EasyAdminBundle') %}
+            {{ form_widget(form.file, { attr: form.file.vars.attr|merge({ style: 'display: none', 'data-ea-select-files-label': selectFilesLabel }) }) }}
+
+            {% if allow_delete %}
+                <div style="display: none">{{ form_widget(form.delete, { label: false }) }}</div>
+            {% endif %}
+
+            {% if not currentFiles %}
+                {# no file has been selected yet #}
+                <label class="btn ea-fileupload-select-btn" for="{{ form.file.vars.id }}">
+                    <i class="fa fa-folder-open-o"></i> {{ selectFilesLabel }}
+                </label>
+
+                {{ _self.render_file_upload_card(true, '', '', true, form.file.vars.id, selectFilesLabel, true, []) }}
+            {% else %}
+                {# there is one or more files and it's an image file(s) #}
+                {% if 'field-image' in row_attr.class|default('') %}
+                    {% for file in currentFiles %}
+                        {{ _self.render_file_upload_card(false, file.filename, file.size|ea_filesize, download_path, form.file.vars.id, selectFilesLabel, allow_delete, currentFiles, ) }}
+                    {% endfor %}
                 {% else %}
-                    {% set placeholder = (currentFiles|first).filename %}
-                    {% set title = (currentFiles|first).mTime|date %}
+                    {# there is one or more files and it's NOT an image file(s) #}
+                    <div class="input-group">
+                        <div type="text" class="form-control">
+                            <span class="text-truncate">{{ file.filename }}</span>
+                            <span class="text-muted">({{ file.size|ea_filesize }})</span>
+                        </div>
+                        <label class="btn btn-outline-secondary" type="button">Button</label>
+                        <button class="btn btn-outline-secondary" type="button">Button</button>
+                    </div>
+
+                    <ul class="list-group">
+                        {% for file in currentFiles %}
+                            <li class="list-group-item d-flex justify-content-between">
+                                <div>
+                                    <span class="text-truncate">{{ file.filename }}</span>
+                                    <span class="text-muted">({{ file.size|ea_filesize }})</span>
+                                </div>
+                                <div class="ea-fileupload-actions">
+                                    <label class="btn" for="{{ form.file.vars.id }}">
+                                        <i class="fa fa-folder-open-o"></i>
+                                    </label>
+
+                                    {% if allow_delete %}
+                                        <label class="btn ea-fileupload-delete-btn" {% if currentFiles is empty %}style="display: none"{% endif %} for="{{ form.delete.vars.id }}">
+                                            <i class="fa fa-trash-o"></i>
+                                        </label>
+                                    {% endif %}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
                 {% endif %}
             {% endif %}
 
-            {% if not multiple and 'field-image' in row_attr.class|default('') %}
-                <div class="ea-fileupload-image-preview">
+
                     {#
                     https://codepen.io/mobifreaks/pen/LIbca
                     https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input/file
+                    https://dev.to/ibn_abubakre/styling-file-inputs-like-a-boss-mhm
+
+                        https://github.com/chromium/chromium/blob/master/third_party/blink/public/strings/translations/blink_strings_es.xtb
+                        <translation id="7364796246159120393">Seleccionar archivo</translation>
+                        <translation id="795667975304826397">Ningún archivo seleccionado</translation>
+                        <translation id="6643016212128521049">Borrar</translation>
                     #}
-                    {% if download_path %}
-                        {% set image_path = download_path ~ currentFiles|first.filename %}
-                        {% set html_id = 'ea-lightbox-' ~ form.vars.id %}
-                        <a href="#" class="ea-lightbox-thumbnail" data-ea-lightbox-content-selector="#{{ html_id }}">
-                            <img src="{{ asset(image_path) }}" class="img-fluid">
-                        </a>
-
-                        <div id="{{ html_id }}" class="ea-lightbox">
-                            <img src="{{ asset(image_path) }}">
-                        </div>
-                    {% endif %}
-                </div>
-            {% endif %}
-
-            {{ form_widget(form.file, { attr: form.file.vars.attr|merge({ placeholder: placeholder, title: title, 'data-files-label': filesLabel }) }) }}
-
-            <ul class="list-group">
-                {% for file in currentFiles %}
-                    <li class="list-group-item">
-                        {{ file.filename }} &bull; {{ file.size|ea_filesize }}
-                    </li>
-                {% endfor %}
-            </ul>
-
-
-            <div class="input-group-append">
-                <span class="input-group-text" {% if currentFiles is empty %}style="display: none"{% endif %}>
-                    {% if currentFiles %}
-                        {% if multiple %}
-                            {{ (currentFiles|reduce((carry, file) => carry + file.size))|ea_filesize }}
-                        {% else %}
-                            {{ (currentFiles|first).size|ea_filesize }}
-                        {% endif %}
-                    {% endif %}
-                </span>
-
-                {% if allow_delete %}
-                    <label class="btn ea-fileupload-delete-btn" {% if currentFiles is empty %}style="display: none"{% endif %} for="{{ form.delete.vars.id }}">
-                        <i class="fa fa-trash-o"></i>
-                    </label>
-                {% endif %}
-
-                <label class="btn" for="{{ form.file.vars.id }}">
-                    <i class="fa fa-folder-open-o"></i>
-                </label>
-            </div>
-        </div>
-
-        {% if multiple and currentFiles %}
-            <div class="form-control fileupload-list">
-                <table class="fileupload-table">
-                    <tbody>
-                    {% for file in currentFiles %}
-                        <tr>
-                            <td>
-                                {% if download_path %}<a href="{{ asset(download_path ~ file.filename) }}">{% endif %}
-                                    <span title="{{ file.mTime|date }}">
-                                        <i class="fa fa-file-o"></i> {{ file.filename }}
-                                    </span>
-                                    {% if download_path %}</a>{% endif %}
-                            </td>
-                            <td class="text-right file-size">{{ file.size|ea_filesize }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% endif %}
-
-        {% if allow_delete %}
-            <div style="display: none">{{ form_widget(form.delete, { label: false }) }}</div>
-        {% endif %}
     </div>
 
     {{ form_errors(form.file) }}

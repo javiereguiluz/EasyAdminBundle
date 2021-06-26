@@ -506,92 +506,115 @@ form .invalid-feedback > .d-block + .d-block {
 }
 
 // fileupload widgets
+.ea-fileupload .card {
+    max-width: 350px;
+
+    img { display: block; margin: 0 auto; max-width: 100%; }
+    .card-header,
+    .card-footer {
+        align-items: center;
+        background: var(--form-bg);
+        padding: 0.5rem 1rem;
+    }
+    .card-header + .card-footer { border-top: none; }
+    label.btn { flex: unset; margin: 0; }
+    .ea-fileupload-file-metadata { display: flex; justify-content: space-between; }
+    // the 'direction' property is a trick to truncate from the start instead of the end of the text
+    .ea-fileupload-filename { direction: rtl; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ea-fileupload-filesize { color: var(--gray-600); padding-left: 15px; }
+}
+
+.ea-fileupload .list-group-item {
+align-items: center;
+padding: 5px 10px;
+}
+
 .ea-fileupload {
-    .custom-file {
-        height: 30px;
-    }
-    .input-group-append .btn {
-        color: var(--text-color);
-        font-size: 17px;
-        height: 28px;
-        line-height: 28px;
-        margin: 1px 0 0 1px;
-        padding: 0 8px;
-        vertical-align: middle;
-    }
+.custom-file {
+    height: 30px;
+}
+.input-group-append .btn {
+    color: var(--text-color);
+    font-size: 17px;
+    height: 28px;
+    line-height: 28px;
+    margin: 1px 0 0 1px;
+    padding: 0 8px;
+    vertical-align: middle;
+}
 
-    .custom-file-input {
-        cursor: pointer;
-    }
+.custom-file-input {
+    cursor: pointer;
+}
 
-    .custom-file-label {
-        height: 30px;
-        margin: 0 !important;
-        text-align: left !important;
-        padding: 3px 40px 3px 7px;
-        border-right: none;
+.custom-file-label {
+    height: 30px;
+    margin: 0 !important;
+    text-align: left !important;
+    padding: 3px 40px 3px 7px;
+    border-right: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.custom-file-label::after {
+    display: none;
+}
+
+.input-group-text {
+    background-color: white;
+    border: none;
+    color: var(--text-muted);
+    height: 28px;
+    margin-top: 1px;
+    padding: 7px;
+    position: absolute;
+    right: 70px;
+    z-index: 3;
+}
+
+.fileupload-list {
+    height: auto;
+    margin-top: 7px;
+    padding: 0;
+
+    .fileupload-table {
+        width: 100%;
+    }
+    .fileupload-table td {
+        padding: 3px 7px;
+        border-radius: 3px;
+    }
+    .fileupload-table td:first-child {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        max-width: 300px;
     }
-    .custom-file-label::after {
-        display: none;
+    .fileupload-table tr:nth-child(odd) td {
+        background-color: #f5f7ff;
     }
-
-    .input-group-text {
-        background-color: white;
-        border: none;
-        color: var(--text-muted);
-        height: 28px;
-        margin-top: 1px;
-        padding: 7px;
-        position: absolute;
-        right: 70px;
-        z-index: 3;
+    .fileupload-table td.file-size {
+        color: #4e566d;
     }
-
-    .fileupload-list {
-        height: auto;
-        margin-top: 7px;
-        padding: 0;
-
-        .fileupload-table {
-            width: 100%;
-        }
-        .fileupload-table td {
-            padding: 3px 7px;
-            border-radius: 3px;
-        }
-        .fileupload-table td:first-child {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 300px;
-        }
-        .fileupload-table tr:nth-child(odd) td {
-            background-color: #f5f7ff;
-        }
-        .fileupload-table td.file-size {
-            color: #4e566d;
-        }
-    }
+}
 }
 
 // Image/file vich uploads
 .ea-vich-image img {
-    box-shadow: 0 0 0 4px var(--white), 0px 0px 4px 3px var(--gray-600);
-    margin: 6px 4px 12px;
-    max-height: 300px;
-    max-width: 100%;
+box-shadow: 0 0 0 4px var(--white), 0px 0px 4px 3px var(--gray-600);
+margin: 6px 4px 12px;
+max-height: 300px;
+max-width: 100%;
 }
 
 .ea-vich-file-name {
-    display: block;
-    margin: 4px 0 8px;
+display: block;
+margin: 4px 0 8px;
 }
 
 .ea-vich-file-name .fa {
-    font-size: 18px;
+font-size: 18px;
 }
 
 // this element should use 'display: flex', but that doesn't work with
@@ -599,43 +622,43 @@ form .invalid-feedback > .d-block + .d-block {
 
 .ea-vich-image-actions > div,
 .ea-vich-file-actions > div {
-    float: left;
-    margin-right: 4px;
+float: left;
+margin-right: 4px;
 }
 
 .ea-vich-image-actions:after,
 .ea-vich-file-actions:after {
-    clear: left;
-    content: "";
-    display: block;
+clear: left;
+content: "";
+display: block;
 }
 
 .ea-vich-image-actions .field-checkbox,
 .ea-vich-file-actions .field-checkbox {
-    padding-top: 4px;
+padding-top: 4px;
 }
 
 .ea-vich-image-actions .form-widget {
-    flex-basis: 100%;
+flex-basis: 100%;
 }
 
 // This CSS trick allows to customize the <input type="file" /> field entirely
 // as explained in https://gist.github.com/barneycarroll/5244258
 .input-file-container {
-    overflow: hidden;
-    position: relative;
+overflow: hidden;
+position: relative;
 }
 
 .input-file-container [type=file] {
-    cursor: inherit;
-    display: block;
-    font-size: 999px;
-    filter: opacity(0);
-    min-height: 100%;
-    min-width: 100%;
-    opacity: 0;
-    position: absolute;
-    right: 0;
-    text-align: right;
-    top: 0;
+cursor: inherit;
+display: block;
+font-size: 999px;
+filter: opacity(0);
+min-height: 100%;
+min-width: 100%;
+opacity: 0;
+position: absolute;
+right: 0;
+text-align: right;
+top: 0;
 }
