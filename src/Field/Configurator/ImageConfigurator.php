@@ -36,7 +36,7 @@ final class ImageConfigurator implements FieldConfiguratorInterface
             : $this->getImagePath($field->getValue(), $configuredBasePath);
         $field->setFormattedValue($formattedValue);
 
-        $field->setFormTypeOption('upload_filename', $field->getCustomOption(ImageField::OPTION_UPLOADED_FILE_NAME_PATTERN));
+        //$field->setFormTypeOption('upload_filename', $field->getCustomOption(ImageField::OPTION_UPLOADED_FILE_NAME_PATTERN));
 
         // this check is needed to avoid displaying broken images when image properties are optional
         if (empty($formattedValue) || $formattedValue === rtrim($configuredBasePath ?? '', '/')) {
@@ -53,7 +53,7 @@ final class ImageConfigurator implements FieldConfiguratorInterface
         }
         $relativeUploadDir = u($relativeUploadDir)->trimStart(\DIRECTORY_SEPARATOR)->ensureEnd(\DIRECTORY_SEPARATOR)->toString();
         $absoluteUploadDir = u($relativeUploadDir)->ensureStart($this->projectDir.\DIRECTORY_SEPARATOR)->toString();
-        $field->setFormTypeOption('upload_dir', $absoluteUploadDir);
+        //$field->setFormTypeOption('upload_dir', $absoluteUploadDir);
     }
 
     private function getImagesPaths(?array $images, ?string $basePath): array

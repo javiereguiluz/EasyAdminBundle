@@ -34,6 +34,9 @@ Encore
     .addEntry('form-type-collection', './assets/js/form-type-collection.js')
     .addEntry('form-type-slug', './assets/js/form-type-slug.js')
     .addEntry('form-type-textarea', './assets/js/form-type-textarea.js')
+
+    // needed for Symfony UX packages
+    .enableStimulusBridge('./assets/controllers.json')
 ;
 
 module.exports = Encore.getWebpackConfig();

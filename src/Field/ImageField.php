@@ -5,6 +5,7 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\TextAlign;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\FileUploadType;
+use Symfony\UX\Dropzone\Form\DropzoneType;
 
 /**
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
@@ -26,7 +27,8 @@ final class ImageField implements FieldInterface
             ->setProperty($propertyName)
             ->setLabel($label)
             ->setTemplateName('crud/field/image')
-            ->setFormType(FileUploadType::class)
+            //->setFormType(FileUploadType::class)
+            ->setFormType(DropzoneType::class)
             ->addCssClass('field-image')
             ->setTextAlign(TextAlign::CENTER)
             ->setCustomOption(self::OPTION_BASE_PATH, null)
