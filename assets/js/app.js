@@ -6,6 +6,7 @@ import Mark from 'mark.js/src/vanilla';
 import DirtyForm from 'dirty-form';
 import * as basicLightbox from 'basiclightbox';
 import Autocomplete from './autocomplete';
+import '../symfony-ux/bootstrap';
 
 document.addEventListener('DOMContentLoaded', () => {
     App.createMainMenu();
