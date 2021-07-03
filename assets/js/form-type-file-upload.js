@@ -1,3 +1,5 @@
+require('../css/form-type-file-upload.css');
+
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.ea-fileupload input[type="file"]').forEach((fileUploadElement) => {
         new FileUpload(fileUploadElement);
@@ -7,28 +9,84 @@ document.addEventListener('DOMContentLoaded', () => {
 class FileUpload
 {
     constructor(fileUploadElement) {
-        this.#initialize(fileUploadElement);
+        this.#renderListOfFiles(fileUploadElement);
+        fileUploadElement.addEventListener('change', () => { this.#renderListOfFiles(fileUploadElement); });
     }
 
-    #initialize(fileUploadElement) {
-        this.#createFileUploadCard(fileUploadElement);
-        this.#createFileMetadataUpdater(fileUploadElement);
-        this.#createImagePreview(fileUploadElement);
-        this.#createDeleteButton(fileUploadElement);
+    #createHtmlElement(tagName, cssClasses, htmlAttributes, textContent)
+    {
+        const element = document.createElement(tagName);
+
+        if (null !== cssClasses && [] !== cssClasses) {
+            element.classList.add(cssClasses);
+        }
+
+        if (null !== htmlAttributes && [] !== htmlAttributes) {
+            htmlAttributes.forEach((propertyName, propertyValue) => {
+                element[propertyName] = propertyValue;
+            });
+        }
+
+        if (null !== textContent && '' !== textContent.trim()) {
+            element.textContent = textContent;
+        }
+
+        return element;
     }
 
-    #createFileUploadCard(fileUploadElement) {
-        fileUploadElement.addEventListener('change', () => {
-            const fileUploadContainer = fileUploadElement.closest('.ea-fileupload');
-            if (!fileUploadContainer.classList.contains('ea-fileupload-empty')) {
-                return;
-            }
+    #renderListOfFiles(fileUploadElement) {
+        console.log(fileUploadElement);
+        if (0 === fileUploadElement.files.length) {
+            return;
+        }
 
-            const fileUploadSelectButton = fileUploadContainer.querySelector('.ea-fileupload-select-btn');
-            const fileUploadCardElement = fileUploadContainer.querySelector('.card');
-            fileUploadCardElement.style.display = 'block';
-            fileUploadSelectButton.parentNode.replaceChild(fileUploadCardElement, fileUploadSelectButton);
+        const newListOfFilesElement = this.#createHtmlElement('div', ['ea-fileupload-selected-files-details']);
+        fileUploadElement.files.forEach((file) => {
+            const fileDetailsElement = this.#createHtmlElement('div', ['ea-fileupload-file-details']);
+
+            const filePreviewElement = this.#createHtmlElement('div', ['ea-fileupload-file-preview']);
+            const imageElement = this.#createHtmlElement('img', [], {src: 'https://live.symfony.com.wip/uploads/sponsors/01F8T4ZFN4EF46ZBMMR5X41671.png'});
+            filePreviewElement.appendChild(imageElement);
+
+            const fileMetadataElement = this.#createHtmlElement('div', ['ea-fileupload-file-metadata']);
+            const fileNameElement = this.#createHtmlElement('span', ['ea-fileupload-file-name'], [], file.name);
+            const fileSizeElement = this.#createHtmlElement('span', ['ea-fileupload-file-size'], [], this.#humanizeFileSize(file.size));
+            fileMetadataElement.appendChild(fileNameElement);
+            fileMetadataElement.appendChild(fileSizeElement);
+
+            const fileActionsElement = this.#createHtmlElement('div', ['ea-fileupload-file-actions']);
+            const fileDownloadElement = this.#createHtmlElement('a', ['ea-fileupload-download-action'], [], 'Download');
+            const fileDeleteElement = this.#createHtmlElement('a', ['ea-fileupload-delete-action', 'text-danger'], [], 'Delete');
+            fileActionsElement.appendChild(fileDownloadElement);
+            fileActionsElement.appendChild(fileDeleteElement);
+
+            fileDetailsElement.appendChild(filePreviewElement);
+            fileDetailsElement.appendChild(fileMetadataElement);
+            fileDetailsElement.appendChild(fileActionsElement);
+
+            newListOfFilesElement.appendChild(fileDetailsElement);
         });
+console.log(newListOfFilesElement);
+        /*
+            <div class="ea-fileupload-selected-files-details">
+                <div class="ea-fileupload-file-details">
+                    <div class="ea-fileupload-file-preview ea-fileupload-file-preview-is-image">
+                        <img src="https://live.symfony.com.wip/uploads/sponsors/01F8T4ZFN4EF46ZBMMR5X41671.png" />
+                    </div>
+                    <div class="ea-fileupload-file-metadata">
+                        <span class="ea-fileupload-file-name">{{ currentFiles|first.filename }}</span>
+                        <span class="ea-fileupload-file-size">({{ currentFiles|first.size|ea_filesize }})
+                    </div>
+                    <div class="ea-fileupload-file-actions">
+                        <a class="ea-fileupload-download-action" href="">Download</a>
+                        <a class="ea-fileupload-delete-action text-danger" href="">Delete</a>
+                    </div>
+                </div>
+            </div>
+         */
+
+        const listOfFilesElement = fileUploadElement.closest('.ea-fileupload').querySelector('.ea-fileupload-selected-files-details');
+        listOfFilesElement.parentNode.replaceChild(newListOfFilesElement, listOfFilesElement);
     }
 
     #createFileMetadataUpdater(fileUploadElement) {

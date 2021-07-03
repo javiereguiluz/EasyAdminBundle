@@ -574,21 +574,69 @@
 
 {% block ea_fileupload_widget %}
     <div class="ea-fileupload {{ not currentFiles ? 'ea-fileupload-empty' }} {{ multiple ? 'ea-file-upload-multiple' : 'ea-file-upload-single' }}">
+            {# label in plural: 'Elegir archivos' #}
             {% set selectFilesLabel = 'Seleccionar archivo'|trans({}, 'EasyAdminBundle') %}
+            <label class="btn ea-fileupload-select-btn" for="{{ form.file.vars.id }}">
+                <i class="fa fa-folder-open-o"></i> {{ selectFilesLabel }} &hellip;
+            </label>
             {{ form_widget(form.file, { attr: form.file.vars.attr|merge({ style: 'display: none', 'data-ea-select-files-label': selectFilesLabel }) }) }}
 
             {% if allow_delete %}
                 <div style="display: none">{{ form_widget(form.delete, { label: false }) }}</div>
             {% endif %}
 
-            {% if not currentFiles %}
-                {# no file has been selected yet #}
-                <label class="btn ea-fileupload-select-btn" for="{{ form.file.vars.id }}">
-                    <i class="fa fa-folder-open-o"></i> {{ selectFilesLabel }}
-                </label>
+            <div class="ea-fileupload-selected-files-details"></div>
 
-                {{ _self.render_file_upload_card(true, '', '', true, form.file.vars.id, selectFilesLabel, true, []) }}
-            {% else %}
+            <div class="ea-fileupload-selected-files-details">
+                <div class="ea-fileupload-file-details">
+                    <div class="ea-fileupload-file-preview ea-fileupload-file-preview-is-image">
+                        <img src="https://live.symfony.com.wip/uploads/sponsors/01F8T4ZFN4EF46ZBMMR5X41671.png" />
+                    </div>
+                    <div class="ea-fileupload-file-metadata">
+                        <span class="ea-fileupload-file-name">{{ currentFiles|first.filename }}</span>
+                        <span class="ea-fileupload-file-size">({{ currentFiles|first.size|ea_filesize }})
+                    </div>
+                    <div class="ea-fileupload-file-actions">
+                        <a class="ea-fileupload-download-action" href="">Download</a>
+                        <a class="ea-fileupload-delete-action text-danger" href="">Delete</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ea-fileupload-selected-files-details">
+                <div class="ea-fileupload-file-details">
+                    <div class="ea-fileupload-file-preview ea-fileupload-file-preview-is-not-image">
+                        <i class="far fa-file-alt"></i>
+                    </div>
+                    <div class="ea-fileupload-file-metadata">
+                        <span class="ea-fileupload-file-name">{{ currentFiles|first.filename }}</span>
+                        <span class="ea-fileupload-file-size">({{ currentFiles|first.size|ea_filesize }})
+                    </div>
+                    <div class="ea-fileupload-file-actions">
+                        <a class="ea-fileupload-download-action" href="">Download</a>
+                        <a class="ea-fileupload-delete-action text-danger" href="">Delete</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ea-fileupload-selected-files-details ea-fileupload-is-multiple">
+                <div class="ea-fileupload-file-details">
+                    <div class="ea-fileupload-file-metadata"></div>
+                    <div class="ea-fileupload-file-actions"></div>
+                </div>
+                <div class="ea-fileupload-file-details">
+                    <div class="ea-fileupload-file-metadata"></div>
+                    <div class="ea-fileupload-file-actions"></div>
+                </div>
+                <div class="ea-fileupload-file-details">
+                    <div class="ea-fileupload-file-metadata"></div>
+                    <div class="ea-fileupload-file-actions"></div>
+                </div>
+            </div>
+
+
+
+            {% if currentFiles %}
                 {# there is one or more files and it's an image file(s) #}
                 {% if 'field-image' in row_attr.class|default('') %}
                     {% for file in currentFiles %}

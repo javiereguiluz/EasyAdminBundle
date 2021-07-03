@@ -43,6 +43,10 @@
       ]
     },
     "form-type-file-upload": {
+      "css": [
+        "./form-type-file-upload.css",
+        "./form-type-file-upload.rtl.css"
+      ],
       "js": [
         "./form-type-file-upload.js"
       ]
