@@ -15,6 +15,7 @@ use Symfony\Component\Form\ChoiceList\Loader\ChoiceLoaderInterface;
 class DynamicChoiceLoader implements ChoiceLoaderInterface
 {
     private $choices = [];
+    private $TestOooooooo = [];
     private $cached = false;
     private $choiceList;
 
