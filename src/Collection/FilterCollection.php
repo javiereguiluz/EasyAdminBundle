@@ -48,9 +48,9 @@ final class FilterCollection implements CollectionInterface
     }
 
     /**
-     * @return ?FilterDto|mixed
+     * @return ?FilterDto
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->filters[$offset];
     }
