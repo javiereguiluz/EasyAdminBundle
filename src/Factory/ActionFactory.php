@@ -186,13 +186,12 @@ final class ActionFactory
                 $routeParameters = $routeParameters($entityInstance);
             }
 
-            return $this->adminUrlGenerator->unsetAll()->includeReferrer()->setRoute($routeName, $routeParameters)->generateUrl();
+            return $this->adminUrlGenerator->unsetAll()->setRoute($routeName, $routeParameters)->generateUrl();
         }
 
         $requestParameters = [
             EA::CRUD_CONTROLLER_FQCN => $request->query->get(EA::CRUD_CONTROLLER_FQCN),
             EA::CRUD_ACTION => $actionDto->getCrudActionName(),
-            EA::REFERRER => $this->generateReferrerUrl($request, $actionDto, $currentAction),
         ];
 
         if (\in_array($actionDto->getName(), [Action::INDEX, Action::NEW, Action::SAVE_AND_ADD_ANOTHER, Action::SAVE_AND_RETURN], true)) {
@@ -202,37 +201,5 @@ final class ActionFactory
         }
 
         return $this->adminUrlGenerator->unsetAllExcept(EA::FILTERS, EA::PAGE)->setAll($requestParameters)->generateUrl();
-    }
-
-    private function generateReferrerUrl(Request $request, ActionDto $actionDto, string $currentAction): ?string
-    {
-        $nextAction = $actionDto->getName();
-
-        if (Action::DETAIL === $currentAction) {
-            if (Action::EDIT === $nextAction) {
-                return $this->adminUrlGenerator->removeReferrer()->generateUrl();
-            }
-        }
-
-        if (Action::INDEX === $currentAction) {
-            return $this->adminUrlGenerator->removeReferrer()->generateUrl();
-        }
-
-        if (Action::NEW === $currentAction) {
-            return null;
-        }
-
-        $referrer = $request->query->get(EA::REFERRER);
-        $referrerParts = parse_url((string) $referrer);
-        parse_str($referrerParts[EA::QUERY] ?? '', $referrerQueryStringVariables);
-        $referrerCrudAction = $referrerQueryStringVariables[EA::CRUD_ACTION] ?? null;
-
-        if (Action::EDIT === $currentAction) {
-            if (\in_array($referrerCrudAction, [Action::INDEX, Action::DETAIL], true)) {
-                return $referrer;
-            }
-        }
-
-        return $this->adminUrlGenerator->removeReferrer()->generateUrl();
     }
 }

@@ -237,7 +237,6 @@ final class AssociationConfigurator implements FieldConfiguratorInterface
             ->setEntityId($entityDto->getPrimaryKeyValue())
             ->unset(EA::MENU_INDEX)
             ->unset(EA::SUBMENU_INDEX)
-            ->includeReferrer()
             ->generateUrl();
     }
 
