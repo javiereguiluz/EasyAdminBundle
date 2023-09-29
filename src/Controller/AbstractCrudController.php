@@ -263,11 +263,16 @@ abstract class AbstractCrudController extends AbstractController implements Crud
             return $this->getRedirectResponseAfterSave($context, Action::EDIT);
         }
 
+        if (null === $referrer = $context->getRequest()->headers->get('referer')) {
+            $referrer = $this->container->get(AdminUrlGenerator::class)->setAction(Action::INDEX)->unset(EA::ENTITY_ID)->generateUrl();
+        }
+
         $responseParameters = $this->configureResponseParameters(KeyValueStore::new([
             'pageName' => Crud::PAGE_EDIT,
             'templateName' => 'crud/edit',
             'edit_form' => $editForm,
             'entity' => $context->getEntity(),
+            'referrer' => $referrer,
         ]));
 
         $event = new AfterCrudActionEvent($context, $responseParameters);

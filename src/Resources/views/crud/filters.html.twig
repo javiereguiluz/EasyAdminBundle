@@ -1,9 +1,9 @@
 {# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
 {# @var filters_form \EasyCorp\Bundle\EasyAdminBundle\Form\Type\FiltersFormType #}
 {% form_theme filters_form with ea.crud.formThemes only %}
-
+{{ dump(ea_url().generateUrl(), ea_url().setAction('index').generateUrl()) }}
 {{ form_start(filters_form, {
-    action: filters_form.vars.action,
+    action: ea_url().setAction('index').generateUrl(),
     attr: {
         id: filters_form.vars.id,
         'data-ea-filters-form-id': filters_form.vars.id

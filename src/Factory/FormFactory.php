@@ -62,8 +62,6 @@ final class FormFactory
     {
         $filtersForm = $this->symfonyFormFactory->createNamed('filters', FiltersFormType::class, null, [
             'method' => 'GET',
-            // HERE: use AdminUrlGenerator to start from current URL but change action to index
-            'action' => $request->query->get(EA::REFERRER, $request->headers->get('referer')),
             'ea_filters' => $filters,
         ]);
 
