@@ -2,6 +2,7 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Router;
 
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Controllers;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
@@ -116,9 +117,9 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
 
         $dashboardRouteConfiguration = $this->getDashboardsRouteConfiguration();
         $dashboardRouteName = $dashboardRouteConfiguration[$dashboardFqcn]['route_name'];
-        $crudControllerShortName = $this->getCrudControllerShortName($crudControllerFqcn);
+        $crudControllerRouteName = $this->getCrudControllerName($crudControllerFqcn);
 
-        return sprintf('%s_%s_%s', $dashboardRouteName, $crudControllerShortName, $action);
+        return sprintf('%s_%s_%s', $dashboardRouteName, $crudControllerRouteName, $action);
     }
 
     public function getRoutePath(string $dashboardFqcn, string $crudControllerFqcn, string $action): ?string
@@ -130,9 +131,37 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
 
         $dashboardRouteConfiguration = $this->getDashboardsRouteConfiguration();
         $dashboardRoutePath = $dashboardRouteConfiguration[$dashboardFqcn]['route_path'];
-        $crudControllerShortName = $this->getCrudControllerShortName($crudControllerFqcn);
+        $crudControllerRoutePath = $this->getCrudControllerPath($crudControllerFqcn);
 
-        return sprintf('%s/%s%s', $dashboardRoutePath, $crudControllerShortName, self::ROUTES[$action]['path']);
+        return sprintf('%s/%s/%s', $dashboardRoutePath, $crudControllerRoutePath, ltrim(self::ROUTES[$action]['path'], '/'));
+    }
+
+    private function getCrudControllerName(string $crudControllerFqcn): string
+    {
+        $reflectionClass = new \ReflectionClass($crudControllerFqcn);
+        $attributes = $reflectionClass->getAttributes();
+
+        foreach ($attributes as $attribute) {
+            if ($attribute->getName() === AdminCrud::class && null !== $routeName = $attribute->getArguments()['routeName']) {
+                return trim($routeName, '_');
+            }
+        }
+
+        return trim($this->getCrudControllerShortName($crudControllerFqcn), '_');
+    }
+
+    private function getCrudControllerPath(string $crudControllerFqcn): string
+    {
+        $reflectionClass = new \ReflectionClass($crudControllerFqcn);
+        $attributes = $reflectionClass->getAttributes();
+
+        foreach ($attributes as $attribute) {
+            if ($attribute->getName() === AdminCrud::class && null !== $path = $attribute->getArguments()['path']) {
+                return trim($path, '/');
+            }
+        }
+
+        return trim($this->getCrudControllerShortName($crudControllerFqcn), '/');
     }
 
     private function getCrudControllerShortName(string $crudControllerFqcn): string

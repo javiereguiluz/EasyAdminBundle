@@ -73,9 +73,40 @@ Admin route name                Admin route path
     dashboards. You can :ref:`restrict which controllers are accessible <security-controllers>`
     on each dahboard to not generate all these routes.
 
-The default behavior of the CRUD actions provided by the ``AbstractCrudController``
-is appropriate for most backends, but you can customize it in several ways:
-:doc:`EasyAdmin events </events>`, :ref:`custom EasyAdmin templates <template-customization>`, etc.
+You can customize both the path and the route name of CRUD controllers using the
+``#[AdminCrud]`` attribute with the following options:
+
+* ``path``: the value that represents the controller in the entire route path
+  (e.g. a ``/foo`` path will result in ``/admin`` + ``/foo`` + ``/<action>``);
+* ``routeName``: the value that represents the controller in the full route name
+  (e.g. a ``foo_bar`` route name will result in ``admin_`` + ``foo_bar`` + ``_<action>``).
+
+Using the same example as above, you can configure the route names and paths of
+the controller as follows::
+
+    use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
+    // ...
+
+    #[AdminCrud(path: '/stock/current', routeName: 'stock')]
+    class ProductCrudController extends AbstractCrudController
+    {
+        // ...
+    }
+
+The route names will no longer be ``admin_product_*`` and ``/admin/product/*``
+but the following:
+
+==============================  =====================================
+Admin route name                Admin route path
+==============================  =====================================
+``admin_stock_index``           ``/admin/stock/current``
+``admin_stock_new``             ``/admin/stock/current/new``
+``admin_stock_batchDelete``     ``/admin/stock/current/batchDelete``
+``admin_stock_autocomplete``    ``/admin/stock/current/autocomplete``
+``admin_stock_edit``            ``/admin/stock/current/324/edit``
+``admin_stock_delete``          ``/admin/stock/current/324/delete``
+``admin_stock_detail``          ``/admin/stock/current/324``
+==============================  =====================================
 
 Page Names and Constants
 ~~~~~~~~~~~~~~~~~~~~~~~~
