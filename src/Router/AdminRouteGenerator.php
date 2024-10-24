@@ -2,7 +2,9 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Router;
 
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminAction;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminCrud;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Controllers;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
@@ -22,30 +24,37 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
     private const ROUTES = [
         'index' => [
             'path' => '/',
+            'name' => 'index',
             'methods' => ['GET'],
         ],
         'new' => [
             'path' => '/new',
+            'name' => 'new',
             'methods' => ['GET', 'POST'],
         ],
         'batchDelete' => [
             'path' => '/batchDelete',
+            'name' => 'batchDelete',
             'methods' => ['POST'],
         ],
         'autocomplete' => [
             'path' => '/autocomplete',
+            'name' => 'autocomplete',
             'methods' => ['GET'],
         ],
         'edit' => [
             'path' => '/{entityId}/edit',
+            'name' => 'edit',
             'methods' => ['GET', 'POST', 'PATCH'],
         ],
         'delete' => [
             'path' => '/{entityId}/delete',
+            'name' => 'delete',
             'methods' => ['POST'],
         ],
         'detail' => [
             'path' => '/{entityId}',
+            'name' => 'detail',
             'methods' => ['GET'],
         ],
     ];
@@ -79,7 +88,10 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
                     continue;
                 }
 
-                foreach (self::ROUTES as $actionName => $actionConfig) {
+
+
+
+                foreach (array_keys(self::ROUTES) as $actionName) {
                     $crudActionRouteName = $this->getRouteName($dashboardFqcn, $crudControllerFqcn, $actionName);
                     $crudActionPath = $this->getRoutePath($dashboardFqcn, $crudControllerFqcn, $actionName);
 
@@ -119,7 +131,12 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
         $dashboardRouteName = $dashboardRouteConfiguration[$dashboardFqcn]['route_name'];
         $crudControllerRouteName = $this->getCrudControllerName($crudControllerFqcn);
 
-        return sprintf('%s_%s_%s', $dashboardRouteName, $crudControllerRouteName, $action);
+        $defaultRouteConfig = $this->getDefaultRouteConfig($dashboardFqcn, $action);
+
+        $actionsCustomRouteConfig = $this->getActionsCustomConfig($crudControllerFqcn);
+        $actionRouteName = $actionsCustomRouteConfig[$action]['routeName'] ?? $defaultRouteConfig['routeName'] ?? $action;
+
+        return sprintf('%s_%s_%s', $dashboardRouteName, $crudControllerRouteName, $actionRouteName);
     }
 
     public function getRoutePath(string $dashboardFqcn, string $crudControllerFqcn, string $action): ?string
@@ -133,7 +150,43 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
         $dashboardRoutePath = $dashboardRouteConfiguration[$dashboardFqcn]['route_path'];
         $crudControllerRoutePath = $this->getCrudControllerPath($crudControllerFqcn);
 
-        return sprintf('%s/%s/%s', $dashboardRoutePath, $crudControllerRoutePath, ltrim(self::ROUTES[$action]['path'], '/'));
+        $defaultRouteConfig = $this->getDefaultRouteConfig($dashboardFqcn, $action);
+
+        $actionsCustomConfig = $this->getActionsCustomConfig($crudControllerFqcn);
+        $actionPath = $actionsCustomConfig[$action]['path'] ?? $defaultRouteConfig['path'];
+
+        return sprintf('%s/%s/%s', $dashboardRoutePath, $crudControllerRoutePath, ltrim($actionPath, '/'));
+    }
+
+    private function getDefaultRouteConfig(string $dashboardFqcn, string $action): array
+    {
+        $reflectionClass = new \ReflectionClass($dashboardFqcn);
+        $attributes = $reflectionClass->getAttributes();
+        $customRouteConfig = [];
+        foreach ($attributes as $attribute) {
+            if ($attribute->getName() === AdminDashboard::class) {
+                $dashboardAttribute = $attribute->newInstance();
+                if (isset($dashboardAttribute->routes[$action])) {
+                    $customRouteConfig = $dashboardAttribute->routes[$action];
+
+                    if (\count(array_diff(array_keys($customRouteConfig), ['path', 'routeName'])) > 0) {
+                        throw new \RuntimeException(sprintf('In the #[AdminDashboard] attribute of the "%s" dashboard controller, the route configuration for the "%s" action defines some unsupported keys. You can only define these keys: "path" and "routeName".', $dashboardFqcn, $action));
+                    }
+
+                    if (!preg_match('/^[a-zA-Z0-9_-]+$/', $customRouteConfig['routeName'])) {
+                        throw new \RuntimeException(sprintf('In the #[AdminDashboard] attribute of the "%s" dashboard controller, the route name "%s" for the "%s" action is not valid. It can only contain letter, numbers, dashes, and underscores.', $dashboardFqcn, $customRouteConfig['routeName'], $action));
+                    }
+
+                    if (\in_array($action, ['edit', 'detail', 'delete'], true) && false === strpos($customRouteConfig['path'], '{entityId}')) {
+                        throw new \RuntimeException(sprintf('In the #[AdminDashboard] attribute of the "%s" dashboard controller, the path for the "%s" action must contain the "{entityId}" placeholder.', $action, $dashboardFqcn));
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        return array_merge(self::ROUTES[$action], $customRouteConfig);
     }
 
     private function getCrudControllerName(string $crudControllerFqcn): string
@@ -162,6 +215,26 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
         }
 
         return trim($this->getCrudControllerShortName($crudControllerFqcn), '/');
+    }
+
+    private function getActionsCustomConfig(string $crudControllerFqcn): array
+    {
+        $reflectionClass = new \ReflectionClass($crudControllerFqcn);
+        $methods = $reflectionClass->getMethods();
+        $actionsCustomConfig = [];
+        foreach ($methods as $method) {
+            $attributes = $method->getAttributes();
+            foreach ($attributes as $attribute) {
+                if ($attribute->getName() === AdminAction::class) {
+                    $actionsCustomConfig[$method->getName()] = [
+                        'path' => trim($attribute->getArguments()['path'], '/'),
+                        'routeName' => trim($attribute->getArguments()['routeName'], '_'),
+                    ];
+                }
+            }
+        }
+
+        return $actionsCustomConfig;
     }
 
     private function getCrudControllerShortName(string $crudControllerFqcn): string
