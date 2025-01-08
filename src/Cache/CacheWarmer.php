@@ -30,15 +30,16 @@ final class CacheWarmer implements CacheWarmerInterface
 
     public function warmUp(string $cacheDir, ?string $buildDir = null): array
     {
-        $cacheFilename = ($buildDir ?? $cacheDir).'/'.self::DASHBOARD_ROUTES_CACHE;
+        // this call triggers the creation of all admin routes via the custom route loader
+        $allRoutes = $this->router->getRouteCollection();
 
+        $cacheFilename = ($buildDir ?? $cacheDir).'/'.self::DASHBOARD_ROUTES_CACHE;
         if (file_exists($cacheFilename)) {
             // this method must return an array of classes to preload, but we don't use
             // this feature, so we return an empty array
             return [];
         }
 
-        $allRoutes = $this->router->getRouteCollection();
         $dashboardRoutes = [];
 
         /** @var Route $route */
