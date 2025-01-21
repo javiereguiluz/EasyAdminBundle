@@ -2,9 +2,9 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Field;
 
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Intl\IntlFormatterInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\MoneyConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
-use EasyCorp\Bundle\EasyAdminBundle\Intl\IntlFormatter;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class MoneyFieldTest extends AbstractFieldTest
@@ -13,7 +13,7 @@ class MoneyFieldTest extends AbstractFieldTest
     {
         parent::setUp();
 
-        $intlFormatterMock = $this->getMockBuilder(IntlFormatter::class)
+        $intlFormatterMock = $this->getMockBuilder(IntlFormatterInterface::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['formatCurrency'])
             ->getMock();

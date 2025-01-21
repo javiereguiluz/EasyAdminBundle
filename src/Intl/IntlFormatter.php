@@ -2,6 +2,7 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Intl;
 
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Intl\IntlFormatterInterface;
 use Twig\Error\RuntimeError;
 
 /**
@@ -10,7 +11,7 @@ use Twig\Error\RuntimeError;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-final class IntlFormatter
+final class IntlFormatter implements IntlFormatterInterface
 {
     private const DATE_FORMATS = [
         'none' => \IntlDateFormatter::NONE,

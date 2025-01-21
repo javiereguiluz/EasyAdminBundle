@@ -2,9 +2,9 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Field;
 
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Intl\IntlFormatterInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\DateTimeConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-use EasyCorp\Bundle\EasyAdminBundle\Intl\IntlFormatter;
 
 class DateTimeFieldTest extends AbstractFieldTest
 {
@@ -12,7 +12,7 @@ class DateTimeFieldTest extends AbstractFieldTest
     {
         parent::setUp();
 
-        $intlFormatterMock = $this->getMockBuilder(IntlFormatter::class)
+        $intlFormatterMock = $this->getMockBuilder(IntlFormatterInterface::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['formatDateTime'])
             ->getMock();

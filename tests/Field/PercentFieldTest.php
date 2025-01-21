@@ -2,9 +2,9 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Field;
 
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Intl\IntlFormatterInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\PercentConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\PercentField;
-use EasyCorp\Bundle\EasyAdminBundle\Intl\IntlFormatter;
 
 class PercentFieldTest extends AbstractFieldTest
 {
@@ -14,7 +14,7 @@ class PercentFieldTest extends AbstractFieldTest
     {
         parent::setUp();
 
-        $this->intlFormatterMock = $this->getMockBuilder(IntlFormatter::class)
+        $this->intlFormatterMock = $this->getMockBuilder(IntlFormatterInterface::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['formatNumber'])
             ->getMock();

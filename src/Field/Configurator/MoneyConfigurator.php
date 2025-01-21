@@ -4,6 +4,7 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Field\Configurator;
 
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Intl\IntlFormatterInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
@@ -16,12 +17,12 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
  */
 final class MoneyConfigurator implements FieldConfiguratorInterface
 {
-    private IntlFormatter $intlFormatter;
+    private IntlFormatterInterface $intlFormatter;
     private PropertyAccessorInterface $propertyAccessor;
 
     public const DEFAULT_DIVISOR = 100;
 
-    public function __construct(IntlFormatter $intlFormatter, PropertyAccessorInterface $propertyAccessor)
+    public function __construct(IntlFormatterInterface $intlFormatter, PropertyAccessorInterface $propertyAccessor)
     {
         $this->intlFormatter = $intlFormatter;
         $this->propertyAccessor = $propertyAccessor;
