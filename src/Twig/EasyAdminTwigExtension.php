@@ -45,6 +45,7 @@ class EasyAdminTwigExtension extends AbstractExtension implements GlobalsInterfa
     public function getFunctions(): array
     {
         return [
+            new TwigFunction('ea', [$this, 'ea']),
             new TwigFunction('ea_url', [$this, 'getAdminUrlGenerator']),
             new TwigFunction('ea_form_ealabel', null, ['node_class' => 'Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', 'is_safe' => ['html']]),
             // deprecated functions
@@ -69,8 +70,16 @@ class EasyAdminTwigExtension extends AbstractExtension implements GlobalsInterfa
 
     public function getGlobals(): array
     {
-        // this is needed to make the admin context available on any Twig template via the short named variable 'ea'
+        // this global is deprecated and will be removed in a future version
+        trigger_deprecation('easycorp/easyadmin-bundle', '4.25.0', 'Using the "ea" global variable is deprecated, use the ea() Twig function instead.');
+
+        // keep providing the context for backwards compatibility
         return ['ea' => $this->adminContextProvider];
+    }
+
+    public function ea(): AdminContextProviderInterface
+    {
+        return $this->adminContextProvider;
     }
 
     /**

@@ -1,6 +1,12 @@
 Upgrade between EasyAdmin 4.x versions
 ======================================
 
+EasyAdmin 4.25.0
+----------------
+
+The global `ea` variable injected in all templates is deprecated.
+Use the `ea()` Twig function to access the admin context.
+
 EasyAdmin 4.22.0
 ----------------
 
