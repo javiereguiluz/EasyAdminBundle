@@ -5,7 +5,14 @@ EasyAdmin 4.25.0
 ----------------
 
 The global `ea` variable injected in all templates is deprecated.
-Use the `ea()` Twig function to access the admin context.
+Use the equivalent `ea()` Twig function, which returns the current context
+of the EasyAdmin application.
+
+    // Before
+    {{ ea.i18n.translationDomain }}
+
+    // After
+    {{ ea().i18n.translationDomain }}
 
 EasyAdmin 4.22.0
 ----------------

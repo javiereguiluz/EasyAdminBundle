@@ -3,6 +3,8 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Twig;
 
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Context\AdminContextInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldLayoutDto;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\FormLayoutFactory;
@@ -70,14 +72,12 @@ class EasyAdminTwigExtension extends AbstractExtension implements GlobalsInterfa
 
     public function getGlobals(): array
     {
-        // this global is deprecated and will be removed in a future version
-        trigger_deprecation('easycorp/easyadmin-bundle', '4.25.0', 'Using the "ea" global variable is deprecated, use the ea() Twig function instead.');
+        trigger_deprecation('easycorp/easyadmin-bundle', '4.25.0', 'Using the "ea" global variable is deprecated, use the equivalent ea() Twig function instead.');
 
-        // keep providing the context for backwards compatibility
         return ['ea' => $this->adminContextProvider];
     }
 
-    public function ea(): AdminContextProviderInterface
+    public function ea(): ?AdminContextProviderInterface
     {
         return $this->adminContextProvider;
     }
