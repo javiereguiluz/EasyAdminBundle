@@ -77,9 +77,9 @@ class EasyAdminTwigExtension extends AbstractExtension implements GlobalsInterfa
         return ['ea' => $this->adminContextProvider];
     }
 
-    public function ea(): ?AdminContextProviderInterface
+    public function ea(): ?AdminContextInterface
     {
-        return $this->adminContextProvider;
+        return $this->adminContextProvider->getContext();
     }
 
     /**

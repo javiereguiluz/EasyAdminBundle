@@ -37,22 +37,31 @@ final class AdminContextProvider implements AdminContextProviderInterface
     {
         $currentRequest = $this->requestStack->getCurrentRequest();
 
-        if (null === $currentRequest) {
-            if ($throw) {
-                throw new \LogicException('Cannot use the EasyAdmin context: no request is available.');
-            }
+        if (null === $currentRequest && $throw) {
+            trigger_deprecation(
+                'easycorp/easyadmin-bundle',
+                '4.25.0',
+                'The "$throw" argument of the "%s" method is deprecated and will be removed in EasyAdmin 5.0.0. Avoid using the EasyAdmin context outside HTTP requests or for non-admin requests.',
+                __METHOD__
+            );
 
-            return null;
+            throw new \LogicException('Cannot use the EasyAdmin context: no request is available.');
         }
 
-        return $currentRequest->get(EA::CONTEXT_REQUEST_ATTRIBUTE);
+        return $currentRequest?->get(EA::CONTEXT_REQUEST_ATTRIBUTE);
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getRequest() instead.
+     */
     public function getRequest(): Request
     {
         return $this->getContext(true)->getRequest();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getReferrer() instead.
+     */
     public function getReferrer(): ?string
     {
         trigger_deprecation(
@@ -65,31 +74,49 @@ final class AdminContextProvider implements AdminContextProviderInterface
         return $this->getContext(true)->getReferrer();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getI18n() instead.
+     */
     public function getI18n(): I18nDto
     {
         return $this->getContext(true)->getI18n();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getCrudControllers() instead.
+     */
     public function getCrudControllers(): CrudControllerRegistry
     {
         return $this->getContext(true)->getCrudControllers();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getEntity() instead.
+     */
     public function getEntity(): EntityDto
     {
         return $this->getContext(true)->getEntity();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getUser() instead.
+     */
     public function getUser(): ?UserInterface
     {
         return $this->getContext(true)->getUser();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getAssets() instead.
+     */
     public function getAssets(): AssetsDto
     {
         return $this->getContext(true)->getAssets();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getSignedUrls() instead.
+     */
     public function getSignedUrls(): bool
     {
         trigger_deprecation(
@@ -102,81 +129,129 @@ final class AdminContextProvider implements AdminContextProviderInterface
         return $this->getContext(true)->getSignedUrls();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getAbsoluteUrls() instead.
+     */
     public function getAbsoluteUrls(): bool
     {
         return $this->getContext(true)->getAbsoluteUrls();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getDashboardTitle() instead.
+     */
     public function getDashboardTitle(): string
     {
         return $this->getContext(true)->getDashboardTitle();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getDashboardFaviconPath() instead.
+     */
     public function getDashboardFaviconPath(): string
     {
         return $this->getContext(true)->getDashboardFaviconPath();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getDashboardControllerFqcn() instead.
+     */
     public function getDashboardControllerFqcn(): string
     {
         return $this->getContext(true)->getDashboardControllerFqcn();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getDashboardRouteName() instead.
+     */
     public function getDashboardRouteName(): string
     {
         return $this->getContext(true)->getDashboardRouteName();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getDashboardContentWidth() instead.
+     */
     public function getDashboardContentWidth(): string
     {
         return $this->getContext(true)->getDashboardContentWidth();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getDashboardSidebarWidth() instead.
+     */
     public function getDashboardSidebarWidth(): string
     {
         return $this->getContext(true)->getDashboardSidebarWidth();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getDashboardHasDarkModeEnabled() instead.
+     */
     public function getDashboardHasDarkModeEnabled(): bool
     {
         return $this->getContext(true)->getDashboardHasDarkModeEnabled();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getDashboardDefaultColorScheme() instead.
+     */
     public function getDashboardDefaultColorScheme(): string
     {
         return $this->getContext(true)->getDashboardDefaultColorScheme();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getDashboardLocales() instead.
+     */
     public function getDashboardLocales(): array
     {
         return $this->getContext(true)->getDashboardLocales();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getMainMenu() instead.
+     */
     public function getMainMenu(): MainMenuDto
     {
         return $this->getContext(true)->getMainMenu();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getUserMenu() instead.
+     */
     public function getUserMenu(): UserMenuDto
     {
         return $this->getContext(true)->getUserMenu();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getCrud() instead.
+     */
     public function getCrud(): ?CrudDto
     {
         return $this->getContext(true)->getCrud();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getSearch() instead.
+     */
     public function getSearch(): ?SearchDto
     {
         return $this->getContext(true)->getSearch();
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->getTemplatePath() instead.
+     */
     public function getTemplatePath(string $templateName): string
     {
         return $this->getContext(true)->getTemplatePath($templateName);
     }
 
+    /**
+     * @deprecated since 4.25.0, will be removed in 5.0. Use $context->usePrettyUrls() instead.
+     */
     public function usePrettyUrls(): bool
     {
         return $this->getContext(true)->usePrettyUrls();
