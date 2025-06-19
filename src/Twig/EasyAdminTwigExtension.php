@@ -71,8 +71,6 @@ class EasyAdminTwigExtension extends AbstractExtension implements GlobalsInterfa
 
     public function getGlobals(): array
     {
-        trigger_deprecation('easycorp/easyadmin-bundle', '4.25.0', 'Using the "ea" global variable is deprecated, use the equivalent ea() Twig function instead.');
-
         return ['ea' => $this->adminContextProvider];
     }
 
