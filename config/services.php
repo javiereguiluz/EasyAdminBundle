@@ -320,6 +320,10 @@ return static function (ContainerConfigurator $container) {
             ->arg(1, new Reference(AuthorizationChecker::class))
             ->arg(2, new Reference(AdminUrlGenerator::class))
             ->arg(3, new Reference('security.csrf.token_manager', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+            ->arg(4, new Reference('EasyCorp\Bundle\EasyAdminBundle\Factory\ActionExtensionRegistry', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+            ->arg(5, new Reference('security.token_storage', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+            ->arg(6, new Reference('logger', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+            ->tag('monolog.logger', ['channel' => 'easyadmin'])
 
         ->set(SecurityVoter::class)
             ->arg(0, service(AuthorizationChecker::class))

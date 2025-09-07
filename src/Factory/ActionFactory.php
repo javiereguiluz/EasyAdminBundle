@@ -4,17 +4,21 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Factory;
 
 use EasyCorp\Bundle\EasyAdminBundle\Collection\ActionCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\ActionConfigDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\ActionDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\ActionExtensionContext;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Security\Permission;
 use EasyCorp\Bundle\EasyAdminBundle\Translation\TranslatableMessageBuilder;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use function Symfony\Component\Translation\t;
 use Symfony\Contracts\Translation\TranslatableInterface;
@@ -29,12 +33,19 @@ final class ActionFactory
         private readonly AuthorizationCheckerInterface $authChecker,
         private readonly AdminUrlGeneratorInterface $adminUrlGenerator,
         private readonly ?CsrfTokenManagerInterface $csrfTokenManager = null,
+        private readonly ?ActionExtensionRegistry $extensionRegistry = null,
+        private readonly ?TokenStorageInterface $tokenStorage = null,
+        private readonly ?LoggerInterface $logger = null,
     ) {
     }
 
     public function processEntityActions(EntityDto $entityDto, ActionConfigDto $actionsDto): void
     {
         $currentPage = $this->adminContextProvider->getContext()->getCrud()->getCurrentPage();
+        
+        // Apply action extensions before processing
+        $actionsDto = $this->applyActionExtensions($actionsDto, $currentPage);
+        
         $entityActions = [];
         foreach ($actionsDto->getActions()->all() as $actionDto) {
             if (!$actionDto->isEntityAction()) {
@@ -78,6 +89,10 @@ final class ActionFactory
         }
 
         $currentPage = $this->adminContextProvider->getContext()->getCrud()->getCurrentPage();
+        
+        // Apply action extensions before processing
+        $actionsDto = $this->applyActionExtensions($actionsDto, $currentPage);
+        
         $globalActions = [];
         foreach ($actionsDto->getActions()->all() as $actionDto) {
             if (!$actionDto->isGlobalAction() && !$actionDto->isBatchAction()) {
@@ -235,5 +250,93 @@ final class ActionFactory
         }
 
         return $this->adminUrlGenerator->unsetAllExcept(...$urlParametersToKeep)->setAll($requestParameters)->generateUrl();
+    }
+
+    private function applyActionExtensions(ActionConfigDto $actionsDto, string $pageName): ActionConfigDto
+    {
+        if (null === $this->extensionRegistry || empty($this->extensionRegistry->getExtensions())) {
+            return $actionsDto;
+        }
+
+        $adminContext = $this->adminContextProvider->getContext();
+        $crudControllerFqcn = $adminContext->getCrud()?->getControllerFqcn() ?? '';
+        $entityFqcn = $adminContext->getCrud()?->getEntityFqcn() ?? '';
+        $dashboardFqcn = get_class($adminContext->getDashboardController());
+        
+        $user = null;
+        $userRoles = [];
+        if (null !== $this->tokenStorage) {
+            $token = $this->tokenStorage->getToken();
+            if (null !== $token) {
+                $user = $token->getUser();
+                $userRoles = $token->getRoleNames();
+            }
+        }
+
+        $extensionContext = new ActionExtensionContext(
+            $crudControllerFqcn,
+            $entityFqcn,
+            $pageName,
+            $dashboardFqcn,
+            $user,
+            $userRoles
+        );
+
+        $actions = Actions::fromDto($actionsDto);
+        $originalActionNames = array_keys($actionsDto->getActions()->all());
+
+        foreach ($this->extensionRegistry->getExtensions() as $extension) {
+            $previousActions = clone $actions;
+            $actions = $extension->extend($actions, $extensionContext);
+            
+            if (null !== $this->logger) {
+                $this->logActionChanges($previousActions, $actions, $extension, $pageName, $originalActionNames);
+            }
+        }
+
+        return $actions->getAsDto($pageName);
+    }
+
+    private function logActionChanges(Actions $previousActions, Actions $newActions, object $extension, string $pageName, array $originalActionNames): void
+    {
+        $previousDto = $previousActions->getAsDto($pageName);
+        $newDto = $newActions->getAsDto($pageName);
+        
+        $previousActionNames = array_keys($previousDto->getActions()->all());
+        $newActionNames = array_keys($newDto->getActions()->all());
+        
+        $addedActions = array_diff($newActionNames, $previousActionNames);
+        $removedActions = array_diff($previousActionNames, $newActionNames);
+        
+        foreach ($newActionNames as $actionName) {
+            if (in_array($actionName, $originalActionNames, true) && in_array($actionName, $previousActionNames, true)) {
+                $previousAction = $previousDto->getAction($pageName, $actionName);
+                $newAction = $newDto->getAction($pageName, $actionName);
+                
+                if ($previousAction !== $newAction) {
+                    $this->logger->debug('Action extension overwrote action', [
+                        'extension' => get_class($extension),
+                        'action' => $actionName,
+                        'page' => $pageName,
+                    ]);
+                }
+            }
+        }
+        
+        foreach ($addedActions as $actionName) {
+            $this->logger->debug('Action extension added action', [
+                'extension' => get_class($extension),
+                'action' => $actionName,
+                'page' => $pageName,
+            ]);
+        }
+        
+        foreach ($removedActions as $actionName) {
+            $this->logger->debug('Action extension removed action', [
+                'extension' => get_class($extension),
+                'action' => $actionName,
+                'page' => $pageName,
+            ]);
+        }
     }
 }

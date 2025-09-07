@@ -25,6 +25,11 @@ final class Actions
         return new self($dto);
     }
 
+    public static function fromDto(ActionConfigDto $dto): self
+    {
+        return new self(clone $dto);
+    }
+
     public function add(string $pageName, Action|string $actionNameOrObject): self
     {
         return $this->doAddAction($pageName, $actionNameOrObject);
