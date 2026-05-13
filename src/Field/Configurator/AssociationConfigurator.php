@@ -12,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\TextAlign;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AssociationContextProviderInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\ControllerFactory;
@@ -21,10 +22,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\CrudAutocompleteType;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\CrudFormType;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Security\Permission;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use function Symfony\Component\Translation\t;
 
 /**
@@ -38,6 +41,8 @@ final readonly class AssociationConfigurator implements FieldConfiguratorInterfa
         private RequestStack $requestStack,
         private ControllerFactory $controllerFactory,
         private FieldFactory $fieldFactory,
+        private AuthorizationCheckerInterface $authorizationChecker,
+        private AssociationContextProviderInterface $associationContextProvider,
     ) {
     }
 
@@ -298,7 +303,24 @@ final readonly class AssociationConfigurator implements FieldConfiguratorInterfa
         // associated entity is null (e.g. admin_post_index and Post <-> User)
         $crudAction = null === $primaryKeyValue ? Action::INDEX : Action::DETAIL;
 
-        // TODO: check if user has permission to see the related entity
+        $targetCrud = $this->associationContextProvider->getCrudDto($crudController, $crudAction);
+        if (null !== $targetCrud) {
+            // check entity-level permission (Crud::setEntityPermission() on the target controller)
+            $entityPermission = $targetCrud->getEntityPermission();
+            if (null !== $entityPermission
+                && !$this->authorizationChecker->isGranted($entityPermission, $entityDto->getInstance())) {
+                return null;
+            }
+
+            // check action-level permission (Actions::setPermission() on the target controller)
+            if (!$this->authorizationChecker->isGranted(
+                Permission::EA_EXECUTE_ACTION,
+                ['crud' => $targetCrud, 'action' => $crudAction, 'entity' => $entityDto],
+            )) {
+                return null;
+            }
+        }
+
         return $this->adminUrlGenerator
             ->setController($crudController)
             ->setAction($crudAction)

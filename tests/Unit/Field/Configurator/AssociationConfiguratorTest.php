@@ -5,15 +5,23 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Field\Configurator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Context\AdminContextInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AssociationContextProviderInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\CrudDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Factory\AdminContextFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\ControllerFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\EntityFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Factory\FieldFactory;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\AssociationConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
+use EasyCorp\Bundle\EasyAdminBundle\Provider\AssociationContextProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGeneratorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Security\Permission;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Controller\ProjectDomain\DeveloperCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Controller\ProjectDomain\ProjectCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Controller\ProjectDomain\ProjectReleaseCategoryCrudController;
@@ -24,10 +32,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Entity\Proj
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Field\AbstractFieldTest;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class AssociationConfiguratorTest extends AbstractFieldTest
 {
     private EntityDto $projectDto;
+    private RequestStack $requestStack;
 
     protected function setUp(): void
     {
@@ -37,18 +47,36 @@ class AssociationConfiguratorTest extends AbstractFieldTest
 
         $adminUrlGenerator = $this->getMockBuilder(AdminUrlGeneratorInterface::class)->disableOriginalConstructor()->getMock();
 
+        $this->requestStack = new RequestStack();
+        $adminContextProvider = new AdminContextProvider($this->requestStack);
+
         $this->configurator = new AssociationConfigurator(
             static::getContainer()->get(EntityFactory::class),
             $adminUrlGenerator,
-            static::getContainer()->get(RequestStack::class),
+            $this->requestStack,
             static::getContainer()->get(ControllerFactory::class),
             static::getContainer()->get(FieldFactory::class),
+            static::getContainer()->get(AuthorizationCheckerInterface::class),
+            new AssociationContextProvider(
+                static::getContainer()->get(ControllerFactory::class),
+                $adminContextProvider,
+                static::getContainer()->get(AdminContextFactory::class),
+            ),
         );
     }
 
     protected function getEntityDto(): EntityDto
     {
         return $this->projectDto;
+    }
+
+    protected function getAdminContext(string $pageName, string $requestLocale, string $actionName, ?string $controllerFqcn = null): AdminContextInterface
+    {
+        $context = parent::getAdminContext($pageName, $requestLocale, $actionName, $controllerFqcn);
+        $context->getRequest()->attributes->set(EA::CONTEXT_REQUEST_ATTRIBUTE, $context);
+        $this->requestStack->push($context->getRequest());
+
+        return $context;
     }
 
     public function testToOneAssociation(): void
@@ -159,5 +187,131 @@ class AssociationConfiguratorTest extends AbstractFieldTest
     public static function failsOnOptionRenderAsEmbeddedCrudFormIfNoCrudControllerCanBeFound(): \Generator
     {
         yield [AssociationField::new('latestRelease')];
+    }
+
+    public function testAssociationLinkIsRenderedWhenUserIsPermitted(): void
+    {
+        $targetCrud = new CrudDto();
+        // no entity permission, no action permissions → both gates pass
+
+        $authChecker = $this->createMock(AuthorizationCheckerInterface::class);
+        $authChecker->method('isGranted')->willReturn(true);
+
+        $this->configurator = $this->buildConfigurator(
+            $authChecker,
+            $this->buildContextProviderReturning($targetCrud),
+            $this->buildUrlGeneratorReturning('http://expected-url'),
+        );
+
+        $fieldDto = $this->configure($this->buildLeadDeveloperField(), controllerFqcn: ProjectCrudController::class);
+
+        $this->assertSame('http://expected-url', $fieldDto->getCustomOption(AssociationField::OPTION_RELATED_URL));
+    }
+
+    public function testAssociationLinkIsHiddenWhenTargetEntityPermissionDenies(): void
+    {
+        $targetCrud = new CrudDto();
+        $targetCrud->setEntityPermission('ROLE_DENIED');
+
+        $authChecker = $this->createMock(AuthorizationCheckerInterface::class);
+        $authChecker->method('isGranted')->willReturnCallback(
+            static fn ($attribute) => 'ROLE_DENIED' !== $attribute,
+        );
+
+        $this->configurator = $this->buildConfigurator(
+            $authChecker,
+            $this->buildContextProviderReturning($targetCrud),
+            $this->buildUrlGeneratorReturning('http://should-not-appear'),
+        );
+
+        $fieldDto = $this->configure($this->buildLeadDeveloperField(), controllerFqcn: ProjectCrudController::class);
+
+        $this->assertNull($fieldDto->getCustomOption(AssociationField::OPTION_RELATED_URL));
+    }
+
+    public function testAssociationLinkIsHiddenWhenTargetActionPermissionDenies(): void
+    {
+        $targetCrud = new CrudDto();
+        // no entity permission, so the gate that matters is EA_EXECUTE_ACTION
+
+        $authChecker = $this->createMock(AuthorizationCheckerInterface::class);
+        $authChecker->method('isGranted')->willReturnCallback(
+            static fn ($attribute) => Permission::EA_EXECUTE_ACTION !== $attribute,
+        );
+
+        $this->configurator = $this->buildConfigurator(
+            $authChecker,
+            $this->buildContextProviderReturning($targetCrud),
+            $this->buildUrlGeneratorReturning('http://should-not-appear'),
+        );
+
+        $fieldDto = $this->configure($this->buildLeadDeveloperField(), controllerFqcn: ProjectCrudController::class);
+
+        $this->assertNull($fieldDto->getCustomOption(AssociationField::OPTION_RELATED_URL));
+    }
+
+    public function testAssociationLinkIsRenderedWhenTargetCrudIsNull(): void
+    {
+        // when the provider can't resolve a target CrudDto, the configurator skips both permission
+        // checks and falls through to URL generation — the auth checker must not be called.
+        $authChecker = $this->createMock(AuthorizationCheckerInterface::class);
+        $authChecker->expects($this->never())->method('isGranted');
+
+        $this->configurator = $this->buildConfigurator(
+            $authChecker,
+            $this->buildContextProviderReturning(null),
+            $this->buildUrlGeneratorReturning('http://expected-url'),
+        );
+
+        $fieldDto = $this->configure($this->buildLeadDeveloperField(), controllerFqcn: ProjectCrudController::class);
+
+        $this->assertSame('http://expected-url', $fieldDto->getCustomOption(AssociationField::OPTION_RELATED_URL));
+    }
+
+    private function buildLeadDeveloperField(): AssociationField
+    {
+        $field = AssociationField::new('leadDeveloper');
+        $field->getAsDto()->setDoctrineMetadata(
+            (array) $this->projectDto->getClassMetadata()->getAssociationMapping('leadDeveloper'),
+        );
+        $field->setCustomOption(AssociationField::OPTION_EMBEDDED_CRUD_FORM_CONTROLLER, DeveloperCrudController::class);
+
+        return $field;
+    }
+
+    private function buildConfigurator(
+        AuthorizationCheckerInterface $authChecker,
+        AssociationContextProviderInterface $contextProvider,
+        AdminUrlGeneratorInterface $urlGenerator,
+    ): AssociationConfigurator {
+        return new AssociationConfigurator(
+            static::getContainer()->get(EntityFactory::class),
+            $urlGenerator,
+            $this->requestStack,
+            static::getContainer()->get(ControllerFactory::class),
+            static::getContainer()->get(FieldFactory::class),
+            $authChecker,
+            $contextProvider,
+        );
+    }
+
+    private function buildContextProviderReturning(?CrudDto $crudDto): AssociationContextProviderInterface
+    {
+        $provider = $this->createMock(AssociationContextProviderInterface::class);
+        $provider->method('getCrudDto')->willReturn($crudDto);
+
+        return $provider;
+    }
+
+    private function buildUrlGeneratorReturning(string $url): AdminUrlGeneratorInterface
+    {
+        $generator = $this->getMockBuilder(AdminUrlGeneratorInterface::class)->disableOriginalConstructor()->getMock();
+        $generator->method('setController')->willReturnSelf();
+        $generator->method('setAction')->willReturnSelf();
+        $generator->method('setEntityId')->willReturnSelf();
+        $generator->method('unset')->willReturnSelf();
+        $generator->method('generateUrl')->willReturn($url);
+
+        return $generator;
     }
 }

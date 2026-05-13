@@ -14,6 +14,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\EntityPaginatorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\EntityRepositoryInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Orm\EntityUpdaterInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AssociationContextProviderInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Registry\AdminControllerRegistryInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Translation\EntityTranslationIdGeneratorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\DataCollector\EasyAdminDataCollector;
@@ -86,6 +87,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityPaginator;
 use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityUpdater;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
+use EasyCorp\Bundle\EasyAdminBundle\Provider\AssociationContextProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\FieldProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Registry\AdminControllerRegistry;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminRouteGenerator;
@@ -163,6 +165,14 @@ return static function (ContainerConfigurator $container) {
             ->arg(0, service('request_stack'))
 
         ->alias(AdminContextProviderInterface::class, AdminContextProvider::class)
+
+        ->set(AssociationContextProvider::class)
+            ->arg(0, service(ControllerFactory::class))
+            ->arg(1, service(AdminContextProvider::class))
+            ->arg(2, service(AdminContextFactory::class))
+            ->tag('kernel.reset', ['method' => 'reset'])
+
+        ->alias(AssociationContextProviderInterface::class, AssociationContextProvider::class)
 
         ->set(AdminContextResolver::class)
             ->arg(0, service(AdminContextProvider::class))
@@ -374,6 +384,8 @@ return static function (ContainerConfigurator $container) {
             ->arg(2, service('request_stack'))
             ->arg(3, service(ControllerFactory::class))
             ->arg(4, new Reference(FieldFactory::class))
+            ->arg(5, new Reference(AuthorizationChecker::class))
+            ->arg(6, service(AssociationContextProviderInterface::class))
 
         ->set(AvatarConfigurator::class)
 
