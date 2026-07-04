@@ -1,0 +1,135 @@
+{% if this.isRawMode() %}
+    {# Raw mode: render a standalone grid from plain "rows" + "columns", with no
+       AdminContext, DTOs or field templates. #}
+
+    {# All the data is pre-computed into local variables HERE (where "this" is the
+       DataGrid component). Inside the <twig:ea:Table> slot "this" is rebound to the
+       Table component, and only the structural sub-elements are plain <thead>/<tbody>/
+       <tr> tags (not <twig:ea:Table:Header>/Row components) so these locals stay in
+       scope for the loops — nested component slots don't propagate the outer scope. #}
+    {% set grid_columns = this.normalizedColumns() %}
+    {% set grid_rows = this.rows %}
+    {% set grid_no_results = this.noResultsMessage is not null ? this.noResultsMessage : 'datagrid.no_results'|trans({}, 'EasyAdminBundle') %}
+
+    {# no legacy "table datagrid" classes here, so raw grids get the clean baseline
+       "ea-table" styling (see .ea-table:not(.datagrid) in easyadmin-theme/table.css) #}
+    <twig:ea:Table {{ ...attributes }} size="{{ this.size ? this.size.value }}">
+        {% if grid_columns is not empty %}
+            <thead>
+                <tr>
+                    {# loop var is "col" (not "column"): the HeaderCell/Cell components
+                       have a "column" prop, and the embed would shadow a "column" loop
+                       variable with the scalar prop value (same reason the index page
+                       loops with "field"). #}
+                    {% for col in grid_columns %}
+                        {% set col_attrs = col.align or col.cssClass ? {class: html_classes(col.align ? 'text-' ~ col.align, col.cssClass)} : {} %}
+                        <twig:ea:Table:HeaderCell
+                            column="{{ col.name }}"
+                            sortable="{{ col.sortable }}"
+                            sortDirection="{{ col.sortDirection }}"
+                            sortUrl="{{ col.sortUrl }}"
+                            {{ ...col_attrs }}
+                        >{{ col.label }}</twig:ea:Table:HeaderCell>
+                    {% endfor %}
+                </tr>
+            </thead>
+        {% endif %}
+
+        <tbody>
+            {% for row in grid_rows %}
+                <tr>
+                    {% for col in grid_columns %}
+                        {% set col_attrs = col.align or col.cssClass ? {class: html_classes(col.align ? 'text-' ~ col.align, col.cssClass)} : {} %}
+                        {# |default('') lets a row lack some column key without erroring under strict_variables #}
+                        <twig:ea:Table:Cell
+                            column="{{ col.name }}"
+                            label="{{ col.label }}"
+                            {{ ...col_attrs }}
+                        >{{ attribute(row, col.name)|default('') }}</twig:ea:Table:Cell>
+                    {% endfor %}
+                </tr>
+            {% else %}
+                <twig:ea:Table:EmptyRow colspan="{{ grid_columns|length > 0 ? grid_columns|length : 100 }}" message="{{ grid_no_results }}" />
+            {% endfor %}
+        </tbody>
+    </twig:ea:Table>
+{% else %}
+{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
+{% set ea = this.context() %}
+
+{# Data is pre-computed here (where "this" is the DataGrid component). Inside the
+   <twig:ea:Table> slot "this" is the Table component, and the structural tags are
+   plain <thead>/<tbody>/<tr> (not the Table:Header/Row components) so these locals
+   stay in scope for the loops — nested component slots don't propagate outer scope. #}
+{% set entities = this.entities %}
+{% set with_actions = this.withActions %}
+{% set header_entity = entities|filter(e => e.isAccessible)|first %}
+{% set columns = header_entity ? header_entity.fields : [] %}
+{% set column_count = (columns|length) + (with_actions ? 1 : 0) %}
+{% set no_results_message = this.noResultsMessage is not null ? this.noResultsMessage : 'datagrid.no_results'|trans(ea.i18n.translationParameters, 'EasyAdminBundle') %}
+
+{% set sort_params = ea.request.query.all['sort']|default({}) %}
+{% set sort_field_name = sort_params|keys|first %}
+{% set ea_sort_asc = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Config\\Option\\SortOrder::ASC') %}
+{% set ea_sort_desc = constant('EasyCorp\\Bundle\\EasyAdminBundle\\Config\\Option\\SortOrder::DESC') %}
+
+<twig:ea:Table {{ ...attributes.defaults({class: 'table datagrid' ~ (entities is empty ? ' datagrid-empty' : ''), 'data-default-action-trigger': ea.crud.defaultRowActionTrigger}) }} size="{{ this.size ? this.size.value }}">
+    {% if header_entity %}
+        <thead>
+            <tr>
+                {% for field in columns %}
+                    {% set is_searchable = null == ea.crud.searchFields or field.property in ea.crud.searchFields %}
+                    {% set is_sorting_field = ea.search.isSortingField(field.property) %}
+                    {% set next_sort_direction = is_sorting_field ? (ea.search.sortDirection(field.property) == ea_sort_desc ? ea_sort_asc : ea_sort_desc) : ea_sort_desc %}
+                    {% set sortable_url = field.isSortable
+                        ? ea_url().setController(ea.request.attributes.get('crudControllerFqcn')).setAction('index').set('page', 1).set('sort', {(field.property): next_sort_direction})
+                        : null %}
+
+                    <twig:ea:Table:HeaderCell
+                        column="{{ field.property }}"
+                        sortable="{{ field.isSortable }}"
+                        sortDirection="{{ is_sorting_field ? ea.search.sortDirection(field.property) }}"
+                        sortUrl="{{ sortable_url }}"
+                        class="{{ field.cssClass }} {{ is_searchable ? 'searchable' }} {{ is_sorting_field ? 'sorted' }} {{ field.isVirtual ? 'field-virtual' }} header-for-{{ field.cssClass|split(' ')|filter(class => class starts with 'field-')|join('') }} text-{{ field.textAlign }}"
+                        dir="{{ ea.i18n.textDirection }}"
+                    >{{ field.label|trans(domain: ea.i18n.translationDomain)|raw }}</twig:ea:Table:HeaderCell>
+                {% endfor %}
+
+                {% if with_actions %}
+                    <th class="{{ ea.crud.showEntityActionsAsDropdown ? 'actions-as-dropdown-table-head' }}" dir="{{ ea.i18n.textDirection }}"><span class="visually-hidden">{{ 'action.entity_actions'|trans(ea.i18n.translationParameters, 'EasyAdminBundle') }}</span></th>
+                {% endif %}
+            </tr>
+        </thead>
+    {% endif %}
+
+    <tbody>
+        {% for entity in entities|filter(e => e.isAccessible) %}
+            <tr data-id="{{ entity.primaryKeyValueAsString }}"{% if entity.defaultActionUrl %} data-default-action-url="{{ entity.defaultActionUrl }}" role="link" tabindex="0"{% endif %}>
+                {% for field in entity.fields %}
+                    {% set is_searchable = null == ea.crud.searchFields or field.property in ea.crud.searchFields %}
+
+                    <twig:ea:Table:Cell
+                        column="{{ field.property }}"
+                        label="{{ field.label|trans(domain: ea.i18n.translationDomain) }}"
+                        class="{{ is_searchable ? 'searchable' }} {{ field.property == sort_field_name ? 'sorted' }} text-{{ field.textAlign }} {{ field.cssClass }}"
+                        dir="{{ ea.i18n.textDirection }}"
+                        {{ ...field.htmlAttributes }}
+                    >{{ include(field.templatePath, {field: field, entity: entity}, with_context: false) }}</twig:ea:Table:Cell>
+                {% endfor %}
+
+                {% if with_actions %}
+                    {{ include('@EasyAdmin/crud/includes/_entity_actions_cell.html.twig', {entity: entity, ea: ea}, with_context: false) }}
+                {% endif %}
+            </tr>
+        {% else %}
+            <twig:ea:Table:EmptyRow colspan="{{ column_count > 0 ? column_count : 100 }}" message="{{ no_results_message }}" />
+        {% endfor %}
+    </tbody>
+</twig:ea:Table>
+
+{% if this.paginator is not null and this.paginator.hasToPaginate %}
+    <div class="content-panel-footer without-padding without-border">
+        {{ include(ea.templatePath('crud/paginator'), {paginator: this.paginator, render_detailed_pagination: true}) }}
+    </div>
+{% endif %}
+{% endif %}

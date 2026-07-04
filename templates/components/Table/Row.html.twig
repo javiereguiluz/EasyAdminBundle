@@ -1,0 +1,5 @@
+{% props
+    selectable = false, # marks the row as selectable; adds an addressable hook for row-selection UIs
+%}
+
+<tr {{- attributes.defaults(selectable ? {class: 'ea-table-row-selectable'} : {}) }}><twig:block name="content"></twig:block></tr>

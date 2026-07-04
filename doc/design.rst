@@ -308,7 +308,39 @@ These are the available components:
 * ``ea:Icon``, renders the SVG icon associated to the given ``name``. The icon
   is resolved using the icon set configured in the backend (`FontAwesome icons`_
   by default, or :ref:`your own icon set <icon-customization>`);
-* ``ea:Flag``, renders the flag of a country as an SVG image.
+* ``ea:Flag``, renders the flag of a country as an SVG image;
+* ``ea:DataGrid``, renders a full data table. Inside EasyAdmin it renders the
+  processed entities of a CRUD page, but it can also render a standalone grid from
+  plain PHP data via its ``rows`` and ``columns`` props:
+
+  .. code-block:: twig
+
+      <twig:ea:DataGrid
+          columns="{{ [
+              'id',
+              { name: 'email', label: 'E-mail', sortable: true, sortUrl: path('sort_by_email') },
+          ] }}"
+          rows="{{ [
+              { id: 1, email: 'jane@example.com' },
+              { id: 2, email: 'john@example.com' },
+          ] }}"
+      />
+
+  Each column is either a string (used as the row key and, humanized, as the header
+  label) or a map with any of these keys: ``name``, ``label``, ``sortable``,
+  ``sortUrl``, ``sortDirection`` (``asc``/``desc``), ``align`` (``left``/``center``/
+  ``right``) and ``cssClass``. Each row is an associative array or an object; cell
+  values are read by column name and escaped (a row may omit some column keys).
+  Use the optional ``size`` prop (``sm``/``md``/``lg``) to change the density and
+  ``noResultsMessage`` to customize the message shown when there are no rows.
+
+  The other mode of the component (the ``entities``/``paginator`` props) renders
+  EasyAdmin entities and only works in the backend pages of the CRUD controller
+  that processed them, because the sort state and URLs, the row actions and the
+  pagination are resolved from the current admin context. Also, this component
+  relies on the styles of the EasyAdmin backend, so grids rendered in pages
+  outside EasyAdmin won't look the same unless those pages load the EasyAdmin
+  stylesheet.
 
 .. _crud-design-custom-web-assets:
 

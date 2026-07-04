@@ -1,0 +1,68 @@
+/* ----------------------------------------------------------------------------
+   Baseline styles for the Table/* Twig component primitives (<twig:ea:Table>, …).
+
+   These rules only apply when the primitives are used on their own (e.g. a table
+   on a dashboard or a detail page). The EasyAdmin index and the DataGrid component
+   opt into the full legacy look by also setting the `datagrid` class, so they are
+   deliberately excluded here via `:not(.datagrid)` to avoid any visual regression.
+ --------------------------------------------------------------------------- */
+.ea-table:not(.datagrid) {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--text-color);
+    font-size: var(--font-size-base);
+}
+
+.ea-table:not(.datagrid) th,
+.ea-table:not(.datagrid) td {
+    padding: 8px 12px;
+    text-align: start;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-secondary-color);
+}
+
+.ea-table:not(.datagrid) thead th {
+    color: var(--text-muted);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.ea-table:not(.datagrid) tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+/* Density variants driven by the shared Size scale (md = base, no class) */
+.ea-table-sm:not(.datagrid) th,
+.ea-table-sm:not(.datagrid) td {
+    padding: 4px 8px;
+    font-size: var(--font-size-sm);
+}
+
+.ea-table-lg:not(.datagrid) th,
+.ea-table-lg:not(.datagrid) td {
+    padding: 12px 16px;
+    font-size: var(--font-size-lg);
+}
+
+/* Unlike the baseline above, the density variants also apply to tables using the
+   legacy `datagrid` look (the DataGrid component in EasyAdmin mode). The extra
+   `.datagrid` selector out-specifies the datagrids.css padding rules; desktop-only
+   so the stacked mobile layout from datagrids.css keeps its own spacing. */
+@media (min-width: 768px) {
+    .ea-table-sm.datagrid th,
+    .ea-table-sm.datagrid td {
+        padding: 4px 8px;
+        font-size: var(--font-size-sm);
+    }
+
+    .ea-table-lg.datagrid th,
+    .ea-table-lg.datagrid td {
+        padding: 12px 16px;
+        font-size: var(--font-size-lg);
+    }
+}
+
+.ea-table:not(.datagrid) .ea-table-empty-row td {
+    text-align: center;
+    color: var(--text-muted);
+}

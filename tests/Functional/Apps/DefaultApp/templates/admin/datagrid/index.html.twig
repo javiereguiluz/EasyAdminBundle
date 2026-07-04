@@ -1,0 +1,15 @@
+{# Custom index page that renders the entities through the DataGrid component
+   (EasyAdmin mode) instead of the default index markup; used to test that mode
+   with a real AdminContext (see Controller/DataGrid/DataGridCrudController). #}
+{% set ea = ea() %}
+{% extends ea.templatePath('layout') %}
+
+{% block main %}
+    <twig:ea:DataGrid
+        entities="{{ entities }}"
+        paginator="{{ paginator }}"
+        withActions
+        noResultsMessage="No categories here"
+        size="sm"
+    />
+{% endblock %}

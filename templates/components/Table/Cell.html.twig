@@ -1,0 +1,10 @@
+{% props
+    column = null, # value rendered as the data-column attribute
+    label = null, # value rendered as the data-label attribute (used by the responsive stacked layout)
+%}
+
+{% set cell_defaults = {} %}
+{% if column is not null %}{% set cell_defaults = cell_defaults|merge({'data-column': column}) %}{% endif %}
+{% if label is not null %}{% set cell_defaults = cell_defaults|merge({'data-label': label}) %}{% endif %}
+
+<td {{- attributes.defaults(cell_defaults) }}><twig:block name="content"></twig:block></td>

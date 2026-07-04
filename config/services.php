@@ -97,6 +97,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Security\SecurityVoter;
 use EasyCorp\Bundle\EasyAdminBundle\Translation\EntityTranslationIdGenerator;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Alert;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Badge;
+use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\DataGrid;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Flag;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Icon;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\EasyAdminTwigExtension;
@@ -475,6 +476,10 @@ return static function (ContainerConfigurator $container) {
             ->tag('twig.component')
 
         ->set(Badge::class)
+            ->tag('twig.component')
+
+        ->set(DataGrid::class)
+            ->arg(0, service(AdminContextProvider::class))
             ->tag('twig.component')
     ;
 };

@@ -115,19 +115,17 @@
                         {% set is_searchable = null == ea.crud.searchFields or field.property in ea.crud.searchFields %}
                         {% set is_sorting_field = ea.search.isSortingField(field.property) %}
                         {% set next_sort_direction = is_sorting_field ? (ea.search.sortDirection(field.property) == ea_sort_desc ? ea_sort_asc : ea_sort_desc) : ea_sort_desc %}
-                        {% set column_icon = is_sorting_field ? (next_sort_direction == ea_sort_desc ? 'internal:sort-arrow-up' : 'internal:sort-arrow-down') : 'internal:sort-arrows' %}
+                        {% set sortable_url = field.isSortable ? ea_url().setController(ea.request.attributes.get('crudControllerFqcn')).setAction('index').set('page', 1).set('sort', {(field.property): next_sort_direction}) : null %}
 
-                        <th data-column="{{ field.property }}" class="{{ field.cssClass }} {{ is_searchable ? 'searchable' }} {{ is_sorting_field ? 'sorted' }} {{ field.isVirtual ? 'field-virtual' }} header-for-{{ field.cssClass|split(' ')|filter(class => class starts with 'field-')|join('') }} text-{{ field.textAlign }}" dir="{{ ea.i18n.textDirection }}">
-                            {% if field.isSortable %}
-                                {% set sortable_url = ea_url().setController(ea.request.attributes.get('crudControllerFqcn')).setAction('index').set('page', 1).set('sort', {(field.property): next_sort_direction}) %}
-
-                                <a href="{{ sortable_url }}">
-                                    {{ field.label|trans|raw }} <twig:ea:Icon name="{{ column_icon }}" />
-                                </a>
-                            {% else %}
-                                <span>{{ field.label|trans|raw }}</span>
-                            {% endif %}
-                        </th>
+                        {# the slot content is a separate scope, so the translation domain must be passed explicitly #}
+                        <twig:ea:Table:HeaderCell
+                            column="{{ field.property }}"
+                            sortable="{{ field.isSortable }}"
+                            sortDirection="{{ is_sorting_field ? ea.search.sortDirection(field.property) }}"
+                            sortUrl="{{ sortable_url }}"
+                            class="{{ field.cssClass }} {{ is_searchable ? 'searchable' }} {{ is_sorting_field ? 'sorted' }} {{ field.isVirtual ? 'field-virtual' }} header-for-{{ field.cssClass|split(' ')|filter(class => class starts with 'field-')|join('') }} text-{{ field.textAlign }}"
+                            dir="{{ ea.i18n.textDirection }}"
+                        >{{ field.label|trans(domain: ea.i18n.translationDomain)|raw }}</twig:ea:Table:HeaderCell>
                     {% endfor %}
 
                     <th class="{{ ea.crud.showEntityActionsAsDropdown ? 'actions-as-dropdown-table-head' }}" dir="{{ ea.i18n.textDirection }}">
@@ -155,53 +153,17 @@
                         {% for field in entity.fields %}
                             {% set is_searchable = null == ea.crud.searchFields or field.property in ea.crud.searchFields %}
 
-                            <td data-column="{{ field.property }}" data-label="{{ field.label|trans|e('html') }}" class="{{ is_searchable ? 'searchable' }} {{ field.property == sort_field_name ? 'sorted' }} text-{{ field.textAlign }} {{ field.cssClass }}" dir="{{ ea.i18n.textDirection }}" {% for name, value in field.htmlAttributes %}{{ name }}="{{ value|e('html_attr') }}" {% endfor %}>
-                                {{ include(field.templatePath, {field: field, entity: entity}, with_context: false) }}
-                            </td>
+                            <twig:ea:Table:Cell
+                                column="{{ field.property }}"
+                                label="{{ field.label|trans }}"
+                                class="{{ is_searchable ? 'searchable' }} {{ field.property == sort_field_name ? 'sorted' }} text-{{ field.textAlign }} {{ field.cssClass }}"
+                                dir="{{ ea.i18n.textDirection }}"
+                                {{ ...field.htmlAttributes }}
+                            >{{ include(field.templatePath, {field: field, entity: entity}, with_context: false) }}</twig:ea:Table:Cell>
                         {% endfor %}
 
                         {% block entity_actions %}
-                            <td class="actions {{ ea.crud.showEntityActionsAsDropdown ? 'actions-as-dropdown' }}">
-                                {% if entity.actions.count > 0 %}
-                                    {% if ea.crud.showEntityActionsAsDropdown %}
-                                        {% set hasAnyActionWithIcon = entity.actions|filter(item => item.isActionGroup ? false : item.icon is not null)|length > 0 %}
-                                        <twig:ea:ActionMenu class="dropdown-actions">
-                                            <twig:ea:ActionMenu:Button withoutDropdownToggleMarker>
-                                                <twig:ea:Icon name="internal:dots-horizontal" />
-                                            </twig:ea:ActionMenu:Button>
-
-                                            <twig:ea:ActionMenu:Overlay>
-                                                <twig:ea:ActionMenu:ActionList hasSubmenus="{{ entity.actions|filter(item => item.isActionGroup)|length > 0 }}">
-                                                    {% for item in entity.actions %}
-                                                        {% if item.isActionGroup %}
-                                                            <twig:ea:ActionMenu:ActionList:ItemGroup
-                                                                group="{{ item }}"
-                                                                showBlankIcons="{{ hasAnyActionWithIcon }}"
-                                                                entity="{{ entity }}" />
-                                                        {% else %}
-                                                            <twig:ea:ActionMenu:ActionList:Item
-                                                                class="{{ item.cssClass }} dropdown-item-variant-{{ item.variant.value }}" url="{{ item.linkUrl }}"
-                                                                icon="{{ item.icon }}" icon:class="action-icon"
-                                                                htmlAttributes="{{ item.htmlAttributes|ea_html_attrs }}"
-                                                                renderAsForm="{{ item.isRenderedAsForm }}"
-                                                                label="{{ item.label|trans }}" label:class="action-label" renderLabelRaw
-                                                                showBlankIcons="{{ hasAnyActionWithIcon }}" />
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </twig:ea:ActionMenu:ActionList>
-                                            </twig:ea:ActionMenu:Overlay>
-                                        </twig:ea:ActionMenu>
-                                    {% else %}
-                                        {% for action in entity.actions %}
-                                            {% if action.isActionGroup %}
-                                                {{ include(action.templatePath, {group: action, entity: entity}, with_context: false) }}
-                                            {% else %}
-                                                {{ include(action.templatePath, {action: action, entity: entity, isIncludedInDropdown: ea.crud.showEntityActionsAsDropdown}, with_context: false) }}
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endif %}
-                                {% endif %}
-                            </td>
+                            {{ include('@EasyAdmin/crud/includes/_entity_actions_cell.html.twig', {entity: entity, ea: ea}, with_context: false) }}
                         {% endblock entity_actions %}
                     </tr>
 

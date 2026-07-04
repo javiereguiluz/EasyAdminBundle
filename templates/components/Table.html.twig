@@ -1,0 +1,12 @@
+{% props
+    size = null, # sm|md|lg (string or Option\Size enum). 'md' is the base size and emits no class
+%}
+
+{% set size_value = size.value is defined ? size.value : size %}
+{% set css_class = html_classes('ea-table',
+    size_value in ['sm', 'lg'] ? 'ea-table-' ~ size_value,
+) %}
+
+<table {{- attributes.defaults({class: css_class}) }}>
+    <twig:block name="content"></twig:block>
+</table>

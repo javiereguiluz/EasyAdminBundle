@@ -1,0 +1,14 @@
+{% props
+    colspan = 100, # number of columns the empty message spans
+    message = null, # optional text shown when there are no rows; overridden by any slot content
+%}
+
+<tr {{- attributes.defaults({class: 'ea-table-empty-row'}) }}>
+    <td colspan="{{ colspan }}">
+        {%- if block('content') is not empty -%}
+            <twig:block name="content"></twig:block>
+        {%- else -%}
+            {{ message }}
+        {%- endif -%}
+    </td>
+</tr>

@@ -1,0 +1,47 @@
+{# Renders the <td> with the actions of the given entity row. It is shared by the
+   CRUD index page and the DataGrid component so the actions cell can never drift
+   between them. Included with "with_context = false"; it expects the "entity"
+   (EntityDto) and "ea" (AdminContext) variables. #}
+{% trans_default_domain ea.i18n.translationDomain %}
+
+<td class="actions {{ ea.crud.showEntityActionsAsDropdown ? 'actions-as-dropdown' }}">
+    {% if entity.actions.count > 0 %}
+        {% if ea.crud.showEntityActionsAsDropdown %}
+            {% set hasAnyActionWithIcon = entity.actions|filter(item => item.isActionGroup ? false : item.icon is not null)|length > 0 %}
+            <twig:ea:ActionMenu class="dropdown-actions">
+                <twig:ea:ActionMenu:Button withoutDropdownToggleMarker>
+                    <twig:ea:Icon name="internal:dots-horizontal" />
+                </twig:ea:ActionMenu:Button>
+
+                <twig:ea:ActionMenu:Overlay>
+                    <twig:ea:ActionMenu:ActionList hasSubmenus="{{ entity.actions|filter(item => item.isActionGroup)|length > 0 }}">
+                        {% for item in entity.actions %}
+                            {% if item.isActionGroup %}
+                                <twig:ea:ActionMenu:ActionList:ItemGroup
+                                    group="{{ item }}"
+                                    showBlankIcons="{{ hasAnyActionWithIcon }}"
+                                    entity="{{ entity }}" />
+                            {% else %}
+                                <twig:ea:ActionMenu:ActionList:Item
+                                    class="{{ item.cssClass }} dropdown-item-variant-{{ item.variant.value }}" url="{{ item.linkUrl }}"
+                                    icon="{{ item.icon }}" icon:class="action-icon"
+                                    htmlAttributes="{{ item.htmlAttributes|ea_html_attrs }}"
+                                    renderAsForm="{{ item.isRenderedAsForm }}"
+                                    label="{{ item.label|trans }}" label:class="action-label" renderLabelRaw
+                                    showBlankIcons="{{ hasAnyActionWithIcon }}" />
+                            {% endif %}
+                        {% endfor %}
+                    </twig:ea:ActionMenu:ActionList>
+                </twig:ea:ActionMenu:Overlay>
+            </twig:ea:ActionMenu>
+        {% else %}
+            {% for action in entity.actions %}
+                {% if action.isActionGroup %}
+                    {{ include(action.templatePath, {group: action, entity: entity}, with_context: false) }}
+                {% else %}
+                    {{ include(action.templatePath, {action: action, entity: entity, isIncludedInDropdown: ea.crud.showEntityActionsAsDropdown}, with_context: false) }}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+</td>

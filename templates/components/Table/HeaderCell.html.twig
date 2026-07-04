@@ -1,0 +1,27 @@
+{% props
+    column = null, # value rendered as the data-column attribute
+    sortable = false, # whether this column can be sorted
+    sortDirection = null, # the sort direction currently applied to this column: 'asc'|'desc'|null (string or SortOrder constant)
+    sortUrl = null, # URL that toggles the sorting of this column
+%}
+
+{% set direction = sortDirection.value is defined ? sortDirection.value : sortDirection %}
+{% set direction = direction is null ? null : direction|lower %}
+{% set sort_icon = direction == 'asc' ? 'internal:sort-arrow-up'
+    : (direction == 'desc' ? 'internal:sort-arrow-down' : 'internal:sort-arrows') %}
+
+{# the "content" slot can only be defined once, so capture it and reuse it in both branches #}
+{% set label %}<twig:block name="content"></twig:block>{% endset %}
+
+{% set th_defaults = {} %}
+{% if column is not null %}{% set th_defaults = th_defaults|merge({'data-column': column}) %}{% endif %}
+{% set th_defaults = th_defaults|merge({scope: 'col'}) %}
+{% if direction in ['asc', 'desc'] %}{% set th_defaults = th_defaults|merge({'aria-sort': direction == 'asc' ? 'ascending' : 'descending'}) %}{% endif %}
+
+<th {{- attributes.defaults(th_defaults) }}>
+    {%- if sortable and sortUrl -%}
+        <a href="{{ sortUrl }}">{{ label }} <twig:ea:Icon name="{{ sort_icon }}" /></a>
+    {%- else -%}
+        <span>{{ label }}</span>
+    {%- endif -%}
+</th>
