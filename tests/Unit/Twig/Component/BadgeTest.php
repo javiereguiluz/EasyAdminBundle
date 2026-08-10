@@ -114,6 +114,7 @@ class BadgeTest extends TestCase
     {
         yield 'string' => ['sm', Size::Small];
         yield 'enum' => [Size::Small, Size::Small];
+        yield 'large string' => ['lg', Size::Large];
         yield 'unknown string falls back to md' => ['nope', Size::Medium];
     }
 
@@ -135,6 +136,8 @@ class BadgeTest extends TestCase
         yield 'custom variant' => ['currency', 'md', null, 'badge badge-currency'];
         yield 'small size' => ['secondary', 'sm', null, 'badge badge-secondary badge-sm'];
         yield 'small size as enum' => ['secondary', Size::Small, null, 'badge badge-secondary badge-sm'];
+        yield 'large size' => ['secondary', 'lg', null, 'badge badge-secondary badge-lg'];
+        yield 'large size as enum' => ['secondary', Size::Large, null, 'badge badge-secondary badge-lg'];
         yield 'radius full' => ['secondary', 'md', 'full', 'badge badge-secondary ea-rounded-full'];
         yield 'small size and radius' => ['warning', 'sm', Radius::Large, 'badge badge-warning badge-sm ea-rounded-lg'];
         yield 'no variant' => ['', 'md', null, 'badge'];

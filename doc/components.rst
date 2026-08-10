@@ -144,8 +144,9 @@ Renders a small colored label, commonly used for statuses, counts and tags:
 The ``variant`` prop accepts the usual Bootstrap values (``primary``,
 ``success``, ``danger``, etc.; default: ``secondary``) plus an ``outline``
 value that renders a badge with a border and no background. Add optional
-leading and/or trailing icons with the ``icon`` and ``endIcon`` props, and
-create pill-shaped badges with ``radius="full"``:
+leading and/or trailing icons with the ``icon`` and ``endIcon`` props, create
+pill-shaped badges with ``radius="full"`` and change the badge dimensions with
+the ``size`` prop (``sm``, ``md`` (default) or ``lg``):
 
 .. code-block:: twig
 
@@ -154,6 +155,8 @@ create pill-shaped badges with ``radius="full"``:
     <twig:ea:Badge variant="outline" endIcon="fa-arrow-right">See all</twig:ea:Badge>
 
     <twig:ea:Badge variant="primary" radius="full" size="sm">12</twig:ea:Badge>
+
+    <twig:ea:Badge variant="success" size="lg">Published</twig:ea:Badge>
 
 Button
 ------

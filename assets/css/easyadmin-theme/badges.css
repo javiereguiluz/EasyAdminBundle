@@ -30,6 +30,13 @@
     --bs-badge-font-size: var(--font-size-xs);
 }
 
+.badge.badge-lg {
+    --bs-badge-padding-x: var(--ea-sp-3);
+    --bs-badge-padding-y: var(--ea-sp-1);
+    --bs-badge-font-size: var(--font-size-sm);
+    line-height: 18px;
+}
+
 .badge.badge-success {
     background-color: var(--badge-success-bg);
     box-shadow: var(--badge-success-box-shadow);

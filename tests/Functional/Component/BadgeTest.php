@@ -63,6 +63,22 @@ class BadgeTest extends AbstractFieldFunctionalTest
         );
     }
 
+    public function testLargeSize(): void
+    {
+        self::assertSame(
+            '<span class="badge badge-secondary badge-lg">x</span>',
+            $this->renderBadge('<twig:ea:Badge size="lg">x</twig:ea:Badge>')
+        );
+    }
+
+    public function testLargeSizeAsEnum(): void
+    {
+        self::assertSame(
+            '<span class="badge badge-secondary badge-lg">x</span>',
+            $this->renderBadge('<twig:ea:Badge size="{{ size }}">x</twig:ea:Badge>', ['size' => Size::Large])
+        );
+    }
+
     public function testRadiusFull(): void
     {
         self::assertSame(

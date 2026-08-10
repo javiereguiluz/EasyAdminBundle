@@ -59,6 +59,8 @@ class Badge
 
         if (Size::Small === $this->size) {
             $cssClasses[] = 'badge-sm';
+        } elseif (Size::Large === $this->size) {
+            $cssClasses[] = 'badge-lg';
         }
 
         // when no radius is set, the badge inherits the project's default border-radius
