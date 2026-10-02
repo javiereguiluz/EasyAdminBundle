@@ -2,10 +2,10 @@
   "entrypoints": {
     "app": {
       "css": [
-        "/app.1fb96ab4.css"
+        "/app.35911c5f.css"
       ],
       "js": [
-        "/app.6eaf7b76.js"
+        "/app.f4f0e668.js"
       ]
     },
     "form": {
@@ -72,6 +72,11 @@
     "login": {
       "js": [
         "/login.c9004e96.js"
+      ]
+    },
+    "fontawesome": {
+      "css": [
+        "/fontawesome.8b162439.css"
       ]
     }
   }

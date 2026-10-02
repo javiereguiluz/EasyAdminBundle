@@ -63,6 +63,19 @@ class TabsTest extends AbstractCrudTestCase
         static::assertStringContainsString('fa-cog', $tabItems->eq(3)->html());
     }
 
+    public function testTabIconsAreRenderedAsInlineSvg(): void
+    {
+        $crawler = $this->client->request('GET', $this->generateNewFormUrl());
+
+        $tabIcon = $crawler->filter('.nav-tabs .nav-item')->eq(0)->filter('span.icon svg');
+
+        static::assertCount(1, $tabIcon);
+        static::assertSame('fas', $tabIcon->attr('data-prefix'));
+        static::assertSame('circle-info', $tabIcon->attr('data-icon'));
+        static::assertSame('true', $tabIcon->attr('aria-hidden'));
+        static::assertCount(0, $crawler->filter('.nav-tabs .nav-item i'));
+    }
+
     public function testFirstTabIsActiveByDefault(): void
     {
         $crawler = $this->client->request('GET', $this->generateNewFormUrl());

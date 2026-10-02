@@ -86,6 +86,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Form\Type\CrudFormType;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\EaMoneyType;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\FileUploadType;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\FiltersFormType;
+use EasyCorp\Bundle\EasyAdminBundle\Icon\FontAwesomeIconResolver;
 use EasyCorp\Bundle\EasyAdminBundle\Intl\IntlFormatter;
 use EasyCorp\Bundle\EasyAdminBundle\Maker\ClassMaker;
 use EasyCorp\Bundle\EasyAdminBundle\Menu\MenuItemMatcher;
@@ -114,6 +115,7 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\UX\Icons\IconRendererInterface;
 
 return static function (ContainerConfigurator $container) {
     $services = $container->services()
@@ -500,8 +502,12 @@ return static function (ContainerConfigurator $container) {
             ->arg(0, service('request_stack'))
             ->tag('assets.package', ['package' => AssetPackage::PACKAGE_NAME])
 
+        ->set(FontAwesomeIconResolver::class)
+
         ->set(Icon::class)
             ->arg(0, service(AdminContextProvider::class))
+            ->arg(1, service(FontAwesomeIconResolver::class))
+            ->arg(2, service(IconRendererInterface::class)->nullOnInvalid())
             ->tag('twig.component')
 
         ->set(Flag::class)

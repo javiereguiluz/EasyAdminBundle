@@ -24,6 +24,9 @@
         <title>{{ block('page_title')|striptags|raw }}</title>
 
         {% block head_stylesheets %}
+            {% if font_awesome_css_enabled ?? true %}
+                <link rel="stylesheet" href="{{ asset('fontawesome.css', constant('EasyCorp\\Bundle\\EasyAdminBundle\\Asset\\AssetPackage::PACKAGE_NAME')) }}">
+            {% endif %}
             <link rel="stylesheet" href="{{ asset('app.css', constant('EasyCorp\\Bundle\\EasyAdminBundle\\Asset\\AssetPackage::PACKAGE_NAME')) }}">
         {% endblock %}
 

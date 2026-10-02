@@ -1,6 +1,6 @@
 {
-  "app.css": "app.1fb96ab4.css",
-  "app.js": "app.6eaf7b76.js",
+  "app.css": "app.35911c5f.css",
+  "app.js": "app.f4f0e668.js",
   "form.js": "form.8345ec28.js",
   "page-layout.js": "page-layout.696f1816.js",
   "page-color-scheme.js": "page-color-scheme.e9aaf2f0.js",
@@ -15,6 +15,7 @@
   "field-text-editor.css": "field-text-editor.618ed450.css",
   "field-text-editor.js": "field-text-editor.b6c9eb40.js",
   "login.js": "login.c9004e96.js",
+  "fontawesome.css": "fontawesome.8b162439.css",
   "fonts/fa-solid-900.ttf": "fonts/fa-solid-900.ad1782c7.ttf",
   "fonts/fa-brands-400.ttf": "fonts/fa-brands-400.26b80c88.ttf",
   "fonts/fa-solid-900.woff2": "fonts/fa-solid-900.83a538a0.woff2",

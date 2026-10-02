@@ -14,6 +14,7 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as SymfonyKernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
+use Symfony\UX\Icons\UXIconsBundle;
 use Symfony\UX\TwigComponent\TwigComponentBundle;
 use Twig\Extra\TwigExtraBundle\TwigExtraBundle;
 
@@ -38,6 +39,7 @@ final class Kernel extends SymfonyKernel
             new TwigBundle(),
             new TwigComponentBundle(),
             new TwigExtraBundle(),
+            new UXIconsBundle(),
         ];
     }
 

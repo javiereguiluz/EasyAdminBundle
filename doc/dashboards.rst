@@ -269,7 +269,7 @@ explained later)::
                 // EasyCorp\Bundle\EasyAdminBundle\Config\Locale
                 ->setLocales([
                     'en', // locale without custom options
-                    Locale::new('pl', 'polski', 'far fa-language') // custom label and icon
+                    Locale::new('pl', 'polski', 'fa-solid fa-language') // custom label and icon
                 ])
             ;
         }
@@ -432,9 +432,10 @@ the item and the second argument is the icon to display. By default, icon names 
 
 .. note::
 
-    The CSS styles and web fonts needed by FontAwesome are included by default, so
-    you don't need to take any additional steps to use FontAwesome icons. Alternatively,
-    you can :ref:`use your own icon sets <icon-customization>` instead of FontAwesome.
+    EasyAdmin includes the SVG files of all FontAwesome Free icons, so you
+    don't need to take any additional steps to use FontAwesome icons.
+    Alternatively, you can :ref:`use other icon sets <icon-customization>`
+    instead of FontAwesome.
 
 .. _menu-item-options:
 
@@ -1158,6 +1159,13 @@ applications can rely on its default values::
                 // "as is" to the Twig asset() function:
                 // <link rel="shortcut icon" href="{{ asset('...') }}">
                 'favicon_path' => '/favicon-admin.svg',
+
+                // whether to load the FontAwesome CSS and webfonts (default: true);
+                // they are only needed to display FontAwesome icons added with <i>
+                // elements (define this option only if you are rendering the login
+                // template in a regular Symfony controller; when rendering it from an
+                // EasyAdmin Dashboard, use the disableFontAwesomeCss() asset method)
+                'font_awesome_css_enabled' => false,
 
                 // the title visible above the login form (define this option only if you are
                 // rendering the login template in a regular Symfony controller; when rendering

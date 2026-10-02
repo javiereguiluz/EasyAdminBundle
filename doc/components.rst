@@ -268,6 +268,13 @@ in the backend (`FontAwesome icons`_ by default, or
 
     <twig:ea:Icon name="fa-solid fa-file-invoice"/>
 
+FontAwesome icons are rendered as inline ``<svg>`` elements, so they don't
+need the FontAwesome CSS. The component accepts the icon names of FontAwesome
+4, 5 and 6, with or without a style class (e.g. ``fa fa-home``,
+``fas fa-house``, ``fa-solid fa-house``), and FontAwesome classes such as
+``fa-fw``, ``fa-2x`` or ``fa-spin``. Read
+:ref:`the icon customization docs <icon-customization>` for more details.
+
 Icons prefixed with ``internal:`` are SVG icons bundled with EasyAdmin and
 render the same regardless of the configured icon set. They are useful when
 overriding backend templates, to match the look of the default interface:

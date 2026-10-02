@@ -74,6 +74,7 @@ Run the relevant target(s) for what you changed:
 |------------------|-------------------------------------------------------------------|
 | PHP code         | `make linter-phpstan`, `make linter-cs-fixer`, `make tests`       |
 | JS / CSS         | `yarn ci`, then `make build-assets`                               |
+| FontAwesome version in `package.json` | `make build-fontawesome-icons` (regenerates `assets/icons/fontawesome/`) |
 | Twig templates   | `make linter-twig`                                                |
 | Documentation    | `make linter-docs`                                                |
 | Translations     | keep all locales consistent; use English as placeholder if unsure |

@@ -23,6 +23,7 @@ Encore
     })
 
     .addEntry('app', './assets/js/app.js')
+    .addStyleEntry('fontawesome', './assets/css/fontawesome.css')
     .addEntry('form', './assets/js/form.js')
     .addEntry('page-layout', './assets/js/page-layout.js')
     .addEntry('page-color-scheme', './assets/js/page-color-scheme.js')

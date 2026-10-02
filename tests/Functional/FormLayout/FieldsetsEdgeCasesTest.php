@@ -66,13 +66,13 @@ class FieldsetsEdgeCasesTest extends AbstractCrudTestCase
         static::assertCount(1, $crawler->filter('.form-fieldset:contains("Fieldset 1") input'));
         static::assertSame('FormTestEntity[name]', trim($crawler->filter('.form-fieldset:contains("Fieldset 1") input')->attr('name')));
         static::assertCount(1, $crawler->filter('.field-form_fieldset.bg-info.form-fieldset:contains("Fieldset 1")'));
-        static::assertStringContainsString('fa fa-cog', $crawler->filter('.form-fieldset:contains("Fieldset 1") .form-fieldset-title i')->attr('class'));
+        static::assertStringContainsString('fa fa-cog', $crawler->filter('.form-fieldset:contains("Fieldset 1") .form-fieldset-title svg')->attr('class'));
 
         static::assertCount(1, $crawler->filter('.form-fieldset:contains("Fieldset 2")'));
         static::assertCount(1, $crawler->filter('.form-fieldset:contains("Fieldset 2") textarea'));
         static::assertSame('FormTestEntity[description]', trim($crawler->filter('.form-fieldset:contains("Fieldset 2") textarea')->attr('name')));
         static::assertCount(1, $crawler->filter('.field-form_fieldset.bg-warning.form-fieldset:contains("Fieldset 2")'));
-        static::assertStringContainsString('fa fa-user', $crawler->filter('.form-fieldset:contains("Fieldset 2") .form-fieldset-title i')->attr('class'));
+        static::assertStringContainsString('fa fa-user', $crawler->filter('.form-fieldset:contains("Fieldset 2") .form-fieldset-title svg')->attr('class'));
     }
 
     public function testFieldsInsideFieldsetsInDetailPage(): void
@@ -89,13 +89,13 @@ class FieldsetsEdgeCasesTest extends AbstractCrudTestCase
         static::assertCount(1, $crawler->filter('.form-fieldset:contains("Fieldset 1") .field-group'));
         static::assertSame('Name', trim($crawler->filter('.form-fieldset:contains("Fieldset 1") .field-group .field-label')->text()));
         static::assertCount(1, $crawler->filter('.field-form_fieldset.bg-info.form-fieldset:contains("Fieldset 1")'));
-        static::assertStringContainsString('fa fa-cog', $crawler->filter('.form-fieldset:contains("Fieldset 1") .form-fieldset-title i')->attr('class'));
+        static::assertStringContainsString('fa fa-cog', $crawler->filter('.form-fieldset:contains("Fieldset 1") .form-fieldset-title svg')->attr('class'));
 
         static::assertCount(1, $crawler->filter('.form-fieldset:contains("Fieldset 2")'));
         static::assertCount(1, $crawler->filter('.form-fieldset:contains("Fieldset 2") .field-group'));
         static::assertSame('Description', trim($crawler->filter('.form-fieldset:contains("Fieldset 2") .field-group .field-label')->text()));
         static::assertCount(1, $crawler->filter('.field-form_fieldset.bg-warning.form-fieldset:contains("Fieldset 2")'));
-        static::assertStringContainsString('fa fa-user', $crawler->filter('.form-fieldset:contains("Fieldset 2") .form-fieldset-title i')->attr('class'));
+        static::assertStringContainsString('fa fa-user', $crawler->filter('.form-fieldset:contains("Fieldset 2") .form-fieldset-title svg')->attr('class'));
     }
 
     public function testFieldsetWithoutFieldsInForms(): void
@@ -105,7 +105,7 @@ class FieldsetsEdgeCasesTest extends AbstractCrudTestCase
         static::assertCount(1, $crawler->filter('.form-fieldset:contains("Fieldset 3")'));
         static::assertCount(0, $crawler->filter('.form-fieldset:contains("Fieldset 3") input'));
         static::assertCount(1, $crawler->filter('.field-form_fieldset.bg-danger.form-fieldset:contains("Fieldset 3")'));
-        static::assertStringContainsString('fa fa-file-alt', $crawler->filter('.form-fieldset:contains("Fieldset 3") .form-fieldset-title i')->attr('class'));
+        static::assertStringContainsString('fa fa-file-alt', $crawler->filter('.form-fieldset:contains("Fieldset 3") .form-fieldset-title svg')->attr('class'));
     }
 
     public function testFieldsetWithoutFieldsInDetailPage(): void
@@ -115,6 +115,6 @@ class FieldsetsEdgeCasesTest extends AbstractCrudTestCase
         static::assertCount(1, $crawler->filter('.form-fieldset:contains("Fieldset 3")'));
         static::assertCount(0, $crawler->filter('.form-fieldset:contains("Fieldset 3") dt'));
         static::assertCount(1, $crawler->filter('.field-form_fieldset.bg-danger.form-fieldset:contains("Fieldset 3")'));
-        static::assertStringContainsString('fa fa-file-alt', $crawler->filter('.form-fieldset:contains("Fieldset 3") .form-fieldset-title i')->attr('class'));
+        static::assertStringContainsString('fa fa-file-alt', $crawler->filter('.form-fieldset:contains("Fieldset 3") .form-fieldset-title svg')->attr('class'));
     }
 }

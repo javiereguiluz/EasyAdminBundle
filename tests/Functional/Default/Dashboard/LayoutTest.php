@@ -139,6 +139,19 @@ class LayoutTest extends AbstractCrudTestCase
         static::assertGreaterThan(0, $crawler->filter('#navigation-toggler')->count());
     }
 
+    public function testFontAwesomeCssIsLoadedByDefaultBeforeAppCss(): void
+    {
+        $crawler = $this->client->request('GET', $this->generateIndexUrl());
+
+        $stylesheetUrls = $crawler->filter('head link[rel="stylesheet"]')->extract(['href']);
+        $fontAwesomeCssPosition = array_key_first(array_filter($stylesheetUrls, static fn (string $url): bool => str_contains($url, '/fontawesome.')));
+        $appCssPosition = array_key_first(array_filter($stylesheetUrls, static fn (string $url): bool => str_contains($url, '/app.')));
+
+        static::assertNotNull($fontAwesomeCssPosition, 'The FontAwesome CSS should be loaded by default');
+        static::assertNotNull($appCssPosition);
+        static::assertLessThan($appCssPosition, $fontAwesomeCssPosition);
+    }
+
     public function testMetaRobotsTagExists(): void
     {
         $crawler = $this->client->request('GET', $this->generateIndexUrl());

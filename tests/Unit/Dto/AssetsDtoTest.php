@@ -49,6 +49,17 @@ class AssetsDtoTest extends TestCase
         $this->assertArrayNotHasKey('detail-entry', $filtered->getRepriseAssets());
     }
 
+    public function testLoadedOnKeepsIconOptions(): void
+    {
+        $assetsDto = new AssetsDto();
+        $assetsDto->setFontAwesomeCssEnabled(false);
+
+        $assetsDto->setIconFamily('tabler');
+
+        $this->assertFalse($assetsDto->loadedOn(Crud::PAGE_INDEX)->isFontAwesomeCssEnabled());
+        $this->assertSame('tabler', $assetsDto->loadedOn(Crud::PAGE_INDEX)->getIconFamily());
+    }
+
     public function testMergeWithMergesRepriseAssets(): void
     {
         $a = new AssetsDto();

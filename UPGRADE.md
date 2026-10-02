@@ -1,6 +1,56 @@
 Upgrade Guide
 =============
 
+## EasyAdmin 5.7.0
+
+### FontAwesome Icons Are Rendered as Inline SVG
+
+EasyAdmin now includes the SVG files of FontAwesome Free and renders the
+FontAwesome icons of your backend (menu items, actions, form tabs, fieldsets,
+etc.) as inline `<svg>` elements instead of `<i class="...">` elements:
+
+```html
+<!-- before -->
+<span class="icon"><i class="fa fa-home"></i></span>
+
+<!-- after -->
+<span class="icon"><svg class="fa fa-home fa-house" data-prefix="fas" data-icon="house" aria-hidden="true" ...>...</svg></span>
+```
+
+The `<svg>` element keeps all the CSS classes of the icon name, so CSS selectors
+like `.fa-home` or `.text-danger` keep working. If your CSS styles or your tests
+select the `<i>` element (e.g. `i.fa-home` or `.icon i`), change them to select
+`svg` or `.fa-home` instead.
+
+Icons that are not part of FontAwesome Free (FontAwesome Pro styles, kits or
+unknown icon names) are still rendered as `<i class="...">` elements.
+
+### The FontAwesome CSS Is Now a Separate File
+
+The FontAwesome CSS and webfonts are no longer part of the `app.css` file of
+EasyAdmin. They are now loaded with a separate `fontawesome.css` file, so the
+FontAwesome icons that you add with your own HTML (e.g. `<i class="fa-solid fa-user"></i>`)
+keep working. If your backend doesn't use those `<i>` elements, call
+`Assets::disableFontAwesomeCss()` in your dashboard to not load that CSS.
+
+In EasyAdmin 6.0, the `fontawesome.css` file won't be loaded by default.
+If you need it, add it with
+`->addCssFile(Asset::fromEasyAdminAssetPackage('fontawesome.css'))` in the
+`configureAssets()` method of your dashboard.
+
+### Prefixed Icon Names Don't Get the Default Icon Prefix
+
+When using `useCustomIconSet('some-prefix')`, the default prefix is no longer
+added to icon names that already include a prefix. Before, `lucide:map-pin`
+was turned into `some-prefix:lucide:map-pin`; now it's used as `lucide:map-pin`.
+
+### New `useIconFamily()` Method
+
+The new `Assets::useIconFamily()` method lets you use other icon sets (Tabler,
+Lucide, Heroicons, etc.) through Symfony UX Icons:
+`->useIconFamily(IconFamily::Tabler)`. Unlike `useCustomIconSet()`, it displays
+an error when Symfony UX Icons is not installed.
+
 ## EasyAdmin 5.4.0
 
 ### Detail Page Templates Are Now Overridable Individually

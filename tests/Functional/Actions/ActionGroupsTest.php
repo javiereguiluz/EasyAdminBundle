@@ -79,7 +79,7 @@ class ActionGroupsTest extends AbstractCrudTestCase
         static::assertCount(1, $mainAction, 'Split dropdown should have a main action');
 
         // verify the main action has the icon
-        $icon = $mainAction->filter('i.fa-star, .btn-icon i.fa-star');
+        $icon = $mainAction->filter('svg.fa-star');
         static::assertCount(1, $icon, 'Main action in split button should display its icon');
     }
 

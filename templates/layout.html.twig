@@ -22,6 +22,15 @@
     <title>{{ page_title_block_output|striptags|raw }}</title>
 
     {% block head_stylesheets %}
+        {% block head_stylesheets_fontawesome %}
+            {% if ea.assets.fontAwesomeCssEnabled %}
+                {% guard function csp_nonce %}
+                    <link rel="stylesheet" href="{{ asset('fontawesome.css', ea.assets.defaultAssetPackageName) }}" nonce="{{ csp_nonce('style') }}">
+                {% else %}
+                    <link rel="stylesheet" href="{{ asset('fontawesome.css', ea.assets.defaultAssetPackageName) }}">
+                {% endguard %}
+            {% endif %}
+        {% endblock head_stylesheets_fontawesome %}
         {% guard function csp_nonce %}
             <link rel="stylesheet" href="{{ asset('app.css', ea.assets.defaultAssetPackageName) }}" nonce="{{ csp_nonce('style') }}">
         {% else %}

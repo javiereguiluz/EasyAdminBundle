@@ -2,6 +2,7 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Config;
 
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\IconFamily;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\IconSet;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\AssetDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\AssetsDto;
@@ -115,6 +116,49 @@ final readonly class Assets
 
         $this->dto->setIconSet(IconSet::Custom);
         $this->dto->setDefaultIconPrefix(trim($defaultIconPrefix));
+        $this->dto->setIconFamily(null);
+
+        return $this;
+    }
+
+    /**
+     * Use this to display the icons of your backend with any icon set supported by
+     * Symfony UX Icons (e.g. ->useIconFamily(IconFamily::Tabler) or ->useIconFamily('mdi')).
+     * Icon names without a prefix (e.g. 'user') are looked up in that icon set;
+     * names with a prefix (e.g. 'lucide:user') are used "as is".
+     *
+     * @param IconFamily|string $family a value of the IconFamily enum or any icon set prefix supported by Iconify
+     */
+    public function useIconFamily(IconFamily|string $family): self
+    {
+        if (IconFamily::FontAwesome === $family || IconFamily::FontAwesome->value === $family) {
+            $this->dto->setIconSet(IconSet::FontAwesome);
+            $this->dto->setDefaultIconPrefix('');
+            $this->dto->setIconFamily(null);
+
+            return $this;
+        }
+
+        $prefix = $family instanceof IconFamily ? $family->value : trim($family);
+        if (1 !== preg_match('/^[a-z0-9]+(-[a-z0-9]+)*$/D', $prefix)) {
+            throw new \InvalidArgumentException(sprintf('The icon family must be a value of the "%s" enum or a valid icon set prefix (e.g. "tabler", "mdi"), but "%s" was given.', IconFamily::class, $prefix));
+        }
+
+        $this->dto->setIconSet(IconSet::Custom);
+        $this->dto->setDefaultIconPrefix($prefix);
+        $this->dto->setIconFamily($prefix);
+
+        return $this;
+    }
+
+    /**
+     * EasyAdmin renders FontAwesome icons as inline SVG, so the FontAwesome CSS and
+     * webfonts are only needed when your own templates include FontAwesome icons with
+     * HTML elements (e.g. <i class="fa-solid fa-user"></i>) or use FontAwesome Pro icons.
+     */
+    public function disableFontAwesomeCss(bool $disable = true): self
+    {
+        $this->dto->setFontAwesomeCssEnabled(!$disable);
 
         return $this;
     }

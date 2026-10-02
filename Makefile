@@ -33,6 +33,9 @@ build-assets: ## Rebuild assets after changes in JS or SCSS
 	yarn encore production
 	php ./src/Resources/bin/fix-assets-manifest-file.php
 
+build-fontawesome-icons: ## Copy the FontAwesome SVG icons to assets/icons/fontawesome/ (run it after updating FontAwesome)
+	php ./src/Resources/bin/build-fontawesome-icons.php
+
 checks-before-pr: linter-cs-fixer linter-phpstan linter-docs linter-twig tests ## Runs tests and linters which are also run on PRs
 
 ## —— Skill ———————————————————————————————————

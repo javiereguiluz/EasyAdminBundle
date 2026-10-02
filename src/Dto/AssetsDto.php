@@ -26,6 +26,8 @@ final class AssetsDto
     private array $bodyContents = [];
     private string $iconSet = IconSet::FontAwesome;
     private string $defaultIconPrefix = '';
+    private bool $fontAwesomeCssEnabled = true;
+    private ?string $iconFamily = null;
 
     public function __construct()
     {
@@ -104,6 +106,16 @@ final class AssetsDto
         $this->defaultIconPrefix = $defaultIconPrefix;
     }
 
+    public function setIconFamily(?string $iconFamily): void
+    {
+        $this->iconFamily = $iconFamily;
+    }
+
+    public function setFontAwesomeCssEnabled(bool $enabled): void
+    {
+        $this->fontAwesomeCssEnabled = $enabled;
+    }
+
     public function getDefaultAssetPackageName(): string
     {
         return AssetPackage::PACKAGE_NAME;
@@ -175,6 +187,20 @@ final class AssetsDto
         return $this->defaultIconPrefix;
     }
 
+    /**
+     * Returns the icon set prefix configured with Assets::useIconFamily()
+     * (null when that method is not used).
+     */
+    public function getIconFamily(): ?string
+    {
+        return $this->iconFamily;
+    }
+
+    public function isFontAwesomeCssEnabled(): bool
+    {
+        return $this->fontAwesomeCssEnabled;
+    }
+
     public function loadedOn(?string $pageName): self
     {
         if (null === $pageName) {
@@ -184,6 +210,8 @@ final class AssetsDto
         $filteredAssets = new self();
         $filteredAssets->iconSet = $this->iconSet;
         $filteredAssets->defaultIconPrefix = $this->defaultIconPrefix;
+        $filteredAssets->fontAwesomeCssEnabled = $this->fontAwesomeCssEnabled;
+        $filteredAssets->iconFamily = $this->iconFamily;
 
         foreach ($this->cssAssets as $cssAsset) {
             if ($cssAsset->getLoadedOn()->has($pageName)) {

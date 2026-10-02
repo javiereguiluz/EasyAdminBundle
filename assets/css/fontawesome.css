@@ -1,0 +1,11 @@
+/* The FontAwesome CSS and webfonts. EasyAdmin renders FontAwesome icons as inline
+   SVG, so this file is only needed by backends that include FontAwesome icons with
+   their own HTML (e.g. <i class="fa-solid fa-user"></i>) or that use FontAwesome Pro.
+   Disable it with Assets::disableFontAwesomeCss() in your dashboard */
+@import "./layers.css";
+
+@import "~@fortawesome/fontawesome-free/css/all.css" layer(vendor.fontawesome);
+@import "~@fortawesome/fontawesome-free/css/v4-shims.css" layer(vendor.fontawesome);
+@import "~@fortawesome/fontawesome-free/css/v5-font-face.css" layer(vendor.fontawesome);
+
+@import "./easyadmin-theme/fontawesome-families.css" layer(ea.base);

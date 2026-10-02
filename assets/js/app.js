@@ -226,8 +226,8 @@ class App {
 
         filterButton.addEventListener('click', (event) => {
             const filterModalBody = filterModal.querySelector('.modal-body');
-            filterModalBody.innerHTML =
-                '<div class="fa-3x px-3 py-3 text-muted text-center"><i class="fas fa-circle-notch fa-spin"></i></div>';
+            // the loading icon is HTML rendered by the server with the ea:Icon Twig component
+            filterModalBody.innerHTML = `<div class="px-3 py-3 text-muted text-center">${filterButton.dataset.loadingIcon ?? ''}</div>`;
 
             fetch(filterButton.getAttribute('href'))
                 .then((response) => {

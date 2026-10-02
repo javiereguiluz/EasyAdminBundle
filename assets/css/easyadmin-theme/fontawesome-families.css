@@ -1,0 +1,17 @@
+/* Allows to use icon names with the style class only (e.g. 'fab fa-github') and
+   the styles of FontAwesome Pro (e.g. 'fal fa-user'), whose CSS is loaded by
+   the backend */
+i.fa,
+i.fas,
+i.far {
+    font-family: "Font Awesome 6 Free", sans-serif;
+}
+i.fab {
+    font-family: "Font Awesome 6 Brands", sans-serif;
+}
+i.fal {
+    font-family: "Font Awesome 6 Pro", sans-serif;
+}
+i.fad {
+    font-family: "Font Awesome 6 Duotone", sans-serif;
+}

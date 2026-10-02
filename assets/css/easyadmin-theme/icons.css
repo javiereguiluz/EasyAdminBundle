@@ -1,0 +1,160 @@
+/* The FontAwesome modifier classes supported by the icons rendered by EasyAdmin
+   without loading the FontAwesome CSS. They apply both to the <svg> element and to
+   the <span class="icon"> wrapper (e.g. <twig:ea:Icon name="..." class="fa-2x" />).
+   The values are the same as FontAwesome's, so the result doesn't change when
+   the FontAwesome CSS is also loaded */
+
+.icon.fa-fw,
+svg.fa-fw {
+    inline-size: 1.25em;
+    text-align: center;
+}
+
+.icon.fa-1x,
+svg.fa-1x {
+    font-size: 1em;
+}
+.icon.fa-2x,
+svg.fa-2x {
+    font-size: 2em;
+}
+.icon.fa-3x,
+svg.fa-3x {
+    font-size: 3em;
+}
+.icon.fa-4x,
+svg.fa-4x {
+    font-size: 4em;
+}
+.icon.fa-5x,
+svg.fa-5x {
+    font-size: 5em;
+}
+.icon.fa-6x,
+svg.fa-6x {
+    font-size: 6em;
+}
+.icon.fa-7x,
+svg.fa-7x {
+    font-size: 7em;
+}
+.icon.fa-8x,
+svg.fa-8x {
+    font-size: 8em;
+}
+.icon.fa-9x,
+svg.fa-9x {
+    font-size: 9em;
+}
+.icon.fa-10x,
+svg.fa-10x {
+    font-size: 10em;
+}
+
+.icon.fa-2xs,
+svg.fa-2xs {
+    font-size: 0.625em;
+}
+.icon.fa-xs,
+svg.fa-xs {
+    font-size: 0.75em;
+}
+.icon.fa-sm,
+svg.fa-sm {
+    font-size: 0.875em;
+}
+.icon.fa-lg,
+svg.fa-lg {
+    font-size: 1.25em;
+}
+.icon.fa-xl,
+svg.fa-xl {
+    font-size: 1.5em;
+}
+.icon.fa-2xl,
+svg.fa-2xl {
+    font-size: 2em;
+}
+span.icon svg.fa-2xs {
+    vertical-align: 0.1em;
+}
+span.icon svg.fa-xs {
+    vertical-align: 0;
+}
+span.icon svg.fa-sm {
+    vertical-align: -0.07143em;
+}
+span.icon svg.fa-lg {
+    vertical-align: -0.2em;
+}
+span.icon svg.fa-xl {
+    vertical-align: -0.25em;
+}
+span.icon svg.fa-2xl {
+    vertical-align: -0.3125em;
+}
+
+.icon.fa-spin,
+svg.fa-spin {
+    animation: ea-icon-spin var(--fa-animation-duration, 2s) linear var(--fa-animation-delay, 0s) infinite
+        var(--fa-animation-direction, normal);
+}
+.icon.fa-spin-pulse,
+svg.fa-spin-pulse,
+.icon.fa-pulse,
+svg.fa-pulse {
+    animation: ea-icon-spin var(--fa-animation-duration, 1s) steps(8) infinite var(--fa-animation-direction, normal);
+}
+.icon.fa-spin-reverse,
+svg.fa-spin-reverse {
+    --fa-animation-direction: reverse;
+}
+
+.icon.fa-rotate-90,
+svg.fa-rotate-90 {
+    transform: rotate(90deg);
+}
+.icon.fa-rotate-180,
+svg.fa-rotate-180 {
+    transform: rotate(180deg);
+}
+.icon.fa-rotate-270,
+svg.fa-rotate-270 {
+    transform: rotate(270deg);
+}
+.icon.fa-flip-horizontal,
+svg.fa-flip-horizontal {
+    transform: scale(-1, 1);
+}
+.icon.fa-flip-vertical,
+svg.fa-flip-vertical {
+    transform: scale(1, -1);
+}
+.icon.fa-flip-both,
+svg.fa-flip-both,
+.icon.fa-flip-horizontal.fa-flip-vertical,
+svg.fa-flip-horizontal.fa-flip-vertical {
+    transform: scale(-1, -1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .icon.fa-spin,
+    svg.fa-spin,
+    .icon.fa-spin-pulse,
+    svg.fa-spin-pulse,
+    .icon.fa-pulse,
+    svg.fa-pulse {
+        animation-delay: -1ms;
+        animation-duration: 1ms;
+        animation-iteration-count: 1;
+    }
+}
+
+@keyframes ea-icon-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

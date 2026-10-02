@@ -24,19 +24,83 @@ creating new Twig templates.
 Changing the Backend Icons
 --------------------------
 
-By default, EasyAdmin uses `FontAwesome icons`_ both for the built-in interface
-icons and any custom icons that you add to menu items, fields, form tabs, etc.
-The full FontAwesome icon set (~2,000 icons) is already included in EasyAdmin,
-so you don't need to download any of these icons.
+By default, EasyAdmin uses `FontAwesome icons`_ both for the built-in
+interface icons and any custom icons that you add to menu items, fields, form
+tabs, etc. The SVG files of all FontAwesome Free icons (~2,000 icons) are
+included in EasyAdmin, so you don't need to download any of these icons.
 
-If you prefer to use other icons, call the ``useCustomIconSet()`` method in
-your dashboard::
+EasyAdmin renders these icons as inline ``<svg>`` elements, so they don't need
+the FontAwesome CSS or webfonts. You can use the icon names of FontAwesome 6
+and also the old names of FontAwesome 4 and 5, with or without a style class
+(icons without a style class use the ``solid`` style)::
+
+    yield MenuItem::linkToDashboard('Home', 'fa-solid fa-house');
+    // these icon names display the same icon:
+    // 'fas fa-house', 'fa fa-home', 'fa-house', 'fa-home'
+
+    yield MenuItem::linkToUrl('Code', 'fa-brands fa-github', 'https://example.com');
+    // these icon names display the same icon: 'fab fa-github', 'fa fa-github'
+
+    yield MenuItem::linkToRoute('Reports', 'fa-regular fa-file-lines', 'reports');
+    // these icon names display the same icon:
+    // 'far fa-file-lines', 'far fa-file-alt', 'fa fa-file-text-o'
+
+The ``<svg>`` element keeps all the CSS classes of the icon name, so the
+following FontAwesome classes work without the FontAwesome CSS: ``fa-fw``,
+the size classes (``fa-xs``, ``fa-sm``, ``fa-lg``, ``fa-xl``, ``fa-2xs``,
+``fa-2xl``, ``fa-1x`` to ``fa-10x``), ``fa-spin``, ``fa-spin-pulse``,
+``fa-spin-reverse``, ``fa-rotate-90``, ``fa-rotate-180``, ``fa-rotate-270``,
+``fa-flip-horizontal``, ``fa-flip-vertical`` and ``fa-flip-both``.
+
+Icons that are not part of FontAwesome Free (e.g. the ``light``, ``thin``,
+``duotone`` or ``sharp`` styles of FontAwesome Pro, or icons from FontAwesome
+kits) are rendered as ``<i class="...">`` elements, like in previous EasyAdmin
+versions. Load the CSS of FontAwesome Pro in your backend to display them.
+
+The FontAwesome CSS
+~~~~~~~~~~~~~~~~~~~
+
+EasyAdmin still loads the FontAwesome CSS and webfonts by default (in a
+separate ``fontawesome.css`` file) so that the FontAwesome icons that you add
+with your own HTML code keep working (e.g.
+``<i class="fa-solid fa-user"></i>`` in a custom template or in the label of a
+field).
+
+If your backend doesn't include FontAwesome icons with ``<i>`` elements, call
+the ``disableFontAwesomeCss()`` method in your dashboard to not load that CSS
+and its webfonts (up to 430 KB less)::
+
+    public function configureAssets(): Assets
+    {
+        return Assets::new()
+            ->disableFontAwesomeCss()
+        ;
+    }
+
+.. tip::
+
+    In your own templates, use the ``ea:Icon`` :doc:`Twig component </components>`
+    instead of ``<i>`` elements to display icons (e.g.
+    ``<twig:ea:Icon name="fa-solid fa-user"/>``). This way, the icons are
+    rendered as SVG and they don't need the FontAwesome CSS.
+
+Using Other Icon Sets
+~~~~~~~~~~~~~~~~~~~~~
+
+If you prefer to use other icons, install `Symfony UX Icons`_ and the
+HttpClient component (needed to download icons on demand) in your application:
+
+.. code-block:: terminal
+
+    $ composer require symfony/ux-icons symfony/http-client
+
+Then, call the ``useIconFamily()`` method in your dashboard::
 
     namespace App\Controller\Admin;
 
     use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
     use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
-    use EasyCorp\Bundle\EasyAdminBundle\Config\Option\IconSet;
+    use EasyCorp\Bundle\EasyAdminBundle\Config\Option\IconFamily;
     use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
     #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
@@ -45,12 +109,54 @@ your dashboard::
         public function configureAssets(): Assets
         {
             return Assets::new()
-                ->useCustomIconSet()
+                ->useIconFamily(IconFamily::Tabler)
             ;
         }
 
         // ...
     }
+
+The ``IconFamily`` enum includes some popular icon sets (``Tabler``,
+``Lucide``, ``Heroicons``, ``Phosphor``, ``BootstrapIcons``,
+``MaterialSymbols`` and ``Remix``). You can also pass the prefix of any icon
+set available in `Iconify`_ (e.g. ``->useIconFamily('mdi')``).
+
+Now, use the names of that icon set when defining icons (e.g. ``user`` and
+``file`` instead of ``fa-solid fa-user`` and ``fa-solid fa-file``). Icon names
+that include a prefix (e.g. ``lucide:map-pin``) are used "as is", so you can
+mix icons from different sets. If Symfony UX Icons is not installed, EasyAdmin
+displays an error that explains how to install it.
+
+Symfony UX Icons downloads the icons from Iconify the first time they are
+rendered. Its ``ux:icons:lock`` command can't find the icons of your
+backend, because their names are defined in PHP code instead of Twig
+templates. Instead, enable the ``auto_lock`` option (available in Symfony UX
+Icons 3.4 and higher) in the ``dev`` environment to save each icon in the
+``assets/icons/`` directory of your application the first time it's rendered.
+Then, commit those files to your repository:
+
+.. code-block:: yaml
+
+    # config/packages/ux_icons.yaml
+    when@dev:
+        ux_icons:
+            iconify:
+                auto_lock: true
+
+The built-in interface icons of EasyAdmin don't change when using other icon
+sets.
+
+Using a Custom Icon Set
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``useCustomIconSet()`` method is an alternative to ``useIconFamily()`` to
+use any icon set supported by Symfony UX Icons. The difference is that it
+doesn't display an error when Symfony UX Icons is not installed (icons are not
+displayed in that case)::
+
+    return Assets::new()
+        ->useCustomIconSet()
+    ;
 
 Then, whenever you define a custom icon for any EasyAdmin feature, use the full
 icon prefix and name (``lucide:map-pin``, ``ic:baseline-calendar-month``, etc.)
@@ -61,9 +167,9 @@ icons), pass it to the ``useCustomIconSet()`` method::
 
     return Assets::new()->useCustomIconSet('tabler');
 
-Now, the ``tabler:`` prefix will be added automatically to all your custom icon
-names. This way, you can use names like ``user`` and ``file`` instead of
-``tabler:user`` and ``tabler:file``.
+Now, the ``tabler:`` prefix will be added automatically to all your custom
+icon names that don't include a prefix. This way, you can use names like
+``user`` and ``file`` instead of ``tabler:user`` and ``tabler:file``.
 
 .. _template-customization:
 
@@ -777,6 +883,7 @@ is not installed.
 .. _`FontAwesome icons`: https://fontawesome.com/v6/search?m=free
 .. _`Symfony UX Icons`: https://symfony.com/bundles/ux-icons/current/index.html
 .. _`Tabler`: https://tabler.io/icons
+.. _`Iconify`: https://icon-sets.iconify.design/
 .. _`Content Security Policy`: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 .. _`NelmioSecurityBundle`: https://github.com/nelmio/NelmioSecurityBundle
 .. _`Twig Components`: https://symfony.com/bundles/ux-twig-component/current/index.html

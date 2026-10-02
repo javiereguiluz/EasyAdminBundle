@@ -59,6 +59,7 @@
         "symfony/expression-language": "^6.4.32|^7.0|^8.0",
         "symfony/phpunit-bridge": "^6.4.26|^7.0|^8.0",
         "symfony/process": "^6.4.33|^7.0|^8.0",
+        "symfony/ux-icons": "^2.32|^3.0",
         "symfony/web-link": "^6.4.32|^7.0|^8.0",
         "vincentlanglet/twig-cs-fixer": "^3.10",
         "league/flysystem": "^3.10",

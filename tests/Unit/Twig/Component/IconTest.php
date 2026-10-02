@@ -10,14 +10,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\AssetsDto;
 use EasyCorp\Bundle\EasyAdminBundle\Provider\AdminContextProvider;
 use EasyCorp\Bundle\EasyAdminBundle\Twig\Component\Icon;
 use PHPUnit\Framework\TestCase;
-use Symfony\Bridge\PhpUnit\ExpectDeprecationTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\UX\Icons\IconRendererInterface;
 
 class IconTest extends TestCase
 {
-    use ExpectDeprecationTrait;
-
     /**
      * @dataProvider provideGetInternalIconData
      */
@@ -43,8 +41,6 @@ class IconTest extends TestCase
 
     /**
      * @dataProvider provideGetFontAwesomeIconData
-     *
-     * @group legacy (needed for tests that use legacy FontAwesome icon names)
      */
     public function testGetFontAwesomeIcon(string $iconName): void
     {
@@ -53,8 +49,59 @@ class IconTest extends TestCase
         $iconDto = $iconComponent->getIcon();
 
         $this->assertSame($iconName, $iconDto->getName());
+        $this->assertSame(IconSet::FontAwesome, $iconDto->getIconSet());
+        $this->assertStringContainsString('assets/icons/fontawesome/', $iconDto->getPath());
+        $this->assertStringStartsWith('<svg class="', $iconDto->getSvgContents());
+        $this->assertStringContainsString('aria-hidden="true"', $iconDto->getSvgContents());
+        $this->assertMatchesRegularExpression('/ data-prefix="fa[srb]" data-icon="[a-z0-9-]+" /', $iconDto->getSvgContents());
+
+        preg_match('/^<svg class="([^"]*)"/', $iconDto->getSvgContents(), $matches);
+        $svgClasses = explode(' ', $matches[1]);
+        foreach (preg_split('/\s+/', $iconName) as $originalClass) {
+            $this->assertContains($originalClass, $svgClasses);
+        }
+    }
+
+    public function testGetFontAwesomeIconAttributes(): void
+    {
+        $iconComponent = new Icon($this->getAdminContextProvider(IconSet::FontAwesome));
+        $iconComponent->name = 'fa fa-file-text-o text-danger';
+        $svgContents = $iconComponent->getIcon()->getSvgContents();
+
+        $this->assertStringStartsWith('<svg class="fa fa-file-text-o text-danger fa-file-lines" data-prefix="far" data-icon="file-lines" aria-hidden="true" fill="currentColor" ', $svgContents);
+    }
+
+    public function testGetFontAwesomeIconEscapesClasses(): void
+    {
+        $iconComponent = new Icon($this->getAdminContextProvider(IconSet::FontAwesome));
+        $iconComponent->name = 'fa-solid fa-user "><script>alert(1)</script>';
+        $svgContents = $iconComponent->getIcon()->getSvgContents();
+
+        $this->assertStringNotContainsString('<script>', $svgContents);
+        $this->assertStringStartsWith('<svg class="fa-solid fa-user &quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt;" ', $svgContents);
+    }
+
+    /**
+     * @dataProvider provideUnresolvedFontAwesomeIconData
+     */
+    public function testGetUnresolvedFontAwesomeIcon(string $iconName): void
+    {
+        $iconComponent = new Icon($this->getAdminContextProvider(IconSet::FontAwesome));
+        $iconComponent->name = $iconName;
+        $iconDto = $iconComponent->getIcon();
+
+        $this->assertSame($iconName, $iconDto->getName());
+        $this->assertTrue($iconDto->isFontAwesomeIconSet());
         $this->assertNull($iconDto->getPath());
         $this->assertNull($iconDto->getSvgContents());
+    }
+
+    public static function provideUnresolvedFontAwesomeIconData(): iterable
+    {
+        yield 'FontAwesome Pro style' => ['fal fa-user'];
+        yield 'FontAwesome Pro family' => ['fa-sharp fa-solid fa-user'];
+        yield 'FontAwesome kit' => ['fa-kit fa-my-custom-icon'];
+        yield 'unknown icon' => ['fa-solid fa-this-icon-does-not-exist'];
     }
 
     public static function provideGetFontAwesomeIconData(): iterable
@@ -110,6 +157,52 @@ class IconTest extends TestCase
     {
         yield ['custom:my-icon'];
         yield ['another-custom-prefix:some-other-icon'];
+    }
+
+    /**
+     * @dataProvider providePrefixedCustomIconData
+     */
+    public function testDefaultPrefixIsNotAddedToPrefixedIconNames(string $iconName, string $expectedIconName): void
+    {
+        $iconComponent = new Icon($this->getAdminContextProvider(IconSet::Custom, 'tabler'));
+        $iconComponent->name = $iconName;
+
+        $this->assertSame($expectedIconName, $iconComponent->getIcon()->getName());
+    }
+
+    public static function providePrefixedCustomIconData(): iterable
+    {
+        yield ['user', 'tabler:user'];
+        yield ['tabler:user', 'tabler:user'];
+        yield ['lucide:map-pin', 'lucide:map-pin'];
+    }
+
+    public function testIconFamilyRequiresSymfonyUxIcons(): void
+    {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('The backend uses the "tabler" icon family (configured with the useIconFamily() method of the Assets class), but Symfony UX Icons is not installed or enabled. Run "composer require symfony/ux-icons symfony/http-client" to install it.');
+
+        $iconComponent = new Icon($this->getAdminContextProvider(IconSet::Custom, 'tabler', 'tabler'));
+        $iconComponent->name = 'user';
+        $iconComponent->getIcon();
+    }
+
+    public function testIconFamilyWithSymfonyUxIcons(): void
+    {
+        $iconComponent = new Icon($this->getAdminContextProvider(IconSet::Custom, 'tabler', 'tabler'), null, $this->getUxIconRenderer());
+        $iconComponent->name = 'user';
+
+        $this->assertSame('tabler:user', $iconComponent->getIcon()->getName());
+    }
+
+    public function testCustomIconSetDoesNotRequireSymfonyUxIcons(): void
+    {
+        $iconComponent = new Icon($this->getAdminContextProvider(IconSet::Custom, 'tabler'));
+        $iconComponent->name = 'user';
+        $iconDto = $iconComponent->getIcon();
+
+        $this->assertSame('tabler:user', $iconDto->getName());
+        $this->assertNull($iconDto->getSvgContents());
     }
 
     /**
@@ -178,11 +271,12 @@ class IconTest extends TestCase
         yield 'filetypes empty icon name' => ['filetypes:'];
     }
 
-    private function getAdminContextProvider(string $appIconSet): AdminContextProvider
+    private function getAdminContextProvider(string $appIconSet, string $defaultIconPrefix = '', ?string $iconFamily = null): AdminContextProvider
     {
         $assetsDto = new AssetsDto();
         $assetsDto->setIconSet($appIconSet);
-        $assetsDto->setDefaultIconPrefix('');
+        $assetsDto->setDefaultIconPrefix($defaultIconPrefix);
+        $assetsDto->setIconFamily($iconFamily);
 
         $adminContext = AdminContext::forTesting(
             dashboardContext: DashboardContext::forTesting(assets: $assetsDto),
@@ -193,5 +287,15 @@ class IconTest extends TestCase
         $requestStack->push($request);
 
         return new AdminContextProvider($requestStack);
+    }
+
+    private function getUxIconRenderer(): IconRendererInterface
+    {
+        return new class implements IconRendererInterface {
+            public function renderIcon(string $name, array $attributes = []): string
+            {
+                return '<svg></svg>';
+            }
+        };
     }
 }

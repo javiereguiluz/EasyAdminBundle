@@ -802,10 +802,6 @@ form .invalid-feedback > .d-block + .d-block {
     margin: var(--ea-sp-2) 0 var(--ea-sp-4);
 }
 
-.ea-vich-file-name .fa {
-    font-size: var(--icon-size-md);
-}
-
 /* this element should use 'display: flex', but that doesn't work with
    the CSS trick used to customize the <input type="file" /> fields. */
 

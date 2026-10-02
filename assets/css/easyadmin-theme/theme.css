@@ -26,4 +26,5 @@
 @import "./errors.css" layer(components);
 @import "./pages.css" layer(components);
 
+@import "./icons.css" layer(utilities);
 @import "./utilities.css" layer(utilities);

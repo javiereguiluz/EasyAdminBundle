@@ -39,6 +39,7 @@ each class declares itself. A `self` return type means the call is chainable.
 - [Config\Option\ColorScheme](#configoptioncolorscheme)
 - [Config\Option\EA](#configoptionea)
 - [Config\Option\GrayScale](#configoptiongrayscale)
+- [Config\Option\IconFamily](#configoptioniconfamily)
 - [Config\Option\IconSet](#configoptioniconset)
 - [Config\Option\ReplacedFileBehavior](#configoptionreplacedfilebehavior)
 - [Config\Option\SearchMode](#configoptionsearchmode)
@@ -256,8 +257,10 @@ addHtmlContentToHead(string $htmlContent): self
 addJsFile(Asset|string $pathOrAsset): self
 addRepriseEntry(Asset|string $entryNameOrAsset): self
 addWebpackEncoreEntry(Asset|string $entryNameOrAsset): self
+disableFontAwesomeCss(bool $disable = true): self
 getAsDto(): AssetsDto
 useCustomIconSet(string $defaultIconPrefix = ''): self
+useIconFamily(IconFamily|string $family): self
 ```
 
 ## Config\Crud
@@ -503,6 +506,19 @@ const NEUTRAL = 'neutral'
 const SLATE = 'slate'
 const STONE = 'stone'
 const ZINC = 'zinc'
+```
+
+## Config\Option\IconFamily
+
+```
+const BootstrapIcons = …
+const FontAwesome = …
+const Heroicons = …
+const Lucide = …
+const MaterialSymbols = …
+const Phosphor = …
+const Remix = …
+const Tabler = …
 ```
 
 ## Config\Option\IconSet

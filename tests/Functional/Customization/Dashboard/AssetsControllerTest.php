@@ -30,6 +30,19 @@ class AssetsControllerTest extends AbstractCrudTestCase
         return AssetsTestDashboardController::class;
     }
 
+    public function testFontAwesomeCssCanBeDisabled(): void
+    {
+        $crawler = $this->client->request('GET', $this->generateIndexUrl());
+
+        static::assertCount(0, $crawler->filter('head link[href*="fontawesome."]'));
+        static::assertCount(1, $crawler->filter('head link[href*="app."]'));
+
+        // FontAwesome icons are still displayed because they are rendered as inline SVG
+        $menuIcon = $crawler->filter('.ea-sidebar-item-icon span.icon svg[data-icon="house"]');
+        static::assertCount(1, $menuIcon);
+        static::assertSame('fas', $menuIcon->attr('data-prefix'));
+    }
+
     public function testCssAssets(): void
     {
         $crawler = $this->client->request('GET', $this->generateIndexUrl());

@@ -28,22 +28,6 @@ body {
     font-size: var(--font-size-base);
 }
 
-/* Needed because we always add 'fa fa-' to the given icon name, so these
-   styles allow to override that with icon names such as 'symfony fab' */
-i.fa,
-i.fas,
-i.far {
-    font-family: "Font Awesome 6 Free", sans-serif;
-}
-i.fab {
-    font-family: "Font Awesome 6 Brands", sans-serif;
-}
-i.fal {
-    font-family: "Font Awesome 6 Pro", sans-serif;
-}
-i.fad {
-    font-family: "Font Awesome 6 Duotone", sans-serif;
-}
 span.icon {
     display: inline-block;
     inline-size: 1.25em;
@@ -56,7 +40,19 @@ span.icon svg {
     max-inline-size: 1em;
     vertical-align: text-bottom;
 }
-body[data-ea-icon-prefix="tabler"] span.icon svg {
+/* FontAwesome icons rendered as SVG take the same space as the FontAwesome webfont
+   glyphs: 1em tall and as wide as their design (up to 1.25em), aligned with the text
+   baseline (these values are the same used by FontAwesome's own SVG rendering) */
+span.icon svg[data-prefix] {
+    block-size: 1em;
+    inline-size: auto;
+    max-block-size: none;
+    max-inline-size: none;
+    overflow: visible;
+    vertical-align: -0.125em;
+}
+body[data-ea-icon-prefix="tabler"] span.icon svg,
+body[data-ea-icon-prefix="lucide"] span.icon svg {
     max-block-size: 1.15em;
     max-inline-size: 1.15em;
 }

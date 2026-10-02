@@ -3,6 +3,7 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\CustomizationApp\Controller\Dashboard;
 
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -24,6 +25,12 @@ class AssetsTestDashboardController extends AbstractDashboardController
     {
         return Dashboard::new()
             ->setTitle('Assets Test');
+    }
+
+    public function configureAssets(): Assets
+    {
+        return parent::configureAssets()
+            ->disableFontAwesomeCss();
     }
 
     public function configureMenuItems(): iterable
