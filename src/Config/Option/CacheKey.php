@@ -8,4 +8,5 @@ final class CacheKey
     public const ROUTE_ATTRIBUTES_TO_NAME = 'easyadmin.routes.fqcn_to_route';
     public const DASHBOARD_FQCN_TO_ROUTE = 'easyadmin.routes.controller_fqcn_to_dashboard_route';
     public const CRUD_FQCN_TO_ENTITY_FQCN = 'easyadmin.crud.controller_fqcn_to_entity_fqcn';
+    public const CRUD_FQCN_TO_MCP_EXPOSURE = 'easyadmin.crud.controller_fqcn_to_mcp_exposure';
 }

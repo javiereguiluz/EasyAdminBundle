@@ -3,16 +3,22 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Field\Configurator;
 
 use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Configurator\CollectionConfigurator;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Controller\NestedCrudForm\ProjectIssueNestedCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Controller\NestedCrudForm\ProjectWithNestedIssuesCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Controller\ProjectDomain\ProjectCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\DefaultApp\Entity\ProjectDomain\Project;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Field\AbstractFieldTest;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class CollectionConfiguratorTest extends AbstractFieldTest
 {
@@ -168,5 +174,39 @@ class CollectionConfiguratorTest extends AbstractFieldTest
         $fieldDto = $this->configure($field);
 
         $this->assertSame(1, $fieldDto->getFormattedValue());
+    }
+
+    public function testEntryCrudFormSwapsTheContextOfTheCurrentRequest(): void
+    {
+        $context = $this->getAdminContext(Crud::PAGE_EDIT, 'en', Action::EDIT, ProjectWithNestedIssuesCrudController::class);
+        $subRequest = $context->getRequest();
+        $subRequest->attributes->set(EA::CONTEXT_REQUEST_ATTRIBUTE, $context);
+
+        // getAdminContext() reboots the kernel, so services must be fetched after it
+        /** @var CollectionConfigurator $configurator */
+        $configurator = static::getContainer()->get(CollectionConfigurator::class);
+        /** @var RequestStack $requestStack */
+        $requestStack = static::getContainer()->get('request_stack');
+
+        $mainRequest = new Request();
+        $requestStack->push($mainRequest);
+        $requestStack->push($subRequest);
+
+        try {
+            $fieldDto = CollectionField::new('projectIssues')
+                ->useEntryCrudForm(ProjectIssueNestedCrudController::class)
+                ->getAsDto();
+            $fieldDto->setFieldFqcn(CollectionField::class);
+
+            // the embedded controller throws when its context doesn't hold the entry entity
+            $configurator->configure($fieldDto, $this->getEntityDto(), $context);
+        } finally {
+            $requestStack->pop();
+            $requestStack->pop();
+        }
+
+        $this->assertSame(CollectionType::class, $fieldDto->getFormType());
+        $this->assertSame($context, $subRequest->attributes->get(EA::CONTEXT_REQUEST_ATTRIBUTE));
+        $this->assertFalse($mainRequest->attributes->has(EA::CONTEXT_REQUEST_ATTRIBUTE));
     }
 }

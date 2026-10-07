@@ -31,6 +31,8 @@ Table of Contents
   errors, retries)
 * :doc:`AI Coding Agents </ai-coding-agents>` (agent skills for Claude Code,
   Codex, Cursor, GitHub Copilot, and other agents)
+* :doc:`MCP Server </mcp>` (let ChatGPT, Claude and other AI clients read the
+  data of your backend)
 * :doc:`Upgrade </upgrade>` (from EasyAdmin 4)
 * :doc:`Appendix: EasyAdmin Pro </pro>` (installation and setup of the Pro
   features)

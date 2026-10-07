@@ -4,6 +4,7 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Dto;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ColorScheme;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\McpExposureMode;
 
 /**
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
@@ -24,6 +25,7 @@ final class DashboardDto
     private array $locales = [];
     private bool $useEntityTranslations = false;
     private ?ThemeDto $theme = null;
+    private ?McpExposureMode $mcpExposureMode = null;
 
     public function getRouteName(): string
     {
@@ -167,5 +169,15 @@ final class DashboardDto
         $this->useEntityTranslations = $useEntityTranslations;
 
         return $this;
+    }
+
+    public function getMcpExposureMode(): ?McpExposureMode
+    {
+        return $this->mcpExposureMode;
+    }
+
+    public function setMcpExposureMode(McpExposureMode $mcpExposureMode): void
+    {
+        $this->mcpExposureMode = $mcpExposureMode;
     }
 }

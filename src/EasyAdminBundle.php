@@ -2,6 +2,8 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle;
 
+use EasyCorp\Bundle\EasyAdminBundle\DependencyInjection\Compiler\McpServerPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -10,6 +12,13 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 class EasyAdminBundle extends Bundle
 {
     public const VERSION = '5.6.2-DEV';
+
+    public function build(ContainerBuilder $container): void
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new McpServerPass());
+    }
 
     public function getPath(): string
     {

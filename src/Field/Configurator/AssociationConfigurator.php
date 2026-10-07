@@ -464,7 +464,7 @@ final class AssociationConfigurator implements FieldConfiguratorInterface
         $crudController = $this->controllerFactory->getCrudControllerInstance(
             $crudControllerFqcn,
             $crudControllerAction,
-            $this->requestStack->getMainRequest()
+            $this->requestStack->getCurrentRequest()
         );
 
         $fields = $crudController->configureFields($crudControllerPageName);

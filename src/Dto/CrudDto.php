@@ -9,6 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ClickTrigger;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\SearchMode;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Controller\CrudControllerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\McpCrudExposure;
 use EasyCorp\Bundle\EasyAdminBundle\Translation\TranslatableMessageBuilder;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Contracts\Translation\TranslatableInterface;
@@ -88,6 +89,7 @@ final class CrudDto
     private $autocompleteCallback;
     private ?string $autocompleteTemplate = null;
     private bool $autocompleteRenderAsHtml = false;
+    private ?McpCrudExposure $mcpExposure = null;
 
     public function __construct()
     {
@@ -604,5 +606,15 @@ final class CrudDto
     public function setAutocompleteRenderAsHtml(bool $renderAsHtml): void
     {
         $this->autocompleteRenderAsHtml = $renderAsHtml;
+    }
+
+    public function getMcpExposure(): ?McpCrudExposure
+    {
+        return $this->mcpExposure;
+    }
+
+    public function setMcpExposure(McpCrudExposure $mcpExposure): void
+    {
+        $this->mcpExposure = $mcpExposure;
     }
 }

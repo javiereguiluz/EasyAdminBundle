@@ -218,7 +218,7 @@ final readonly class CollectionConfigurator implements FieldConfiguratorInterfac
         $controllerFactory = $this->controllerFactory;
         $requestStack = $this->requestStack;
         $createEntryEntity = static function () use ($controllerFactory, $requestStack, $targetCrudControllerFqcn, $targetEntityFqcn): object {
-            $request = $requestStack->getMainRequest();
+            $request = $requestStack->getCurrentRequest();
             $controller = null !== $request
                 ? $controllerFactory->getCrudControllerInstance($targetCrudControllerFqcn, Action::NEW, $request)
                 : null;
@@ -242,7 +242,7 @@ final readonly class CollectionConfigurator implements FieldConfiguratorInterfac
     private function createEntityDto(string $targetEntityFqcn, string $targetCrudControllerFqcn, string $crudAction, string $crudControllerPageName, string $crudPageName): EntityDto
     {
         $entityDto = $this->entityFactory->create($targetEntityFqcn);
-        $request = $this->requestStack->getMainRequest();
+        $request = $this->requestStack->getCurrentRequest();
 
         $crudController = $this->controllerFactory->getCrudControllerInstance(
             $targetCrudControllerFqcn,

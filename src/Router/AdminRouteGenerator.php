@@ -4,12 +4,15 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Router;
 
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\ExcludeFromMcp;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\ExposeToMcp;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\CacheKey;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\EA;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Controller\CrudControllerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Controller\DashboardControllerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Router\AdminRouteGeneratorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\McpCrudExposure;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Config\Resource\ReflectionClassResource;
 use Symfony\Component\Routing\Route;
@@ -112,6 +115,7 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
         // find them quickly without having to use Symfony's router service
         $this->saveAdminRoutesInCache($adminRoutes);
         $this->saveCrudControllerToEntityFqcnMapInCache($this->crudControllers);
+        $this->saveCrudControllerToMcpExposureMapInCache($this->crudControllers);
 
         return $collection;
     }
@@ -889,5 +893,36 @@ final class AdminRouteGenerator implements AdminRouteGeneratorInterface
         $crudToEntityCacheItem = $this->cache->getItem(CacheKey::CRUD_FQCN_TO_ENTITY_FQCN);
         $crudToEntityCacheItem->set($crudToEntityMap);
         $this->cache->save($crudToEntityCacheItem);
+    }
+
+    /**
+     * @param iterable<CrudControllerInterface> $crudControllers
+     */
+    private function saveCrudControllerToMcpExposureMapInCache(iterable $crudControllers): void
+    {
+        // only the PHP attributes are cached because they are static; the final MCP
+        // exposure also depends on Crud::exposeToMcp()/excludeFromMcp(), which can
+        // change per request (e.g. depending on the user), so it's resolved at runtime
+        $crudToMcpExposureMap = [];
+        foreach ($crudControllers as $crudController) {
+            $exposeAttribute = $this->getPhpAttributeInstance($crudController::class, ExposeToMcp::class);
+            $excludeAttribute = $this->getPhpAttributeInstance($crudController::class, ExcludeFromMcp::class);
+
+            if (null !== $exposeAttribute && null !== $excludeAttribute) {
+                throw new \LogicException(sprintf('The "%s" CRUD controller cannot use both the #[ExposeToMcp] and #[ExcludeFromMcp] attributes. Remove one of them.', $crudController::class));
+            }
+
+            if (null !== $exposeAttribute) {
+                // validates the alias at warm-up so an invalid one fails early
+                McpCrudExposure::exposed($exposeAttribute->readOnly, $exposeAttribute->alias);
+                $crudToMcpExposureMap[$crudController::class] = ['exposed' => true, 'readOnly' => $exposeAttribute->readOnly, 'alias' => $exposeAttribute->alias];
+            } elseif (null !== $excludeAttribute) {
+                $crudToMcpExposureMap[$crudController::class] = ['exposed' => false, 'readOnly' => false, 'alias' => null];
+            }
+        }
+
+        $crudToMcpExposureCacheItem = $this->cache->getItem(CacheKey::CRUD_FQCN_TO_MCP_EXPOSURE);
+        $crudToMcpExposureCacheItem->set($crudToMcpExposureMap);
+        $this->cache->save($crudToMcpExposureCacheItem);
     }
 }

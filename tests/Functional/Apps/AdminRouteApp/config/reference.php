@@ -1237,6 +1237,19 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         collect_components?: bool|Param, // Collect components instances // Default: true
  *     },
  * }
+ * @psalm-type EasyAdminConfig = array{
+ *     mcp?: array{ // Options of the MCP server (experimental)
+ *         limits?: array{
+ *             max_page_size?: int|Param, // The maximum number of records returned by each call that lists records // Default: 50
+ *             max_response_bytes?: int|Param, // Calls whose response is larger than this fail with an error asking to narrow the results (they are never truncated silently) // Default: 262144
+ *             max_string_length?: int|Param, // Longer string values are truncated and marked as such // Default: 2000
+ *             max_to_many_items?: int|Param, // The maximum number of related records included for each to-many association (their total count is always included) // Default: 10
+ *             calls_per_minute?: int|Param, // The maximum number of tool calls per minute for each user, for all their MCP clients (requires symfony/rate-limiter; 0 disables the limit) // Default: 120
+ *             time_limit?: int|Param, // The maximum execution time of each tool call, in seconds (0 disables the limit) // Default: 30
+ *         },
+ *     },
+ *     ...<string, mixed>
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1246,6 +1259,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     security?: SecurityConfig,
  *     twig?: TwigConfig,
  *     twig_component?: TwigComponentConfig,
+ *     easy_admin?: EasyAdminConfig,
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,

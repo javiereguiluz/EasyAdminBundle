@@ -5,6 +5,7 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Config;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ColorScheme;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\TextDirection;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\DashboardDto;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\McpExposureMode;
 
 /**
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
@@ -131,8 +132,44 @@ final class Dashboard
         return $this;
     }
 
+    /**
+     * Exposes to MCP clients only the CRUD controllers marked with
+     * Crud::exposeToMcp() or #[ExposeToMcp].
+     *
+     * @experimental
+     */
+    public function exposeSelectedCrudsToMcp(): self
+    {
+        $this->setMcpExposureMode(McpExposureMode::Selected, __FUNCTION__);
+
+        return $this;
+    }
+
+    /**
+     * Exposes to MCP clients all CRUD controllers except those marked with
+     * Crud::excludeFromMcp() or #[ExcludeFromMcp].
+     *
+     * @experimental
+     */
+    public function exposeAllCrudsToMcp(): self
+    {
+        $this->setMcpExposureMode(McpExposureMode::All, __FUNCTION__);
+
+        return $this;
+    }
+
     public function getAsDto(): DashboardDto
     {
         return $this->dto;
+    }
+
+    private function setMcpExposureMode(McpExposureMode $mode, string $methodName): void
+    {
+        $currentMode = $this->dto->getMcpExposureMode();
+        if (null !== $currentMode && $mode !== $currentMode) {
+            throw new \LogicException(sprintf('The dashboard cannot call both "exposeSelectedCrudsToMcp()" and "exposeAllCrudsToMcp()". Remove one of them (the last call was "%s()").', $methodName));
+        }
+
+        $this->dto->setMcpExposureMode($mode);
     }
 }

@@ -59,10 +59,15 @@
         "symfony/expression-language": "^6.4.32|^7.0|^8.0",
         "symfony/phpunit-bridge": "^6.4.26|^7.0|^8.0",
         "symfony/process": "^6.4.33|^7.0|^8.0",
+        "symfony/rate-limiter": "^6.4|^7.0|^8.0",
         "symfony/web-link": "^6.4.32|^7.0|^8.0",
         "vincentlanglet/twig-cs-fixer": "^3.10",
         "league/flysystem": "^3.10",
         "zenstruck/foundry": "^2.3"
+    },
+    "suggest": {
+        "symfony/mcp-bundle": "To let AI clients read the data of the backend with the experimental MCP server (it requires Symfony 7.3 or higher)",
+        "symfony/rate-limiter": "To limit the calls of each AI client to the MCP server"
     },
     "config": {
         "sort-packages": true,

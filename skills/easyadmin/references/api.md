@@ -13,6 +13,8 @@ each class declares itself. A `self` return type means the call is chainable.
 
 - [Attribute\AdminDashboard](#attributeadmindashboard)
 - [Attribute\AdminRoute](#attributeadminroute)
+- [Attribute\ExcludeFromMcp](#attributeexcludefrommcp)
+- [Attribute\ExposeToMcp](#attributeexposetomcp)
 - [Config\Action](#configaction)
 - [Config\ActionGroup](#configactiongroup)
 - [Config\Actions](#configactions)
@@ -120,6 +122,16 @@ __construct(?string $routePath = null, ?string $routeName = null, array $routeOp
 
 ```
 __construct(?string $path = null, ?string $name = null, array $options = [], array|false|null $allowedDashboards = false, array|false|null $deniedDashboards = false)
+```
+
+## Attribute\ExcludeFromMcp
+
+This class declares no members of its own.
+
+## Attribute\ExposeToMcp
+
+```
+__construct(bool $readOnly = false, ?string $alias = null)
 ```
 
 ## Config\Action
@@ -278,6 +290,8 @@ static new(): self
 addFormTheme(string $themePath): self
 askConfirmationOnBatchActions(TranslatableInterface|bool|string $askConfirmation = true): self
 autocomplete(bool $enable = true, ?callable $callback = null, ?string $template = null, bool $renderAsHtml = false): self
+excludeFromMcp(): self
+exposeToMcp(bool $readOnly = false, ?string $alias = null): self
 getAsDto(): CrudDto
 hideNullValues(bool $hide = true): self
 overrideTemplate(string $templateName, string $templatePath): self
@@ -319,6 +333,8 @@ showEntityActionsInlined(bool $showInlined = true): self
 static new(): self
 
 disableDarkMode(bool $disableDarkMode = true): self
+exposeAllCrudsToMcp(): self
+exposeSelectedCrudsToMcp(): self
 generateRelativeUrls(bool $relativeUrls = true): self
 getAsDto(): DashboardDto
 renderContentMaximized(bool $maximized = true): self
@@ -452,6 +468,7 @@ Also accepts every MenuItemTrait method (see [Config\Menu\MenuItemTrait](#config
 
 ```
 const CRUD_FQCN_TO_ENTITY_FQCN = 'easyadmin.crud.controller_fqcn_to_entity_fqcn'
+const CRUD_FQCN_TO_MCP_EXPOSURE = 'easyadmin.crud.controller_fqcn_to_mcp_exposure'
 const DASHBOARD_FQCN_TO_ROUTE = 'easyadmin.routes.controller_fqcn_to_dashboard_route'
 const ROUTE_ATTRIBUTES_TO_NAME = 'easyadmin.routes.fqcn_to_route'
 const ROUTE_NAME_TO_ATTRIBUTES = 'easyadmin.routes.route_to_fqcn'

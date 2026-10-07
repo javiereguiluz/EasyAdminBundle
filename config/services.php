@@ -10,6 +10,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Asset\AssetPackage;
 use EasyCorp\Bundle\EasyAdminBundle\Command\InstallAiSkillCommand;
 use EasyCorp\Bundle\EasyAdminBundle\Command\MakeAdminDashboardCommand;
 use EasyCorp\Bundle\EasyAdminBundle\Command\MakeCrudControllerCommand;
+use EasyCorp\Bundle\EasyAdminBundle\Command\McpDoctorCommand;
 use EasyCorp\Bundle\EasyAdminBundle\Command\UpdateAiSkillCommand;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Filter\FilterConfiguratorInterface;
@@ -88,6 +89,21 @@ use EasyCorp\Bundle\EasyAdminBundle\Form\Type\FileUploadType;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Type\FiltersFormType;
 use EasyCorp\Bundle\EasyAdminBundle\Intl\IntlFormatter;
 use EasyCorp\Bundle\EasyAdminBundle\Maker\ClassMaker;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\CollectionResolver;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\McpCallContext;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\McpContextFactory;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\McpExposureResolver;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\Read\CollectionReader;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\Read\RecordNormalizer;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\RecordLoader;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\Schema\FieldSchemaGenerator;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\Security\McpGrantResolver;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\Value\AssociationValueNormalizer;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\Value\ChoiceValueNormalizer;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\Value\DateTimeValueNormalizer;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\Value\FieldValueNormalizer;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\Value\MoneyValueNormalizer;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\Value\ScalarValueNormalizer;
 use EasyCorp\Bundle\EasyAdminBundle\Menu\MenuItemMatcher;
 use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityPaginator;
 use EasyCorp\Bundle\EasyAdminBundle\Orm\EntityRepository;
@@ -141,6 +157,19 @@ return static function (ContainerConfigurator $container) {
         ->set(UpdateAiSkillCommand::class)->public()
             ->arg(0, service(SkillInstaller::class))
             ->arg(1, service(GuidelinesFileWriter::class))
+            ->tag('console.command')
+
+        ->set(McpDoctorCommand::class)->public()
+            ->arg(0, service(CollectionResolver::class))
+            ->arg(1, service(AdminRouteGenerator::class))
+            ->arg(2, service('router'))
+            ->arg(3, new Reference('security.firewall.map', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+            ->arg(4, new Reference('security.access_map', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+            ->arg(5, param('kernel.bundles'))
+            ->arg(6, param('easyadmin.mcp.limits'))
+            ->arg(7, new Reference('easyadmin.mcp.rate_limiter', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+            ->arg(8, service('parameter_bag'))
+            ->arg(9, tagged_iterator(EasyAdminExtension::TAG_MCP_DOCTOR_CHECK))
             ->tag('console.command')
 
         ->set(SkillInstaller::class)
@@ -267,6 +296,90 @@ return static function (ContainerConfigurator $container) {
         ->set(AdminRouteLoader::class)
             ->arg(0, service(AdminRouteGenerator::class))
             ->tag('routing.loader', ['type' => AdminRouteLoader::ROUTE_LOADER_TYPE])
+
+        // MCP services without dependencies on mcp/sdk or mcp-bundle (the ones that depend
+        // on them are defined in services_mcp.php, which is only loaded when mcp-bundle is enabled)
+        ->set(McpExposureResolver::class)
+            ->arg(0, service('cache.easyadmin'))
+            ->arg(1, service(AdminRouteGenerator::class))
+
+        ->set(CollectionResolver::class)
+            ->arg(0, tagged_iterator(EasyAdminExtension::TAG_DASHBOARD_CONTROLLER))
+            ->arg(1, tagged_iterator(EasyAdminExtension::TAG_CRUD_CONTROLLER))
+            ->arg(2, service(AdminRouteGenerator::class))
+            ->arg(3, service(McpExposureResolver::class))
+
+        ->set(McpCallContext::class)
+            ->tag('kernel.reset', ['method' => 'reset'])
+
+        ->set(McpGrantResolver::class)
+            ->arg(0, new Reference('security.token_storage', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+
+        ->set(McpContextFactory::class)
+            ->arg(0, service('request_stack'))
+            ->arg(1, service('http_kernel'))
+            ->arg(2, service(CollectionResolver::class))
+            ->arg(3, service(ControllerFactory::class))
+            ->arg(4, service(AdminContextFactory::class))
+            ->arg(5, service('event_dispatcher'))
+            ->arg(6, new Reference('security.token_storage', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+            ->arg(7, new Reference('security.authorization_checker', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+            ->arg(8, new Reference('controller.is_granted_attribute_listener', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+            ->arg(9, service(AdminRouteGenerator::class))
+            ->arg(10, service('router'))
+            ->arg(11, new Reference('security.access_map', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+
+        ->set(RecordLoader::class)
+            ->arg(0, service(McpContextFactory::class))
+            ->arg(1, service(FilterFactory::class))
+            ->arg(2, service('security.authorization_checker')->nullOnInvalid())
+
+        ->set(ScalarValueNormalizer::class)
+            ->tag(EasyAdminExtension::TAG_MCP_VALUE_NORMALIZER)
+
+        ->set(DateTimeValueNormalizer::class)
+            ->tag(EasyAdminExtension::TAG_MCP_VALUE_NORMALIZER)
+
+        ->set(ChoiceValueNormalizer::class)
+            ->tag(EasyAdminExtension::TAG_MCP_VALUE_NORMALIZER)
+
+        ->set(MoneyValueNormalizer::class)
+            ->tag(EasyAdminExtension::TAG_MCP_VALUE_NORMALIZER)
+
+        ->set(AssociationValueNormalizer::class)
+            ->arg(0, service('doctrine'))
+            ->arg(1, service(AdminControllerRegistryInterface::class))
+            ->arg(2, '%easyadmin.mcp.limits.max_to_many_items%')
+            ->tag(EasyAdminExtension::TAG_MCP_VALUE_NORMALIZER)
+
+        ->set(FieldValueNormalizer::class)
+            ->arg(0, tagged_iterator(EasyAdminExtension::TAG_MCP_VALUE_NORMALIZER))
+            ->arg(1, '%easyadmin.mcp.limits.max_string_length%')
+
+        ->set(FieldSchemaGenerator::class)
+            ->arg(0, service(FieldValueNormalizer::class))
+            ->arg(1, service('translator')->nullOnInvalid())
+
+        ->set(RecordNormalizer::class)
+            ->arg(0, service(FieldValueNormalizer::class))
+            ->arg(1, service(CollectionResolver::class))
+            ->arg(2, service(RecordLoader::class))
+
+        ->set(CollectionReader::class)
+            ->arg(0, service(CollectionResolver::class))
+            ->arg(1, service(McpContextFactory::class))
+            ->arg(2, service(RecordLoader::class))
+            ->arg(3, service(RecordNormalizer::class))
+            ->arg(4, service(FieldSchemaGenerator::class))
+            ->arg(5, service(FieldValueNormalizer::class))
+            ->arg(6, service(FieldFactory::class))
+            ->arg(7, service(FilterFactory::class))
+            ->arg(8, service(EntityFactory::class))
+            ->arg(9, service(FormFactory::class))
+            ->arg(10, service('security.authorization_checker')->nullOnInvalid())
+            ->arg(11, service('translator')->nullOnInvalid())
+            ->arg(12, '%easyadmin.mcp.limits%')
+            ->arg(13, tagged_iterator(EasyAdminExtension::TAG_MCP_COLLECTION_EXTENSION))
 
         ->set(MenuFactory::class)
             ->arg(0, service(AdminContextProvider::class))

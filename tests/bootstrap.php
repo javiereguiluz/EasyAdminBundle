@@ -58,3 +58,7 @@ $testAppKernels = [
 foreach ($testAppKernels as $kernelClass) {
     initializeTestAppDatabase(new $kernelClass(), $filesystem);
 }
+
+// this app creates its database in each test, but its container must be rebuilt
+// because test kernels don't check if the cached container is fresh
+$filesystem->remove((new EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\McpApp\Kernel())->getCacheDir());

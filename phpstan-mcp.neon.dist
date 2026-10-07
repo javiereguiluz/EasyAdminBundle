@@ -1,0 +1,19 @@
+# Analyses the code that depends on symfony/mcp-bundle, which is optional and
+# only installed in the "mcp" CI job (it requires Symfony 7.3 or higher)
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 6
+    phpVersion: 80400
+    paths:
+        - src/Mcp/
+        - src/DependencyInjection/Compiler/McpServerPass.php
+        - src/Command/McpDoctorCommand.php
+    bootstrapFiles:
+        - vendor/bin/.phpunit/phpunit/vendor/autoload.php
+    ignoreErrors:
+        -
+            identifier: missingType.generics
+    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false

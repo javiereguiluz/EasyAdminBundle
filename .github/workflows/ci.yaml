@@ -218,6 +218,45 @@ jobs:
               env:
                   SYMFONY_DEPRECATIONS_HELPER: ${{ matrix.symfony_deprecations_helper || '' }}
 
+    # the MCP server is optional and symfony/mcp-bundle requires Symfony 7.3 or higher,
+    # so it's never added to require-dev (it would break the jobs of older Symfony versions)
+    mcp:
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        steps:
+            - uses: actions/checkout@v7
+
+            - name: Setup PHP, with composer and extensions
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 8.4
+                  coverage: none
+                  extensions: mbstring, intl, pdo, pdo_sqlite, sqlite3, fileinfo
+                  ini-values: date.timezone=UTC
+                  tools: composer:2.9.8
+
+            - name: symfony/flex is required to install the correct symfony version
+              run: |
+                  composer global config --no-plugins allow-plugins.symfony/flex true
+                  composer global require symfony/flex
+                  composer config extra.symfony.require "7.4.*"
+
+            - name: Install dependencies
+              run: |
+                  composer config audit.block-insecure false
+                  composer require --dev --no-update symfony/mcp-bundle:^0.14 nyholm/psr7
+                  composer update --no-interaction --no-progress --prefer-dist
+                  vendor/bin/simple-phpunit install
+
+            # PHPUnit 9 only runs the first path given as argument
+            - name: Run MCP tests
+              run: |
+                  make tests ARGS="tests/Unit/Mcp"
+                  make tests ARGS="tests/Functional/Mcp"
+
+            - name: Run PHPStan analysis of the MCP code
+              run: vendor/bin/phpstan analyse -c phpstan-mcp.neon.dist
+
     php-linter:
         runs-on: ubuntu-latest
         timeout-minutes: 10

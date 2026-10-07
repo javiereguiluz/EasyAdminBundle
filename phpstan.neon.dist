@@ -10,6 +10,9 @@ parameters:
         analyse:
             - src/ArgumentResolver
             - src/Test/Trait/CrudTestFormAsserts.php
+            # these files depend on symfony/mcp-bundle, which is optional; they're analysed by phpstan-mcp.neon.dist
+            - src/Mcp/Server
+            - src/DependencyInjection/Compiler/McpServerPass.php
     bootstrapFiles:
         - vendor/bin/.phpunit/phpunit/vendor/autoload.php
     ignoreErrors:

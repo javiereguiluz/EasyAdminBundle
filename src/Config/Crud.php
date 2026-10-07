@@ -9,6 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\CrudDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FilterConfigDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\PaginatorDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Mcp\McpCrudExposure;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Contracts\Translation\TranslatableInterface;
 
@@ -468,6 +469,37 @@ final class Crud
         }
 
         $this->dto->setDefaultRowActionTrigger($trigger);
+
+        return $this;
+    }
+
+    /**
+     * Marks this CRUD controller as exposed to MCP clients. This replaces entirely
+     * the #[ExposeToMcp] and #[ExcludeFromMcp] attributes of the controller and any
+     * previous call to exposeToMcp() or excludeFromMcp() (e.g. in the dashboard).
+     *
+     * @param bool        $readOnly if true, MCP tools can never change the data of this CRUD controller
+     * @param string|null $alias    the stable id of the collection used by MCP tools (by default, it's derived from the controller class name)
+     *
+     * @experimental
+     */
+    public function exposeToMcp(bool $readOnly = false, ?string $alias = null): self
+    {
+        $this->dto->setMcpExposure(McpCrudExposure::exposed($readOnly, $alias));
+
+        return $this;
+    }
+
+    /**
+     * Marks this CRUD controller as not exposed to MCP clients. This replaces entirely
+     * the #[ExposeToMcp] and #[ExcludeFromMcp] attributes of the controller and any
+     * previous call to exposeToMcp() or excludeFromMcp() (e.g. in the dashboard).
+     *
+     * @experimental
+     */
+    public function excludeFromMcp(): self
+    {
+        $this->dto->setMcpExposure(McpCrudExposure::excluded());
 
         return $this;
     }
