@@ -666,17 +666,126 @@ Then, load this CSS file in your dashboard and/or CRUD controller::
     ``variables-theme.css``). If some Bootstrap style resists your changes,
     override the relevant ``--bs-*`` variable in your own CSS file.
 
+.. _design-prose:
+
+Styling Custom Content
+~~~~~~~~~~~~~~~~~~~~~~
+
+Besides the backend interface, EasyAdmin styles the HTML contents that you
+write yourself (headings, paragraphs, lists, tables, images, code blocks,
+etc.) so they look good without writing any CSS. These styles are called
+**prose** and they work like this:
+
+* The contents of the ``main`` block of
+  :ref:`custom pages <content-page-template>` that extend the
+  ``@EasyAdmin/page/content.html.twig`` template get these styles
+  automatically;
+* In any other template, add the ``ea-prose`` CSS class to an element to style
+  its contents;
+* CSS classes don't stop these styles (``<p class="text-center">`` is still a
+  styled paragraph), but Bootstrap and EasyAdmin components (cards, alerts,
+  badges, buttons, tables with the ``table`` class, etc.), Bootstrap
+  typography classes (``h1`` to ``h6``, ``display-*``, ``list-unstyled``,
+  etc.) and forms keep their own styles;
+* Add the ``ea-not-prose`` CSS class (or the ``data-ea-not-prose`` attribute)
+  to exclude any other part of the contents. Excluded elements use the default
+  typography of the backend.
+
+.. code-block:: twig
+
+    {# templates/admin/release_notes.html.twig #}
+    {% extends '@EasyAdmin/page/content.html.twig' %}
+
+    {% block main %}
+        <h2>What's new</h2>
+        <p class="lead">This paragraph is displayed bigger than the others.</p>
+        <p>Headings, paragraphs, lists and tables are styled automatically.</p>
+
+        <div class="ea-prose-scroll">
+            {# wide tables scroll horizontally inside this element #}
+            <table>...</table>
+        </div>
+
+        <div class="ea-not-prose">
+            {# this widget keeps its own styles #}
+        </div>
+    {% endblock %}
+
+The automatic styles of custom pages require the ``page-content`` CSS class
+that the template adds to the ``<body>`` element. If you override the
+``body_class`` block, keep that class with ``{{ parent() }}``. To keep the
+previous unstyled design of a custom page, wrap the contents of its ``main``
+block in a ``<div data-ea-not-prose>`` element.
+
+.. note::
+
+    Prose can't be enabled again inside an element excluded with
+    ``ea-not-prose``. Components placed inside prose contents keep their
+    styles, but they inherit the font size, line height and color of the
+    ``ea-prose`` element; wrap them in an ``ea-not-prose`` element to use the
+    default backend typography instead.
+
+To use these styles inside the :ref:`Modal component <components-modal>`,
+add the ``ea-prose`` class to an element of its ``body`` block, not to the
+``bodyClass`` option.
+
+The typography of these contents is defined with a few CSS variables. Like
+the rest of the design tokens, override them in your own CSS file:
+
+.. code-block:: css
+
+    /* public/css/admin.css */
+    :root {
+        /* the size of the text (by default, 15px, which is a bit bigger than
+           the 14px used in the rest of the backend) */
+        --ea-prose-font-size: 16px;
+        /* the line height of paragraphs, lists and other body text (by
+           default, 1.75) */
+        --ea-prose-line-height: 1.8;
+        /* the space between paragraphs, lists, tables, etc. All vertical gaps
+           (above headings, between list items, etc.) are multiples of it */
+        --ea-prose-spacing: 1.5em;
+        /* the fonts (by default, the same fonts as the rest of the backend) */
+        --ea-prose-font-family: Georgia, serif;
+        --ea-prose-heading-font-family: Georgia, serif;
+        --ea-prose-code-font-family: 'Fira Code', monospace;
+    }
+
+Define these variables in other CSS classes to create different styles for
+different contents (e.g. ``<div class="ea-prose release-notes">``):
+
+.. code-block:: css
+
+    /* public/css/admin.css */
+    .ea-prose.release-notes {
+        --ea-prose-line-height: 1.5;
+        --ea-prose-spacing: 0.75em;
+    }
+
+The ``--prose-color`` text color is only applied to elements with the
+``ea-prose`` class. Custom pages use the default text color of the backend.
+
+The colors are defined with the ``--prose-*`` theme variables (e.g.
+``--prose-link-color``, ``--prose-code-color``, ``--prose-rule-color``) of the
+``variables-theme.css`` file, which you can also override. In addition, the
+``--heading-font-weight`` theme variable defines the font weight of all the
+headings of the backend (page titles, form fieldsets and prose contents) and
+the ``--link-font-weight`` variable defines the font weight of links (the
+components rendered as links, such as menu items, dropdown items and pagination
+links, define their own font weight).
+
 CSS Cascade Layers
 ~~~~~~~~~~~~~~~~~~
 
 In addition to redefining CSS variables, you can override any style with your
 own CSS rules. All backend styles are assigned to `CSS cascade layers`_:
-``ea-overrides`` for the rules that must beat third-party styles, ``vendor``
+``ea-overrides`` for the rules that must beat third-party styles,
+``ea-defaults`` for fallback values that lose to any other style, ``vendor``
 for third-party styles (Bootstrap, FontAwesome, etc.) and ``ea`` for the
-EasyAdmin styles (with ``ea.tokens``, ``ea.base``, ``ea.components`` and
-``ea.utilities`` sublayers). They are declared in that order in
-``assets/css/layers.css``: ``ea-overrides`` comes first, and not last, because
-the layer order is inverted for ``!important`` declarations.
+EasyAdmin styles (with ``ea.tokens``, ``ea.base``, ``ea.prose``,
+``ea.components`` and ``ea.utilities`` sublayers). They are declared in that
+order in ``assets/css/layers.css``: ``ea-overrides`` comes first, and not
+last, because the layer order is inverted for ``!important`` declarations.
 
 Unlayered CSS always wins over layered CSS, so any rule in your own CSS files
 overrides the backend styles, no matter its specificity or loading order.

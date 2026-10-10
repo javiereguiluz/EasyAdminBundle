@@ -23,6 +23,35 @@ before running any `{% set %}` tag of the template:
 {% extends ea().templatePath('crud/edit') %}
 ```
 
+### Custom Pages Style Their HTML Contents
+
+The HTML contents of custom pages (the `main` block of the templates that extend
+`@EasyAdmin/page/content.html.twig`) now get default typography styles for
+headings, paragraphs, lists, tables, code, etc. Bootstrap and EasyAdmin components
+and forms keep their own styles. To keep the previous design of a page, wrap its
+contents in an element with the `data-ea-not-prose` attribute:
+
+```twig
+{% block main %}
+    <div data-ea-not-prose>
+        {# ... #}
+    </div>
+{% endblock %}
+```
+
+Other related design changes:
+
+* Headings use the `600` font weight instead of `700`. Change it with the new
+  `--heading-font-weight` CSS variable;
+* The text of these contents is `15px` with a `1.75` line height (the rest of the
+  backend keeps `14px`). Change it with the `--ea-prose-font-size` and
+  `--ea-prose-line-height` CSS variables;
+* Light text is darker (`--gray-950`; it was `--gray-800` and `--gray-600` in
+  datagrid cells) and links use the new `--link-font-weight` variable (`500`);
+* The title and description styles of modal windows only apply to the `h4` and
+  `p` elements written directly in the modal body, not to the elements nested
+  inside other elements.
+
 ## EasyAdmin 5.4.0
 
 ### Detail Page Templates Are Now Overridable Individually

@@ -30,6 +30,9 @@
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
+    /* 600 instead of 700, like GitHub (Primer) and shadcn/ui: it still reads as a
+       heading without looking heavy at large sizes */
+    --heading-font-weight: var(--font-weight-semibold);
 
     /* Icons are sized with font-size, because base.css renders them em-relative.
        That makes icon size its own axis: it is not type, so it does not take a
@@ -153,7 +156,7 @@
     --datagrid-noresults-placeholder-bg: var(--gray-100);
     --datagrid-hidden-results-gradient-bg: var(--gray-50);
     --table-thead-color: var(--gray-800);
-    --table-cell-color: var(--gray-600);
+    --table-cell-color: var(--text-color);
     --table-thead-marker-color: var(--gray-400);
     --table-cell-border-color: var(--gray-200);
     --table-hover-cell-bg: var(--gray-50);
@@ -442,8 +445,8 @@
     --button-invisible-danger-active-color: #a40e26;
     --button-invisible-danger-hover-active-bg: #ffdad6;
 
-    --text-color: var(--gray-800);
-    --text-color-rgb: 38, 38, 38;
+    --text-color: var(--gray-950);
+    --text-color-rgb: 2, 6, 23;
     --text-color-light: var(--gray-400);
     --text-color-dark: var(--blue-gray-800); /* deprecated: kept for backward compatibility, unused internally */
     --box-shadow-lg: var(--shadow-lg);
@@ -496,11 +499,33 @@
 
     --link-color: var(--ea-primary);
     --link-color-rgb: 92, 112, 214; /* deprecated: kept for backward compatibility, unused internally */
+    --link-font-weight: var(--font-weight-medium);
     --link-hover-color: color-mix(in oklab, var(--ea-primary) 60%, var(--white));
     --link-hover-color-rgb: 153, 166, 230; /* deprecated: kept for backward compatibility, unused internally */
     --link-hover-decoration: none;
     --link-danger-color: var(--red-600);
     --link-danger-hover-color: var(--red-500);
+
+    /* colors of prose content (.ea-prose and custom pages; see prose.css) */
+    --prose-color: var(--text-color);
+    --prose-heading-color: var(--text-color);
+    --prose-lead-color: var(--text-muted);
+    --prose-link-color: var(--link-color);
+    --prose-bold-color: currentColor;
+    --prose-counter-color: var(--text-muted);
+    --prose-bullet-color: var(--gray-400);
+    --prose-caption-color: var(--text-muted);
+    --prose-quote-color: var(--text-muted);
+    --prose-rule-color: var(--border-color);
+    --prose-th-border-color: var(--gray-300);
+    /* inline code keeps the color of the text around it, on a neutral background
+       derived from that color (like GitHub, shadcn, MDN and the Symfony docs) */
+    --prose-code-color: currentColor;
+    --prose-code-bg: color-mix(in oklab, currentColor 6%, transparent);
+    --prose-pre-color: var(--form-type-text-editor-content-pre-color);
+    --prose-pre-bg: var(--form-type-text-editor-content-pre-bg);
+    --prose-kbd-color: var(--text-color);
+    --prose-mark-bg: color-mix(in oklab, var(--yellow-300) 50%, transparent);
 
     /* the --border-radius-* scale is defined in design-tokens.css, derived from --ea-radius */
     --border-width: 1px;
@@ -918,6 +943,18 @@
     --link-color: var(--ea-primary-text);
     --link-hover-color: color-mix(in oklab, var(--ea-primary-text) 70%, var(--white));
     --link-hover-decoration: none;
+
+    /* --text-muted is too dark for reading text on dark backgrounds (contrast
+       below 4.5:1), so prose uses lighter shades */
+    --prose-lead-color: var(--gray-400);
+    --prose-counter-color: var(--gray-400);
+    --prose-caption-color: var(--gray-400);
+    --prose-quote-color: var(--gray-400);
+    --prose-bullet-color: var(--gray-600);
+    --prose-th-border-color: var(--gray-700);
+    --prose-mark-bg: color-mix(in oklab, var(--yellow-500) 35%, transparent);
+    /* light text on dark backgrounds needs a slightly stronger code background */
+    --prose-code-bg: color-mix(in oklab, currentColor 8%, transparent);
 
     --border-color: var(--gray-800);
 }

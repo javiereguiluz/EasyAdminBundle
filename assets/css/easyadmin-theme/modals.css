@@ -93,13 +93,16 @@
 .modal-body {
     padding: 0;
 }
-.modal-body h4 {
+/* only the title and description written directly in the body (the Modal
+   component props and the h4/p of the confirmation modals); deeper elements
+   (e.g. the contents of an .ea-prose wrapper) keep their own styles */
+.modal-body-content > h4 {
     color: var(--text-color);
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-normal);
 }
-.modal-body p {
+.modal-body-content > p {
     color: var(--text-muted);
 }
 .modal-body-content {

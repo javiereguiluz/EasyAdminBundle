@@ -281,7 +281,7 @@ label.form-check-label {
     display: flex;
     color: var(--form-column-header-color);
     font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--heading-font-weight);
     padding: 0 0 var(--ea-sp-1);
 }
 
@@ -361,7 +361,7 @@ label.form-check-label {
     display: flex;
     color: var(--form-fieldset-header-color);
     font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--heading-font-weight);
     padding: 0 0 var(--ea-sp-2);
 }
 .form-fieldset-header .form-fieldset-title .form-fieldset-title-content.not-collapsible {

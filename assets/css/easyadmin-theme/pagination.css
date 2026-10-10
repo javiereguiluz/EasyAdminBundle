@@ -32,6 +32,7 @@
     }
 }
 .page-item .page-link {
+    font-weight: var(--font-weight-normal);
     white-space: nowrap;
 }
 .page-item.active .page-link,

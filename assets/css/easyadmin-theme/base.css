@@ -26,6 +26,11 @@ body {
     color: var(--text-color);
     font-family: var(--font-family-base);
     font-size: var(--font-size-base);
+    /* grayscale antialiasing on macOS (the only platform where these apply), as
+       shadcn/ui, Radix and most modern UIs do; text looks crisper and lighter,
+       especially light text on dark backgrounds */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Needed because we always add 'fa fa-' to the given icon name, so these
@@ -63,6 +68,7 @@ body[data-ea-icon-prefix="tabler"] span.icon svg {
 
 a {
     color: var(--link-color);
+    font-weight: var(--link-font-weight);
     text-decoration: none;
 }
 a:hover {
@@ -70,11 +76,12 @@ a:hover {
     text-decoration: var(--link-hover-decoration);
 }
 
-/* these Bootstrap components color their own anchors, but their rules live in
+/* these Bootstrap components style their own anchors, but their rules live in
    the 'vendor' layer, so the generic 'a' rules above would always beat them
-   (layer order trumps specificity); hand the color back to Bootstrap's own
-   cascade, which handles all their variants and states (#7768). The second
-   selector is needed because 'a:hover' out-specifies single-class selectors */
+   (layer order trumps specificity); hand the color and font weight back to
+   Bootstrap's own cascade, which handles all their variants and states (#7768).
+   The second selector is needed because 'a:hover' out-specifies single-class
+   selectors */
 :is(
         .alert-link,
         .nav-link,
@@ -96,6 +103,7 @@ a:hover {
         .carousel-control-next
     ):is(:hover, :focus, :active) {
     color: revert-layer;
+    font-weight: revert-layer;
 }
 
 code,
@@ -189,6 +197,7 @@ a.user-menu-wrapper .user-details:hover {
     color: var(--user-name-color);
     cursor: pointer;
     display: flex;
+    font-weight: var(--font-weight-normal);
     -webkit-appearance: none; /* needed for Safari */
 }
 .user-menu-wrapper.user-is-impersonated a.user-details,
@@ -251,6 +260,7 @@ a.user-menu-wrapper .user-details:hover {
 .dropdown-settings .dropdown-settings-button {
     color: var(--dropdown-settings-icon-color);
     font-size: var(--icon-size-md);
+    font-weight: var(--font-weight-normal);
     padding-inline-start: var(--ea-sp-8);
 }
 
@@ -283,6 +293,13 @@ a.user-menu-wrapper .user-details:hover {
 
 .content {
     margin-block-start: 1px;
+}
+/* by default, grid items can't be narrower than the longest line of their
+   contents, so a wide table or code block would make the whole page wider
+   instead of scrolling inside its own element */
+.main-content,
+.content {
+    min-inline-size: 0;
 }
 
 .resizer-handler {
@@ -377,7 +394,7 @@ a.user-menu-wrapper .user-details:hover {
 }
 .content-header-title .title {
     font-size: var(--font-size-xxl);
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--heading-font-weight);
     line-height: var(--line-height-tight);
     margin: 0;
     padding-inline-end: var(--ea-sp-8);
@@ -655,6 +672,7 @@ a.user-menu-wrapper .user-details:hover {
     overflow: hidden;
     padding: var(--ea-sp-2) var(--ea-sp-3);
     font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
     line-height: 1.25rem; /* fixed length: pins the item height for the ellipsis clamp, not a type ratio */
     text-overflow: ellipsis;
 }

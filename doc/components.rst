@@ -276,6 +276,8 @@ overriding backend templates, to match the look of the default interface:
 
     <twig:ea:Icon name="internal:search"/>
 
+.. _components-modal:
+
 Modal
 -----
 
@@ -315,6 +317,11 @@ custom CSS classes to each of those elements:
             <twig:ea:Modal:Close>Close</twig:ea:Modal:Close>
         </twig:block>
     </twig:ea:Modal>
+
+To use the :ref:`prose styles <design-prose>` in the modal contents, add
+the ``ea-prose`` CSS class to an element inside the ``body`` block. Don't add
+it with the ``bodyClass`` prop, because the modal body uses its own layout for
+the title, the description and the contents.
 
 For confirmation-style dialogs, display an icon at the top left of the window
 with the ``icon`` prop, or stacked on top of the contents with ``topIcon``:
