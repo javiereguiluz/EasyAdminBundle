@@ -37,6 +37,19 @@
        set of recipes serve light and dark. */
     --ea-primary-mix-base: var(--white);
     --ea-primary-contrast-base: var(--black);
+
+    /* the typography of prose content (.ea-prose and custom pages; see prose.css):
+       the text size, the line height of body text and the space between blocks.
+       Every vertical gap between prose elements is a multiple of that spacing;
+       indents, paddings and font sizes follow the text size. Override them here or on any
+       prose container (e.g. a '.ea-prose.compact' preset).
+       They are literal values on purpose: a var() here would be resolved on :root
+       and would ignore overrides of the referenced variable on other elements.
+       The optional --ea-prose-font-family, --ea-prose-heading-font-family and
+       --ea-prose-code-font-family knobs are not declared, so prose keeps the backend fonts */
+    --ea-prose-font-size: calc(15em / 14); /* relative to the container: 15px in the 14px backend */
+    --ea-prose-line-height: 1.75;
+    --ea-prose-spacing: 1.143em; /* about 17px with 15px text; resolved on each element that uses it */
 }
 
 .ea-dark-scheme {

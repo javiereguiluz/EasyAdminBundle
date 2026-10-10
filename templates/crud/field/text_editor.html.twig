@@ -16,7 +16,7 @@
                     <h5 class="modal-title">{{ field.label|trans }}</h5>
                     <twig:ea:Button type="button" isInvisible icon="internal:xmark" data-bs-dismiss="modal" aria-label="{{ 'action.close'|trans([], domain: 'EasyAdminBundle') }}" />
                 </div>
-                <div class="modal-body">
+                <div class="modal-body ea-prose">
                     {{ field.formattedValue|nl2br }}
                 </div>
             </div>
