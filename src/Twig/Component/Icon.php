@@ -23,6 +23,9 @@ class Icon
      * The name of the icon (e.g. 'fa-user' for FontAwesome icons or 'internal:delete' for EasyAdmin icons).
      */
     public ?string $name = null;
+    /**
+     * The size of the icon: 'sm', 'md' or 'lg'; when null, the icon follows the size of the surrounding text.
+     */
     public ?Size $size = null;
     private ?string $iconSet = null;
 

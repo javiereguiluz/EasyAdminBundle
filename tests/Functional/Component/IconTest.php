@@ -46,6 +46,13 @@ class IconTest extends AbstractFieldFunctionalTest
         self::assertStringContainsString('<svg', $html);
     }
 
+    public function testSizeOfDropdownItemIcon(): void
+    {
+        $html = $this->renderIcon('<twig:ea:ActionMenu:ActionList:Item label="Edit" url="/edit" icon="fa-solid fa-user" icon:size="lg"/>');
+
+        self::assertMatchesRegularExpression('/<span\s+class="icon ea-icon-lg">\s*<i class="fa-solid fa-user"><\/i>/', $html);
+    }
+
     private function renderIcon(string $template, array $context = []): string
     {
         return static::getContainer()->get('twig')->createTemplate($template)->render($context);
