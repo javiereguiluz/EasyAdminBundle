@@ -60,6 +60,17 @@ body[data-ea-icon-prefix="tabler"] span.icon svg {
     max-block-size: 1.15em;
     max-inline-size: 1.15em;
 }
+/* !important because an explicit size must win over the theme rules that size
+   icons through deep selectors (e.g. '.datagrid .dropdown-actions > .dropdown-toggle .icon') */
+.icon.ea-icon-sm {
+    font-size: var(--icon-size-sm) !important;
+}
+.icon.ea-icon-md {
+    font-size: var(--icon-size-md) !important;
+}
+.icon.ea-icon-lg {
+    font-size: var(--icon-size-lg) !important;
+}
 
 a {
     color: var(--link-color);
