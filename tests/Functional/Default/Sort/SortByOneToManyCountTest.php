@@ -42,9 +42,12 @@ class SortByOneToManyCountTest extends AbstractCrudTestCase
         $this->client->followRedirects();
 
         foreach (self::BLOG_POST_COUNT_BY_USER_NAME as $name => $blogPostCount) {
-            $user = UserFactory::createOne(['name' => $name]);
-            // created after their author, so the blog posts don't create other users
-            BlogPostFactory::createMany($blogPostCount, ['author' => $user]);
+            // created from the user side because, with ['author' => $user], Foundry < 2.11.1
+            // leaves only the last blog post in the in-memory collection of the user
+            UserFactory::createOne([
+                'name' => $name,
+                'blogPosts' => BlogPostFactory::new()->many($blogPostCount),
+            ]);
         }
     }
 
