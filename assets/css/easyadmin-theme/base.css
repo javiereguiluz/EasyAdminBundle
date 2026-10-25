@@ -26,7 +26,6 @@ body {
     color: var(--text-color);
     font-family: var(--font-family-base);
     font-size: var(--font-size-base);
-    font-size-adjust: var(--font-size-adjust-base);
     /* grayscale antialiasing on macOS (the only platform where these apply), as
        shadcn/ui, Radix and most modern UIs do; text looks crisper and lighter,
        especially light text on dark backgrounds */
@@ -49,21 +48,6 @@ i.fal {
 }
 i.fad {
     font-family: "Font Awesome 6 Duotone", sans-serif;
-}
-/* font-size-adjust is inherited, and resizing icon fonts by their x-height
-   would make the icons bigger or smaller */
-.fa,
-.fas,
-.far,
-.fab,
-.fal,
-.fad,
-.fa-solid,
-.fa-regular,
-.fa-brands,
-.fa-classic,
-.fa-sharp {
-    font-size-adjust: none;
 }
 span.icon {
     display: inline-block;
@@ -147,12 +131,6 @@ pre {
 }
 pre {
     line-height: var(--line-height-relaxed);
-}
-code,
-kbd,
-pre,
-samp {
-    font-size-adjust: var(--font-size-adjust-monospace);
 }
 
 /* Needed to provide BC compatibility because

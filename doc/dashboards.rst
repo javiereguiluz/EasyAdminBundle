@@ -335,9 +335,9 @@ EasyAdmin applies some optimizations to make fonts fast and stable:
 * Fonts are split in parts for each group of languages (latin, cyrillic, greek,
   etc.). Browsers only download the parts used by each page, so a page in
   English only downloads the latin part;
-* Each font looks different at the same size (some fonts have taller lowercase
-  letters than others). EasyAdmin resizes all fonts automatically, so the
-  backend looks the same with any font;
+* While a bundled font loads, the backend uses a system font adjusted to the
+  same width and height, so the page contents don't move when the font is
+  ready;
 * The languages not supported by the selected font (e.g. Arabic, Hebrew or
   Chinese) are displayed with the fonts of the operating system.
 

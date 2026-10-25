@@ -482,15 +482,19 @@
             const knobs = {
                 antialiasing: { label: 'Antialiasing', options: ['Yes', 'No'] },
                 legibility: { label: 'optimizeLegibility', options: ['Yes', 'No'] },
-                font: { label: 'Font', options: ['System', 'Inter', 'Geist', 'IBM Plex'] },
+                font: { label: 'Font', options: ['System', 'Inter', 'Geist', 'IBM Plex', 'Noto Sans'] },
                 text: { label: 'Text color', options: ['950', '900', '800'] },
                 linkWeight: { label: 'Link weight', options: ['400', '500', '600'] },
+                rowHeight: { label: 'Row height', options: ['38', '41', '44'] },
+                titleSize: { label: 'Page title', options: ['28', '24', '22', '20'] },
             };
             const fonts = {
                 'System': 'var(--font-family-system-sans-serif)',
                 'Inter': '"Inter Variable", "Inter Variable Fallback", var(--font-family-system-sans-serif)',
                 'Geist': '"Geist Variable", "Geist Variable Fallback", var(--font-family-system-sans-serif)',
                 'IBM Plex': '"IBM Plex Sans Variable", "IBM Plex Sans Variable Fallback", var(--font-family-system-sans-serif)',
+                // not bundled: loaded from the same package that would be bundled
+                'Noto Sans': '"Noto Sans Variable", var(--font-family-system-sans-serif)',
             };
             // light step -> its mirror in dark mode
             const textColors = {
@@ -501,6 +505,18 @@
             try { state = JSON.parse(localStorage.getItem('ea-debug-knobs')) || {}; } catch (e) {}
 
             const apply = () => {
+                // the rows are 38px tall by default; the height of a table row works as its minimum height
+                let knobStyle = document.getElementById('ea-debug-knobs-style');
+                if (null === knobStyle) {
+                    knobStyle = document.createElement('style');
+                    knobStyle.id = 'ea-debug-knobs-style';
+                    document.head.append(knobStyle);
+                }
+                const rowHeight = state.rowHeight ?? '38';
+                // the page title is 24px on small screens and 28px on large ones
+                const titleSize = state.titleSize ?? '28';
+                knobStyle.textContent = ('38' === rowHeight ? '' : `.datagrid tbody tr { height: ${rowHeight}px; }`)
+                    + ('28' === titleSize ? '' : `.content-header-title .title { font-size: ${titleSize}px; }`);
                 const targets = [document.documentElement, document.body];
                 const isDark = document.body.classList.contains('ea-dark-scheme') || document.documentElement.classList.contains('ea-dark-scheme');
                 for (const el of targets) {
@@ -510,7 +526,13 @@
                     el.style.setProperty('-moz-osx-font-smoothing', smoothing);
                     if (state.font) {
                         el.style.setProperty('--font-family-base', fonts[state.font]);
-                        el.style.setProperty('--font-size-adjust-base', 'System' === state.font ? 'none' : '0.508');
+                    }
+                    if ('Noto Sans' === state.font && null === document.getElementById('ea-debug-knobs-noto-sans')) {
+                        const link = document.createElement('link');
+                        link.id = 'ea-debug-knobs-noto-sans';
+                        link.rel = 'stylesheet';
+                        link.href = 'https://cdn.jsdelivr.net/npm/@fontsource-variable/noto-sans@5.3.0/wght.css';
+                        document.head.append(link);
                     }
                     if (state.text) {
                         el.style.setProperty('--text-color', textColors[isDark ? 'dark' : 'light'][state.text]);
@@ -525,7 +547,7 @@
                 const root = document.getElementById('ea-debug-knobs');
                 root.replaceChildren();
                 for (const [key, knob] of Object.entries(knobs)) {
-                    const current = state[key] ?? { antialiasing: 'Yes', legibility: 'No', font: 'IBM Plex', text: '950', linkWeight: '500' }[key];
+                    const current = state[key] ?? { antialiasing: 'Yes', legibility: 'No', font: 'IBM Plex', text: '950', linkWeight: '500', rowHeight: '38', titleSize: '28' }[key];
                     const group = document.createElement('div');
                     const label = document.createElement('div');
                     label.textContent = knob.label;

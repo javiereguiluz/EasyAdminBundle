@@ -121,9 +121,7 @@ public function configureDashboard(): Dashboard
 
 The previous font stacks are now defined in the `--font-family-system-sans-serif`
 and `--font-family-system-monospace` CSS variables, which are used at the end of
-`--font-family-sans-serif` and `--font-family-monospace`. All fonts are also
-resized with `font-size-adjust` (`--font-size-adjust-base` and
-`--font-size-adjust-monospace` variables), so they look the same size.
+`--font-family-sans-serif` and `--font-family-monospace`.
 
 ## EasyAdmin 5.4.0
 

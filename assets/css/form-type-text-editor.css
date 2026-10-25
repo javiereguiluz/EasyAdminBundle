@@ -96,7 +96,6 @@
         border-radius: var(--border-radius);
         color: var(--form-type-text-editor-content-pre-color);
         font-family: var(--font-family-monospace);
-        font-size-adjust: var(--font-size-adjust-monospace);
     }
 
     /* there's no way to disable buttons from the Trix toolbar except by hiding them via CSS

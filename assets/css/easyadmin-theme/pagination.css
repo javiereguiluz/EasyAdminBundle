@@ -18,7 +18,6 @@
 }
 .list-pagination-counter {
     color: var(--pagination-color);
-    font-variant-numeric: tabular-nums;
 }
 .list-pagination-counter strong {
     font-weight: var(--font-weight-medium);

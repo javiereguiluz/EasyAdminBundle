@@ -121,17 +121,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
     }
 }
 /* digits of the same width, so the numbers of a column line up */
-.datagrid
-    td:is(
-        .field-id,
-        .field-integer,
-        .field-number,
-        .field-money,
-        .field-percent,
-        .field-date,
-        .field-datetime,
-        .field-time
-    ) {
+.datagrid td:is(.field-id, .field-integer, .field-number, .field-money, .field-percent) {
     font-variant-numeric: tabular-nums;
 }
 .datagrid td.field-avatar {

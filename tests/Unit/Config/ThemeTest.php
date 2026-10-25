@@ -253,7 +253,7 @@ class ThemeTest extends TestCase
         $this->assertFalse($themeDto->hasCssVariables());
     }
 
-    /** @dataProvider provideBundledBaseFonts */
+    #[DataProvider('provideBundledBaseFonts')]
     public function testBundledBaseFont(Font $font, string $fontFamily, string $fileName): void
     {
         $themeDto = Theme::new()->font(base: $font)->getAsDto();
@@ -261,7 +261,6 @@ class ThemeTest extends TestCase
 
         $this->assertSame($font, $themeDto->getBaseFont());
         $this->assertSame(sprintf('"%1$s", "%1$s Fallback", var(--font-family-system-sans-serif)', $fontFamily), $cssVariables['--font-family-sans-serif']);
-        $this->assertSame('0.508', $cssVariables['--font-size-adjust-base']);
         $this->assertArrayNotHasKey('--font-family-monospace', $cssVariables);
         $this->assertSame([sprintf('fonts/%s-latin-wght-normal.woff2', $fileName)], $themeDto->getFontPreloadPaths());
         $this->assertNull($themeDto->getRemoteFontStylesheetUrl());
@@ -281,7 +280,6 @@ class ThemeTest extends TestCase
 
         $this->assertNull($themeDto->getBaseFont());
         $this->assertSame('"JetBrains Mono Variable", "JetBrains Mono Variable Fallback", var(--font-family-system-monospace)', $cssVariables['--font-family-monospace']);
-        $this->assertSame('0.529', $cssVariables['--font-size-adjust-monospace']);
         $this->assertArrayNotHasKey('--font-family-sans-serif', $cssVariables);
         // the monospace font is never preloaded (most pages don't use it)
         $this->assertSame(['fonts/ibm-plex-sans-latin-wght-normal.woff2'], $themeDto->getFontPreloadPaths());
@@ -293,9 +291,7 @@ class ThemeTest extends TestCase
 
         $this->assertSame([
             '--font-family-sans-serif' => 'var(--font-family-system-sans-serif)',
-            '--font-size-adjust-base' => 'none',
             '--font-family-monospace' => 'var(--font-family-system-monospace)',
-            '--font-size-adjust-monospace' => 'none',
         ], $themeDto->getCssVariables()['common']);
         $this->assertSame([], $themeDto->getFontPreloadPaths());
         $this->assertNull($themeDto->getRemoteFontStylesheetUrl());
@@ -308,9 +304,7 @@ class ThemeTest extends TestCase
 
         $this->assertSame('Open Sans', $themeDto->getBaseFont());
         $this->assertSame('"Open Sans", var(--font-family-system-sans-serif)', $cssVariables['--font-family-sans-serif']);
-        $this->assertSame('0.508', $cssVariables['--font-size-adjust-base']);
         $this->assertSame('"Fira Code", var(--font-family-system-monospace)', $cssVariables['--font-family-monospace']);
-        $this->assertSame('0.529', $cssVariables['--font-size-adjust-monospace']);
         $this->assertSame([], $themeDto->getFontPreloadPaths());
         $this->assertSame('https://fonts.bunny.net/css2?family=Open+Sans:wght@400;500;600;700&family=Fira+Code:wght@400;500;600;700&display=swap', $themeDto->getRemoteFontStylesheetUrl());
     }
@@ -323,7 +317,7 @@ class ThemeTest extends TestCase
         $this->assertSame('https://fonts.bunny.net/css2?family=Fira+Code:wght@400;500;600;700&display=swap', $themeDto->getRemoteFontStylesheetUrl());
     }
 
-    /** @dataProvider provideBundledFontNames */
+    #[DataProvider('provideBundledFontNames')]
     public function testRemoteFontNamesOfBundledFontsUseTheBundledFont(string $fontName, Font $font): void
     {
         $themeDto = Theme::new()->font(base: $fontName)->getAsDto();
@@ -340,7 +334,7 @@ class ThemeTest extends TestCase
         yield ['GEIST', Font::Geist];
     }
 
-    /** @dataProvider provideInvalidRemoteFontNames */
+    #[DataProvider('provideInvalidRemoteFontNames')]
     public function testInvalidRemoteFontNamesAreRejected(string $fontName): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -379,7 +373,7 @@ class ThemeTest extends TestCase
         Theme::new()->font(base: Font::JetBrainsMono);
     }
 
-    /** @dataProvider provideNonMonospaceFonts */
+    #[DataProvider('provideNonMonospaceFonts')]
     public function testNonMonospaceFontsCantBeTheMonospaceFont(Font|string $font): void
     {
         $this->expectException(\InvalidArgumentException::class);

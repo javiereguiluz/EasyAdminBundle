@@ -7,7 +7,6 @@
     .CodeMirror {
         font-family: var(--font-family-monospace);
         font-size: var(--font-size-sm);
-        font-size-adjust: var(--font-size-adjust-monospace);
         line-height: var(--line-height-normal);
         block-size: auto;
         min-block-size: 45px;

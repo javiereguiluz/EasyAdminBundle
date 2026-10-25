@@ -26,10 +26,6 @@ final readonly class ThemeDto
     // used by the pages rendered without a dashboard (e.g. the login page)
     public const DEFAULT_FONT_PRELOAD_PATH = 'fonts/'.self::BUNDLED_FONT_FILE_PREFIXES[self::DEFAULT_BASE_FONT->name].'-latin-wght-normal.woff2';
 
-    // the x-height of the system fonts; see --font-size-adjust-* in variables-theme.css
-    private const FONT_SIZE_ADJUST_BASE = '0.508';
-    private const FONT_SIZE_ADJUST_MONOSPACE = '0.529';
-
     // the weights defined by the --font-weight-* CSS variables; Bunny Fonts serves
     // static font files, so the stylesheet only lists the weights used by the theme
     private const REMOTE_FONT_WEIGHTS = '400;500;600;700';
@@ -180,12 +176,10 @@ final readonly class ThemeDto
 
         if (null !== $this->baseFont) {
             $common['--font-family-sans-serif'] = self::getFontFamily($this->baseFont, '--font-family-system-sans-serif');
-            $common['--font-size-adjust-base'] = Font::System === $this->baseFont ? 'none' : self::FONT_SIZE_ADJUST_BASE;
         }
 
         if (null !== $this->monospaceFont) {
             $common['--font-family-monospace'] = self::getFontFamily($this->monospaceFont, '--font-family-system-monospace');
-            $common['--font-size-adjust-monospace'] = Font::System === $this->monospaceFont ? 'none' : self::FONT_SIZE_ADJUST_MONOSPACE;
         }
 
         return ['common' => $common, 'dark' => $dark];

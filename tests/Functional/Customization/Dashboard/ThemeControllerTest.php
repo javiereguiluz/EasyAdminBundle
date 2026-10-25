@@ -86,9 +86,7 @@ class ThemeControllerTest extends AbstractCrudTestCase
         static::assertSame('', $fontPreloads->attr('crossorigin'));
 
         static::assertStringContainsString('--font-family-sans-serif: "Inter Variable", "Inter Variable Fallback", var(--font-family-system-sans-serif);', $headHtmlContents);
-        static::assertStringContainsString('--font-size-adjust-base: 0.508;', $headHtmlContents);
         static::assertStringContainsString('--font-family-monospace: "JetBrains Mono Variable", "JetBrains Mono Variable Fallback", var(--font-family-system-monospace);', $headHtmlContents);
-        static::assertStringContainsString('--font-size-adjust-monospace: 0.529;', $headHtmlContents);
 
         static::assertCount(0, $crawler->filter('head link[rel="preconnect"]'));
         static::assertStringNotContainsString('fonts.bunny.net', $headHtmlContents);
