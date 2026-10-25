@@ -49,6 +49,13 @@
 {% endfor %}
 }
 {% endif %}
+{% if themeCssVariables.light is not empty %}
+:root {
+{% for name, value in themeCssVariables.light %}
+    {{ name }}: {{ value }};
+{% endfor %}
+}
+{% endif %}
 {% if themeCssVariables.dark is not empty %}
 .ea-dark-scheme {
 {% for name, value in themeCssVariables.dark %}

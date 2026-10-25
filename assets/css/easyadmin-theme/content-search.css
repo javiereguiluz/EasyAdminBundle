@@ -18,14 +18,15 @@
     align-items: center;
     display: flex;
     flex: unset;
+    gap: var(--ea-sp-2);
 }
-@media (min-width: 992px) {
-    .content-top .content-search .form-widget {
-        display: block;
-    }
-}
+/* flex centers the SVG inside the icon box; otherwise the generic 'text-bottom'
+   alignment of icons places it lower than the center of the search text */
 .content-top .content-search .content-search-icon {
+    align-items: center;
     color: var(--content-search-icon-color);
+    display: flex;
+    justify-content: center;
     margin-inline-end: 0;
 }
 .content-top .content-search .content-search-reset {

@@ -595,8 +595,7 @@ Start with the design tokens, because each one changes many things consistently:
     /* public/css/admin.css */
     :root,
     .ea-dark-scheme {
-        /* the accent color of buttons, links, switches, etc. Pick one with
-           enough contrast on white, because it is also used for link text */
+        /* the accent color of buttons, switches, active menu items, etc. */
         --ea-primary: #15803d;
         /* the base of the spacing scale; increase it for a more spacious backend,
            decrease it for a more compact one. All paddings, margins, gaps and the

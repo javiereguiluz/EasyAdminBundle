@@ -219,13 +219,20 @@ explained later)::
                 // writing any CSS (all Theme options are optional; you can call only
                 // the ones you need)
                 ->setTheme(Theme::new()
-                    // the accent color of buttons, links, switches, etc. Use the
-                    // hexadecimal, rgb(), hsl() or oklch() formats (no alpha channel).
-                    // The color of the text/icons displayed on top of primary-colored
-                    // elements is computed automatically based on this color.
-                    // The optional 'dark' argument sets a different primary color for
-                    // the dark color scheme (if not set, the same color is used in both)
-                    ->primaryColor('#15803d', dark: 'oklch(0.6 0.2 150)')
+                    // the accent color of buttons, switches, active menu items, etc.
+                    // Use one of the predefined colors, tuned for both color schemes:
+                    // 'neutral' (the default look: almost black in the light scheme and
+                    // almost white in the dark one), 'red', 'orange', 'amber', 'yellow',
+                    // 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo',
+                    // 'violet', 'purple', 'fuchsia', 'pink' or 'rose' (also available as
+                    // the constants of EasyCorp\Bundle\EasyAdminBundle\Config\Option\ThemeColor)
+                    ->primaryColor('emerald')
+                    // instead, you can use any color in the hexadecimal, rgb(), hsl() or
+                    // oklch() formats (no alpha channel). The color of the text/icons on
+                    // top of primary-colored elements is computed automatically. The
+                    // optional 'dark' argument sets a different color for the dark scheme
+                    // (if not set, the same color is used in both color schemes):
+                    // ->primaryColor('#15803d', dark: 'oklch(0.6 0.2 150)')
                     // the base border radius from which all border radius values of the
                     // backend derive. Use a CSS length in 'px' or 'rem' units or one of
                     // these presets: 'none', 'xs', 'sm', 'md' (the default look), 'lg', 'xl'
@@ -241,8 +248,8 @@ explained later)::
                     ->spacing('md')
                     // the gray scale used by all neutral surfaces, borders and text
                     // colors: 'neutral', 'stone' (warmer), 'zinc', 'gray' or 'slate'
-                    // (cooler). The default look uses 'slate' in the light color scheme
-                    // and 'neutral' in the dark one. The optional 'dark' argument sets a
+                    // (cooler). The default look uses 'neutral' in both the light and
+                    // dark color schemes. The optional 'dark' argument sets a
                     // different gray scale for the dark color scheme (if not set, the
                     // same scale is used in both). Instead of magic strings, you can use
                     // the constants of EasyCorp\Bundle\EasyAdminBundle\Config\Option\GrayScale

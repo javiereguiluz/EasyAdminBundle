@@ -3,6 +3,7 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Config;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\GrayScale;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ThemeColor;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Theme;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -46,7 +47,8 @@ class ThemeTest extends TestCase
         yield 'hex with payload' => ['#fff;}'];
         yield '5-digit hex' => ['#12345'];
         yield 'hex with alpha' => ['#ffffff00'];
-        yield 'named color' => ['red'];
+        yield 'CSS named color' => ['tomato'];
+        yield 'predefined color in other case' => ['Blue'];
         yield 'rgb out of range' => ['rgb(300, 0, 0)'];
         yield 'rgb with alpha' => ['rgb(0, 0, 0, 0.5)'];
         yield 'hsl with alpha' => ['hsl(0 0% 0% / 50%)'];
@@ -69,6 +71,88 @@ class ThemeTest extends TestCase
         $this->assertSame('#fff', $themeDto->getPrimaryForeground());
         $this->assertSame('#facc15', $themeDto->getDarkPrimaryColor());
         $this->assertSame('#000', $themeDto->getDarkPrimaryForeground());
+    }
+
+    public function testPredefinedPrimaryColorSetsBothColorSchemes(): void
+    {
+        $themeDto = Theme::new()->primaryColor(ThemeColor::BLUE)->getAsDto();
+
+        $this->assertSame('oklch(0.488 0.243 264.376)', $themeDto->getPrimaryColor());
+        $this->assertSame('oklch(0.97 0.014 254.604)', $themeDto->getPrimaryForeground());
+        $this->assertSame('oklch(0.424 0.199 265.638)', $themeDto->getDarkPrimaryColor());
+        $this->assertSame('oklch(0.97 0.014 254.604)', $themeDto->getDarkPrimaryForeground());
+    }
+
+    public function testPredefinedPrimaryColorWithCustomDarkVariant(): void
+    {
+        $themeDto = Theme::new()->primaryColor(ThemeColor::EMERALD, dark: '#facc15')->getAsDto();
+
+        $this->assertSame('oklch(0.508 0.118 165.612)', $themeDto->getPrimaryColor());
+        $this->assertSame('#facc15', $themeDto->getDarkPrimaryColor());
+        $this->assertSame('#000', $themeDto->getDarkPrimaryForeground());
+    }
+
+    public function testCustomPrimaryColorWithPredefinedDarkVariant(): void
+    {
+        $themeDto = Theme::new()->primaryColor('#15803d', dark: ThemeColor::NEUTRAL)->getAsDto();
+
+        $this->assertSame('#15803d', $themeDto->getPrimaryColor());
+        $this->assertSame('oklch(0.922 0 0)', $themeDto->getDarkPrimaryColor());
+        $this->assertSame('oklch(0.205 0 0)', $themeDto->getDarkPrimaryForeground());
+    }
+
+    public function testEveryPredefinedPrimaryColorIsSupported(): void
+    {
+        $colors = (new \ReflectionClass(ThemeColor::class))->getConstants();
+
+        $this->assertCount(18, $colors);
+        foreach ($colors as $color) {
+            $cssVariables = Theme::new()->primaryColor($color)->getAsDto()->getCssVariables();
+
+            $this->assertStringStartsWith('oklch(', $cssVariables['common']['--ea-primary']);
+            $this->assertStringStartsWith('oklch(', $cssVariables['dark']['--ea-primary']);
+        }
+    }
+
+    #[DataProvider('provideLightPrimaryColors')]
+    public function testLightPrimaryColorUsesItsForegroundAsTextInTheLightScheme(string $color, string $expectedTextColor): void
+    {
+        $cssVariables = Theme::new()->primaryColor($color)->getAsDto()->getCssVariables();
+
+        $this->assertSame(['--ea-primary-on-surface' => $expectedTextColor], $cssVariables['light']);
+    }
+
+    public static function provideLightPrimaryColors(): iterable
+    {
+        yield [ThemeColor::YELLOW, 'oklch(0.421 0.095 57.708)'];
+        yield [ThemeColor::LIME, 'oklch(0.405 0.101 131.063)'];
+        yield ['#facc15', '#000'];
+    }
+
+    public function testDarkPrimaryColorIsUsedAsTextInTheLightScheme(): void
+    {
+        $this->assertSame([], Theme::new()->primaryColor(ThemeColor::BLUE)->getAsDto()->getCssVariables()['light']);
+        $this->assertSame([], Theme::new()->primaryColor('#15803d')->getAsDto()->getCssVariables()['light']);
+    }
+
+    public function testPrimaryColorDrawsTheCheckIconsWithItsForeground(): void
+    {
+        $cssVariables = Theme::new()->primaryColor(ThemeColor::YELLOW, dark: '#1e3a8a')->getAsDto()->getCssVariables();
+
+        // the light foreground of yellow is #733e0a and the dark one (for #1e3a8a) is #fff
+        $this->assertStringContainsString('%23733e0a', $cssVariables['common']['--ea-primary-foreground-check-icon']);
+        $this->assertStringContainsString('%23733e0a', $cssVariables['common']['--ea-primary-foreground-radio-icon']);
+        $this->assertStringContainsString('%23ffffff', $cssVariables['dark']['--ea-primary-foreground-check-icon']);
+        // the value is emitted in an HTML template, so it must not contain characters that HTML escaping changes
+        $this->assertDoesNotMatchRegularExpression('/[\'"<>&]/', $cssVariables['common']['--ea-primary-foreground-check-icon']);
+    }
+
+    public function testCustomPrimaryColorUsesTheSameColorInBothSchemes(): void
+    {
+        $cssVariables = Theme::new()->primaryColor('#15803d')->getAsDto()->getCssVariables();
+
+        $this->assertSame('#15803d', $cssVariables['common']['--ea-primary']);
+        $this->assertArrayNotHasKey('--ea-primary', $cssVariables['dark']);
     }
 
     public function testInvalidDarkPrimaryColorIsRejected(): void
@@ -196,7 +280,7 @@ class ThemeTest extends TestCase
         $themeDto = Theme::new()->getAsDto();
 
         $this->assertFalse($themeDto->hasCssVariables());
-        $this->assertSame(['common' => [], 'dark' => []], $themeDto->getCssVariables());
+        $this->assertSame(['common' => [], 'light' => [], 'dark' => []], $themeDto->getCssVariables());
     }
 
     public function testCssVariablesOfFullyConfiguredTheme(): void

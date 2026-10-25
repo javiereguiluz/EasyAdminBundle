@@ -87,6 +87,23 @@ a:hover {
     text-decoration: var(--link-hover-decoration);
 }
 
+/* content links (field values, help texts, etc.) have the same color as the
+   text around them, so they need an underline to stand out; links styled by
+   components always have a class, and the toggles of collapsible sections and
+   modals use data-bs-toggle */
+a:not([class], [data-bs-toggle]),
+a:not([class], [data-bs-toggle]):hover {
+    text-decoration-line: underline;
+    text-decoration-color: var(--link-underline-color);
+    text-underline-offset: 3px;
+}
+a:not([class], [data-bs-toggle]):hover {
+    text-decoration-color: var(--link-hover-underline-color);
+}
+.datagrid thead a:not([class]) {
+    text-decoration: none;
+}
+
 /* these Bootstrap components color their own anchors, but their rules live in
    the 'vendor' layer, so the generic 'a' rules above would always beat them
    (layer order trumps specificity); hand the color back to Bootstrap's own
@@ -138,9 +155,28 @@ pre {
    ========================================================================= */
 @media (min-width: 992px) {
     .wrapper {
+        background: var(--sidebar-bg);
         display: grid;
         grid-template-columns: var(--sidebar-max-width) auto;
         min-block-size: 100vh;
+    }
+
+    /* the page scrolls as a whole (not inside this box), so when the contents
+       are taller than the screen only the top corners are visible at first and
+       the bottom ones appear when scrolling to the end of the page */
+    .main-content {
+        background: var(--body-bg);
+        border: var(--border-width) solid var(--main-content-border-color);
+        border-radius: var(--main-content-border-radius);
+        display: flex;
+        flex-direction: column;
+        margin: var(--main-content-gap);
+        margin-inline-start: 0;
+        min-block-size: calc(100vh - 2 * var(--main-content-gap));
+        min-inline-size: 0;
+    }
+    .main-content > .content-wrapper {
+        flex-grow: 1;
     }
 }
 @media (min-width: 1280px) {
@@ -318,8 +354,9 @@ a.user-menu-wrapper .user-details:hover {
         background: var(--resize-handler-hover-bg);
     }
 }
+/* it stretches to the height of .content-wrapper, which fills .main-content */
 #content-resizer-handler {
-    min-block-size: calc(100vh - var(--ea-sp-28) - var(--lg-content-padding-bottom));
+    min-block-size: 0;
 }
 
 .content-top {

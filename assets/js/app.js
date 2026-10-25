@@ -167,9 +167,13 @@ class App {
             toggler.setAttribute('aria-expanded', 'true');
 
             modalBackdrop = document.createElement('div');
-            modalBackdrop.classList.add('modal-backdrop', 'fade', 'show');
+            modalBackdrop.classList.add('modal-backdrop', 'fade', 'ea-sidebar-backdrop');
             modalBackdrop.onclick = closeSidebar;
             document.body.appendChild(modalBackdrop);
+            // reading the layout makes the browser apply the transparent style first;
+            // otherwise 'show' would be applied at once and the backdrop wouldn't fade in
+            modalBackdrop.getBoundingClientRect();
+            modalBackdrop.classList.add('show');
 
             window.addEventListener('keydown', onKeyDown, true);
         };
@@ -179,7 +183,13 @@ class App {
             toggler.setAttribute('aria-expanded', 'false');
 
             if (modalBackdrop) {
-                modalBackdrop.remove();
+                const closingBackdrop = modalBackdrop;
+                closingBackdrop.classList.remove('show');
+                // getAnimations() is empty when there's no transition (e.g. reduced motion),
+                // so the backdrop is removed right away instead of waiting for 'transitionend'
+                Promise.allSettled(closingBackdrop.getAnimations().map((animation) => animation.finished)).then(() =>
+                    closingBackdrop.remove()
+                );
                 modalBackdrop = null;
             }
 

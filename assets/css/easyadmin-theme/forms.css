@@ -138,6 +138,12 @@ body.ea-dark-scheme .form-widget .form-select {
 .form-check-input:checked {
     background-color: var(--form-type-check-input-checked-bg);
 }
+.form-check-input:checked[type="checkbox"] {
+    --bs-form-check-bg-image: var(--ea-primary-foreground-check-icon);
+}
+.form-check-input:checked[type="radio"] {
+    --bs-form-check-bg-image: var(--ea-primary-foreground-radio-icon);
+}
 .form-check-input:focus {
     box-shadow: var(--form-input-hover-shadow);
 }

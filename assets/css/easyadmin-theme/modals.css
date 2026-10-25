@@ -9,6 +9,18 @@
     -webkit-backdrop-filter: blur(4px);
     transition: opacity var(--ea-duration-fast) var(--ea-ease-in-out);
 }
+.modal-backdrop.ea-sidebar-backdrop {
+    transition: opacity var(--ea-duration-drawer-open) var(--ea-ease-drawer-backdrop);
+}
+.modal-backdrop.ea-sidebar-backdrop:not(.show) {
+    pointer-events: none;
+    transition-duration: var(--ea-duration-drawer-close);
+}
+@media (prefers-reduced-motion: reduce) {
+    .modal-backdrop.ea-sidebar-backdrop {
+        transition: none;
+    }
+}
 
 /* Always center the dialog vertically and horizontally on screen.
    The max-width cap (applied at every viewport, not just ≥576px like Bootstrap's

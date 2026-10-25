@@ -66,6 +66,7 @@
 }
 
 .ea-switch-input:checked ~ .ea-switch-track .ea-switch-thumb {
+    background-color: var(--switch-checked-thumb-bg);
     transform: translateX(calc(var(--ea-switch-width) - var(--ea-switch-thumb-size) - 2 * var(--ea-switch-thumb-inset)));
 }
 
@@ -77,14 +78,17 @@
    colors as the button variants. The unchecked track stays neutral gray */
 .ea-switch-success {
     --switch-checked-bg: var(--switch-success-bg);
+    --switch-checked-thumb-bg: var(--switch-thumb-bg);
     --switch-focus-ring: color-mix(in srgb, var(--switch-success-bg) 35%, transparent);
 }
 .ea-switch-warning {
     --switch-checked-bg: var(--switch-warning-bg);
+    --switch-checked-thumb-bg: var(--switch-thumb-bg);
     --switch-focus-ring: color-mix(in srgb, var(--switch-warning-bg) 35%, transparent);
 }
 .ea-switch-danger {
     --switch-checked-bg: var(--switch-danger-bg);
+    --switch-checked-thumb-bg: var(--switch-thumb-bg);
     --switch-focus-ring: color-mix(in srgb, var(--switch-danger-bg) 35%, transparent);
 }
 

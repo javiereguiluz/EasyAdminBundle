@@ -46,6 +46,7 @@ each class declares itself. A `self` return type means the call is chainable.
 - [Config\Option\SortOrder](#configoptionsortorder)
 - [Config\Option\TextAlign](#configoptiontextalign)
 - [Config\Option\TextDirection](#configoptiontextdirection)
+- [Config\Option\ThemeColor](#configoptionthemecolor)
 - [Config\Theme](#configtheme)
 - [Config\UserMenu](#configusermenu)
 - [Contracts\Controller\CrudControllerInterface](#contractscontrollercrudcontrollerinterface)
@@ -558,6 +559,29 @@ const RIGHT = 'right'
 ```
 const LTR = 'ltr'
 const RTL = 'rtl'
+```
+
+## Config\Option\ThemeColor
+
+```
+const AMBER = 'amber'
+const BLUE = 'blue'
+const CYAN = 'cyan'
+const EMERALD = 'emerald'
+const FUCHSIA = 'fuchsia'
+const GREEN = 'green'
+const INDIGO = 'indigo'
+const LIME = 'lime'
+const NEUTRAL = 'neutral'
+const ORANGE = 'orange'
+const PINK = 'pink'
+const PURPLE = 'purple'
+const RED = 'red'
+const ROSE = 'rose'
+const SKY = 'sky'
+const TEAL = 'teal'
+const VIOLET = 'violet'
+const YELLOW = 'yellow'
 ```
 
 ## Config\Theme

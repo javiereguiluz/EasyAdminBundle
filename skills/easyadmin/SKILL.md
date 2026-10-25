@@ -124,14 +124,14 @@ the same pages are installed locally under `vendor/easycorp/easyadmin-bundle/doc
 - Every menu item accepts `setPermission()`, `setLinkTarget('_blank')`,
   `setLinkRel()`, `setBadge()`, `setCssClass()`, `setQueryParameter()` and
   `setTranslationParameters()`. The parent of a submenu links to nothing; call
-  `keepOpen()` on it to render it expanded. <!-- src/Config/Menu/MenuItemTrait.php::setPermission; src/Config/Menu/SubMenuItem.php::keepOpen; doc/dashboards.rst:651-656 -->
+  `keepOpen()` on it to render it expanded. <!-- src/Config/Menu/MenuItemTrait.php::setPermission; src/Config/Menu/SubMenuItem.php::keepOpen; doc/dashboards.rst:658-663 -->
 - `index()` belongs to the dashboard interface: do not add arguments to it.
-  Inject services through the constructor. <!-- src/Contracts/Controller/DashboardControllerInterface.php::index; doc/dashboards.rst:294-298 -->
+  Inject services through the constructor. <!-- src/Contracts/Controller/DashboardControllerInterface.php::index; doc/dashboards.rst:301-305 -->
 - To open a CRUD page instead of a dashboard, redirect from `index()`:
-  `return $this->redirectToRoute('admin_product_index');`. <!-- src/Resources/skeleton/dashboard.tpl:14-19; doc/dashboards.rst:325-330 -->
+  `return $this->redirectToRoute('admin_product_index');`. <!-- src/Resources/skeleton/dashboard.tpl:14-19; doc/dashboards.rst:332-337 -->
 - `Dashboard::new()` options: `setTitle()`, `setFaviconPath()`, `setLocales()`,
   `setTranslationDomain()`, `setDefaultColorScheme()`, `disableDarkMode()`,
-  `setTheme()`. EasyAdmin never translates the contents stored in entities. <!-- src/Config/Dashboard.php::setLocales; doc/dashboards.rst:861-865 -->
+  `setTheme()`. EasyAdmin never translates the contents stored in entities. <!-- src/Config/Dashboard.php::setLocales; doc/dashboards.rst:868-872 -->
 <!-- rules:end -->
 
 ## CRUD controller

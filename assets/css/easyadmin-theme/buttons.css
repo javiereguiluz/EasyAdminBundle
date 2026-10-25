@@ -339,21 +339,22 @@
 }
 
 /* Link-style buttons (e.g. the "add new item" / "delete item" buttons of collection fields).
-   Defined explicitly so they use EasyAdmin's link colors instead of the Bootstrap link colors
-   that would otherwise leak in through the --bs-btn-* bridge above. */
+   Defined explicitly so they use the primary color instead of the Bootstrap link colors
+   that would otherwise leak in through the --bs-btn-* bridge above (links use the text color,
+   but these are actions, like the 'link' variant of shadcn/ui buttons). */
 .btn-link,
 .btn-link.btn.disabled,
 .btn-link.btn:disabled {
     --button-box-shadow: none;
     --button-bg: transparent;
-    --button-color: var(--link-color);
+    --button-color: var(--color-primary);
     --button-icon-color: inherit;
     --button-border-color: transparent;
     --button-hover-bg: transparent;
-    --button-hover-color: var(--link-hover-color);
+    --button-hover-color: var(--color-primary);
     --button-hover-border-color: transparent;
     --button-active-box-shadow: none;
-    --button-active-color: var(--link-hover-color);
+    --button-active-color: var(--color-primary);
     --button-active-bg: transparent;
     --button-active-border-color: transparent;
 }
@@ -588,7 +589,7 @@ fieldset:disabled a.btn {
    file (e.g. disabled anchor buttons, which remain focusable); on regular buttons that rule wins
    because it has a higher specificity */
 .btn:focus-visible {
-    outline: var(--ea-focus-ring-width) solid var(--link-color);
+    outline: var(--ea-focus-ring-width) solid var(--button-focus-outline-color);
     outline-offset: 2px;
 }
 

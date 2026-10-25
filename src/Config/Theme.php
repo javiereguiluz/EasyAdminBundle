@@ -3,6 +3,7 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Config;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\GrayScale;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ThemeColor;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\ThemeDto;
 use EasyCorp\Bundle\EasyAdminBundle\Util\ThemeColorCalculator;
 
@@ -42,6 +43,32 @@ final class Theme
         GrayScale::SLATE => '--blue-gray-',
     ];
 
+    // the shadcn/ui color themes: each value is [light color, light foreground,
+    // dark color, dark foreground]; the chromatic colors use the Tailwind 700
+    // shade in the light scheme and the 800 shade in the dark one (yellow and
+    // lime use lighter shades with dark text), and 'neutral' is almost black in
+    // the light scheme and almost white in the dark one
+    private const PRIMARY_COLOR_PRESETS = [
+        ThemeColor::NEUTRAL => ['oklch(0.205 0 0)', 'oklch(0.985 0 0)', 'oklch(0.922 0 0)', 'oklch(0.205 0 0)'],
+        ThemeColor::RED => ['oklch(0.505 0.213 27.518)', 'oklch(0.971 0.013 17.38)', 'oklch(0.444 0.177 26.899)', 'oklch(0.971 0.013 17.38)'],
+        ThemeColor::ORANGE => ['oklch(0.553 0.195 38.402)', 'oklch(0.98 0.016 73.684)', 'oklch(0.47 0.157 37.304)', 'oklch(0.98 0.016 73.684)'],
+        ThemeColor::AMBER => ['oklch(0.555 0.163 48.998)', 'oklch(0.987 0.022 95.277)', 'oklch(0.473 0.137 46.201)', 'oklch(0.987 0.022 95.277)'],
+        ThemeColor::YELLOW => ['oklch(0.852 0.199 91.936)', 'oklch(0.421 0.095 57.708)', 'oklch(0.795 0.184 86.047)', 'oklch(0.421 0.095 57.708)'],
+        ThemeColor::LIME => ['oklch(0.841 0.238 128.85)', 'oklch(0.405 0.101 131.063)', 'oklch(0.768 0.233 130.85)', 'oklch(0.405 0.101 131.063)'],
+        ThemeColor::GREEN => ['oklch(0.527 0.154 150.069)', 'oklch(0.982 0.018 155.826)', 'oklch(0.448 0.119 151.328)', 'oklch(0.982 0.018 155.826)'],
+        ThemeColor::EMERALD => ['oklch(0.508 0.118 165.612)', 'oklch(0.979 0.021 166.113)', 'oklch(0.432 0.095 166.913)', 'oklch(0.979 0.021 166.113)'],
+        ThemeColor::TEAL => ['oklch(0.511 0.096 186.391)', 'oklch(0.984 0.014 180.72)', 'oklch(0.437 0.078 188.216)', 'oklch(0.984 0.014 180.72)'],
+        ThemeColor::CYAN => ['oklch(0.52 0.105 223.128)', 'oklch(0.984 0.019 200.873)', 'oklch(0.45 0.085 224.283)', 'oklch(0.984 0.019 200.873)'],
+        ThemeColor::SKY => ['oklch(0.5 0.134 242.749)', 'oklch(0.977 0.013 236.62)', 'oklch(0.443 0.11 240.79)', 'oklch(0.977 0.013 236.62)'],
+        ThemeColor::BLUE => ['oklch(0.488 0.243 264.376)', 'oklch(0.97 0.014 254.604)', 'oklch(0.424 0.199 265.638)', 'oklch(0.97 0.014 254.604)'],
+        ThemeColor::INDIGO => ['oklch(0.457 0.24 277.023)', 'oklch(0.962 0.018 272.314)', 'oklch(0.398 0.195 277.366)', 'oklch(0.962 0.018 272.314)'],
+        ThemeColor::VIOLET => ['oklch(0.491 0.27 292.581)', 'oklch(0.969 0.016 293.756)', 'oklch(0.432 0.232 292.759)', 'oklch(0.969 0.016 293.756)'],
+        ThemeColor::PURPLE => ['oklch(0.496 0.265 301.924)', 'oklch(0.977 0.014 308.299)', 'oklch(0.438 0.218 303.724)', 'oklch(0.977 0.014 308.299)'],
+        ThemeColor::FUCHSIA => ['oklch(0.518 0.253 323.949)', 'oklch(0.977 0.017 320.058)', 'oklch(0.452 0.211 324.591)', 'oklch(0.977 0.017 320.058)'],
+        ThemeColor::PINK => ['oklch(0.525 0.223 3.958)', 'oklch(0.971 0.014 343.198)', 'oklch(0.459 0.187 3.815)', 'oklch(0.971 0.014 343.198)'],
+        ThemeColor::ROSE => ['oklch(0.514 0.222 16.935)', 'oklch(0.969 0.015 12.422)', 'oklch(0.455 0.188 13.697)', 'oklch(0.969 0.015 12.422)'],
+    ];
+
     private ?string $primaryColor = null;
     private ?string $primaryForeground = null;
     private ?string $darkPrimaryColor = null;
@@ -50,6 +77,7 @@ final class Theme
     private ?string $spacing = null;
     private ?string $grayRampPrefix = null;
     private ?string $darkGrayRampPrefix = null;
+    private ?string $primaryOnSurface = null;
 
     private function __construct()
     {
@@ -61,23 +89,47 @@ final class Theme
     }
 
     /**
-     * Sets the accent color of the backend. The optional $dark argument defines
-     * a different primary color for the dark color scheme (a good dark variant
-     * is usually retuned, not just lightened; if not set, the same color is
-     * used in both schemes).
+     * Sets the accent color of the backend. Use one of the ThemeColor constants
+     * ("neutral", "blue", "emerald", etc.) to apply a predefined color tuned for
+     * both color schemes, or any color in the hexadecimal ("#15803d"), "rgb()",
+     * "hsl()" or "oklch()" formats, without an alpha channel.
      *
-     * Colors can use the hexadecimal ("#15803d"), "rgb()", "hsl()" or "oklch()"
-     * formats, without an alpha channel. The color of the text/icons displayed
-     * on top of primary-colored elements is computed automatically based on the
-     * luminance of this color.
+     * The optional $dark argument defines a different primary color for the dark
+     * color scheme (a good dark variant is usually retuned, not just lightened).
+     * If not set, predefined colors use their own dark variant and custom colors
+     * use the same color in both schemes. The color of the text/icons displayed
+     * on top of primary-colored elements is computed automatically for custom
+     * colors and predefined for the ThemeColor ones.
      */
     public function primaryColor(string $color, ?string $dark = null): self
     {
-        $this->primaryColor = self::validateColor($color, 'primaryColor');
-        $this->primaryForeground = ThemeColorCalculator::foregroundFor($this->primaryColor);
+        $preset = self::PRIMARY_COLOR_PRESETS[$color] ?? null;
 
-        $this->darkPrimaryColor = null === $dark ? null : self::validateColor($dark, 'primaryColor');
-        $this->darkPrimaryForeground = null === $this->darkPrimaryColor ? null : ThemeColorCalculator::foregroundFor($this->darkPrimaryColor);
+        if (null === $preset) {
+            $this->primaryColor = self::validateColor($color);
+            $this->primaryForeground = ThemeColorCalculator::foregroundFor($this->primaryColor);
+        } else {
+            [$this->primaryColor, $this->primaryForeground] = $preset;
+        }
+
+        // a light primary (e.g. yellow) is unreadable as text on the light
+        // surfaces of the backend (active menu item, sorted column, etc.), so
+        // those elements use the dark color displayed on top of it instead
+        $this->primaryOnSurface = '#000' === ThemeColorCalculator::foregroundFor($this->primaryColor) ? $this->primaryForeground : null;
+
+        if (null === $dark) {
+            [$this->darkPrimaryColor, $this->darkPrimaryForeground] = null === $preset ? [null, null] : [$preset[2], $preset[3]];
+
+            return $this;
+        }
+
+        $darkPreset = self::PRIMARY_COLOR_PRESETS[$dark] ?? null;
+        if (null === $darkPreset) {
+            $this->darkPrimaryColor = self::validateColor($dark);
+            $this->darkPrimaryForeground = ThemeColorCalculator::foregroundFor($this->darkPrimaryColor);
+        } else {
+            [$this->darkPrimaryColor, $this->darkPrimaryForeground] = [$darkPreset[2], $darkPreset[3]];
+        }
 
         return $this;
     }
@@ -115,8 +167,8 @@ final class Theme
      * scale is used in both schemes).
      *
      * Use one of the GrayScale constants: "neutral", "stone" (warm), "zinc",
-     * "gray" or "slate" (cool). The default look uses "slate" in the light
-     * scheme and "neutral" in the dark scheme.
+     * "gray" or "slate" (cool). The default look uses "neutral" in both the
+     * light and dark schemes.
      */
     public function grays(string $grayScale, ?string $dark = null): self
     {
@@ -137,6 +189,7 @@ final class Theme
             $this->spacing,
             $this->grayRampPrefix,
             $this->darkGrayRampPrefix,
+            $this->primaryOnSurface,
         );
     }
 
@@ -152,7 +205,7 @@ final class Theme
     // the returned values are emitted verbatim inside an inline <style> element,
     // so this validation is a security boundary against CSS injection, not just
     // a usability check: only strictly anchored color grammars are accepted
-    private static function validateColor(string $color, string $optionName): string
+    private static function validateColor(string $color): string
     {
         $color = trim($color);
 
@@ -177,7 +230,7 @@ final class Theme
             }
         }
 
-        throw new \InvalidArgumentException(sprintf('The "%s" value given to the %s option is not a valid color. Use the hexadecimal ("#15803d"), "rgb()", "hsl()" or "oklch()" formats, without an alpha channel.', $color, $optionName));
+        throw new \InvalidArgumentException(sprintf('The "%s" value given to the primaryColor() method is not a valid color. Use the hexadecimal ("#15803d"), "rgb()", "hsl()" or "oklch()" formats, without an alpha channel, or one of these predefined colors: "%s".', $color, implode('", "', array_keys(self::PRIMARY_COLOR_PRESETS))));
     }
 
     /**

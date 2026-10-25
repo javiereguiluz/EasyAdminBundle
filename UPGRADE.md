@@ -1,6 +1,46 @@
 Upgrade Guide
 =============
 
+## EasyAdmin 5.9.0
+
+### New Default Look
+
+The default colors of the backend changed:
+
+* The primary color is now `neutral` (almost black in the light color scheme and
+  almost white in the dark one) instead of indigo;
+* The grays are now neutral (true gray) in both color schemes, instead of slate
+  (blue gray) in the light scheme;
+* Links use the text color; the links inside contents (field values, help texts,
+  etc.) are underlined.
+
+`Theme::primaryColor()` now also accepts the name of a predefined color (e.g.
+`primaryColor('blue')`), tuned for both color schemes. The names are available
+as the constants of the new `ThemeColor` class. To keep the previous colors:
+
+```php
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\GrayScale;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Theme;
+
+public function configureDashboard(): Dashboard
+{
+    return Dashboard::new()
+        // ...
+        ->setTheme(Theme::new()
+            ->primaryColor('hsl(230, 61%, 58%)', dark: 'hsl(224, 84%, 49%)')
+            ->grays(GrayScale::SLATE, dark: GrayScale::NEUTRAL));
+}
+```
+
+To color the links with the primary color again, add this to your own CSS:
+
+```css
+:root, .ea-dark-scheme {
+    --link-color: var(--ea-primary-text);
+    --link-hover-color: var(--ea-primary-strong);
+}
+```
+
 ## EasyAdmin 5.8.0
 
 ### `createEntity()` Can Return `null`

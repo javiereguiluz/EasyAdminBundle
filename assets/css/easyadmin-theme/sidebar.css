@@ -6,26 +6,43 @@
 .sidebar-wrapper {
     position: relative;
 }
+/* in narrow screens the sidebar is a drawer that floats over the page with the
+   same gap, border and radius as the main content box of wide screens; it slides
+   with 'translate' (not 'left') so the browser doesn't recompute the layout on
+   every frame, and the delayed 'visibility' keeps the closed drawer out of the
+   keyboard navigation only after the closing slide ends */
 .ea-sidebar {
+    --ea-sidebar-closed-translate: calc(-100% - var(--main-content-gap) - 2px);
     background: var(--sidebar-bg);
-    block-size: 100%;
+    border: var(--border-width) solid var(--main-content-border-color);
+    border-radius: var(--main-content-border-radius);
+    box-shadow: var(--shadow-lg);
     display: flex;
     flex-direction: column;
-    min-block-size: 100vh;
-    inset-inline-start: calc(0px - 2 * var(--ea-sp-10) - var(--sidebar-max-width));
+    inset-inline-start: var(--main-content-gap);
+    max-inline-size: calc(100vw - 2 * var(--main-content-gap));
     overflow-inline: hidden;
     overflow-block: auto;
     padding: var(--ea-sp-8) var(--ea-sp-10);
     position: fixed;
-    inset-block-start: 0;
-    transition: left var(--ea-duration-slower);
+    inset-block: var(--main-content-gap);
+    transition: translate var(--ea-duration-drawer-close) var(--ea-ease-drawer), visibility 0s linear
+        var(--ea-duration-drawer-close);
+    translate: var(--ea-sidebar-closed-translate) 0;
+    visibility: hidden;
     z-index: calc(var(--zindex-modal-backdrop) + 1);
     inline-size: calc(2 * var(--ea-sp-10) + var(--sidebar-max-width));
     overscroll-behavior: contain; /* needed to not scroll the entire page when reaching the end of this element scroll */
 }
+.ea-sidebar:dir(rtl) {
+    --ea-sidebar-closed-translate: calc(100% + var(--main-content-gap) + 2px);
+}
 @media (min-width: 992px) {
     .ea-sidebar {
-        box-shadow: inset calc(-1 * var(--border-width)) 0 0 var(--sidebar-border-color);
+        block-size: 100%;
+        border: 0;
+        border-radius: 0;
+        min-block-size: 100vh;
         max-inline-size: var(--sidebar-max-width);
         /* 'visible' is required so the sticky footer anchors to the viewport instead
            of the sidebar (any other value turns the sidebar into its scrollport) */
@@ -35,12 +52,16 @@
         z-index: calc(var(--zindex-modal-backdrop) - 1);
         inline-size: initial;
         overscroll-behavior: auto;
+        box-shadow: none;
+        transition: none;
+        translate: none;
+        visibility: visible;
     }
 }
 body.ea-mobile-sidebar-visible .ea-sidebar {
-    box-shadow: 20px 0 25px -5px color-mix(in srgb, var(--black) 10%, transparent), 10px 0 10px -5px
-        color-mix(in srgb, var(--black) 4%, transparent);
-    inset-inline-start: 0;
+    transition: translate var(--ea-duration-drawer-open) var(--ea-ease-drawer);
+    translate: 0 0;
+    visibility: visible;
 }
 
 /* Header
@@ -65,7 +86,8 @@ body.ea-mobile-sidebar-visible .ea-sidebar {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-normal);
-    padding: var(--ea-sp-8) 0 var(--ea-sp-14) 0;
+    /* the top padding aligns the logo text with the search text of the content top bar */
+    padding: calc(var(--ea-sp-14) - 3px) 0 var(--ea-sp-8);
 }
 .ea-sidebar-logo img,
 .ea-sidebar-logo svg {
@@ -103,9 +125,6 @@ body.ea-mobile-sidebar-visible .ea-sidebar {
 }
 @media (min-width: 992px) {
     .ea-sidebar-footer {
-        /* the inset shadow continues the sidebar right border that the footer overlaps */
-        box-shadow: 0 calc(-1 * var(--border-width)) 0 var(--sidebar-border-color), inset calc(-1 * var(--border-width))
-            0 0 var(--sidebar-border-color);
         margin-block-end: 0;
         margin-inline-start: calc(0px - var(--sidebar-padding-left));
         margin-inline-end: calc(0px - var(--sidebar-padding-right));
@@ -674,6 +693,8 @@ body.ea-sidebar-width-compact #sidebar-resizer-handler:dir(rtl) {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .ea-sidebar,
+    body.ea-mobile-sidebar-visible .ea-sidebar,
     .ea-sidebar-submenu,
     .ea-sidebar-item-chevron,
     .ea-sidebar-item-tooltip,
