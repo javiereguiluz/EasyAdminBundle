@@ -89,16 +89,41 @@ contents in an element with the `data-ea-not-prose` attribute:
 
 Other related design changes:
 
-* Headings use the `600` font weight instead of `700`. Change it with the new
-  `--heading-font-weight` CSS variable;
+* Headings use the `600` font weight instead of `700` and the large ones use a
+  tighter letter spacing (new `--heading-font-weight`, `--heading-letter-spacing`);
 * The text of these contents is `15px` with a `1.75` line height (the rest of the
   backend keeps `14px`). Change it with the `--ea-prose-font-size` and
   `--ea-prose-line-height` CSS variables;
-* Light text is darker (`--gray-950`; it was `--gray-800` and `--gray-600` in
-  datagrid cells) and links use the new `--link-font-weight` variable (`500`);
+* Text is darker in light mode (`--gray-950`) and lighter in dark mode (`--gray-50`,
+  muted `--gray-400`); links use the new `--link-font-weight` variable (`500`);
 * The title and description styles of modal windows only apply to the `h4` and
   `p` elements written directly in the modal body, not to the elements nested
   inside other elements.
+
+### The Default Font Is IBM Plex Sans
+
+The backend now displays text with the IBM Plex Sans font, which is bundled with
+EasyAdmin (it doesn't make requests to other websites). To keep using the fonts
+of the operating system, as in previous versions, use the new `font()` method of
+the theme:
+
+```php
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\Font;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Theme;
+
+public function configureDashboard(): Dashboard
+{
+    return Dashboard::new()
+        // ...
+        ->setTheme(Theme::new()->font(base: Font::System));
+}
+```
+
+The previous font stacks are now defined in the `--font-family-system-sans-serif`
+and `--font-family-system-monospace` CSS variables, which are used at the end of
+`--font-family-sans-serif` and `--font-family-monospace`. All fonts are also
+resized with `font-size-adjust` (`--font-size-adjust-base` and
+`--font-size-adjust-monospace` variables), so they look the same size.
 
 ## EasyAdmin 5.4.0
 

@@ -769,7 +769,9 @@ The colors are defined with the ``--prose-*`` theme variables (e.g.
 ``--prose-link-color``, ``--prose-code-color``, ``--prose-rule-color``) of the
 ``variables-theme.css`` file, which you can also override. In addition, the
 ``--heading-font-weight`` theme variable defines the font weight of all the
-headings of the backend (page titles, form fieldsets and prose contents) and
+headings of the backend (page titles, form fieldsets and prose contents), the
+``--heading-letter-spacing`` variable defines the letter spacing of the
+headings of ``18px`` or more and
 the ``--link-font-weight`` variable defines the font weight of links (the
 components rendered as links, such as menu items, dropdown items and pagination
 links, define their own font weight).

@@ -18,6 +18,10 @@
         {% endguard %}
     {% endblock head_metas %}
 
+    {% block head_fonts %}
+        {{ include('@EasyAdmin/includes/_fonts.html.twig', {theme: ea.dashboardTheme, asset_package: ea.assets.defaultAssetPackageName}, with_context: false) }}
+    {% endblock head_fonts %}
+
     {% set page_title_block_output %}{% block page_title %}{{ block('content_title') }}{% endblock %}{% endset %}
     <title>{{ page_title_block_output|striptags|raw }}</title>
 
@@ -34,6 +38,9 @@
        configured by the user, so their CSS can override the theme #}
     {# these lines are not indented on purpose: Twig removes the newline found
        after each tag, so the CSS newlines must belong to the content lines #}
+    {# the values are printed with 'raw' because browsers don't decode HTML entities
+       inside <style> (e.g. the quotes of font names); it's safe because the Theme
+       class only accepts strictly validated values #}
     {% block head_theme %}
         {% set theme = ea.dashboardTheme %}
         {% if theme is not null and theme.hasCssVariables %}
@@ -46,14 +53,14 @@
 {% if themeCssVariables.common is not empty %}
 :root, .ea-dark-scheme {
 {% for name, value in themeCssVariables.common %}
-    {{ name }}: {{ value }};
+    {{ name }}: {{ value|raw }};
 {% endfor %}
 }
 {% endif %}
 {% if themeCssVariables.dark is not empty %}
 .ea-dark-scheme {
 {% for name, value in themeCssVariables.dark %}
-    {{ name }}: {{ value }};
+    {{ name }}: {{ value|raw }};
 {% endfor %}
 }
 {% endif %}

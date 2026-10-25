@@ -2,6 +2,7 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Config;
 
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\Font;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\GrayScale;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\ThemeDto;
 use EasyCorp\Bundle\EasyAdminBundle\Util\ThemeColorCalculator;
@@ -50,6 +51,8 @@ final class Theme
     private ?string $spacing = null;
     private ?string $grayRampPrefix = null;
     private ?string $darkGrayRampPrefix = null;
+    private Font|string|null $baseFont = null;
+    private Font|string|null $monospaceFont = null;
 
     private function __construct()
     {
@@ -126,6 +129,31 @@ final class Theme
         return $this;
     }
 
+    /**
+     * Sets the fonts of the backend: $base is used for all the text and
+     * $monospace for code (e.g. the contents of code fields). By default, the
+     * backend uses IBM Plex Sans for text and the monospace fonts of the
+     * operating system for code (pass Font::System to use the fonts of the
+     * operating system for text too).
+     *
+     * A Font enum case selects a font bundled with EasyAdmin, served by your
+     * own application. A string is a Google Fonts family name, served through
+     * Bunny Fonts (https://fonts.bunny.net), a privacy-friendly mirror of
+     * Google Fonts; if the string is the name of a bundled font (e.g. 'Inter'),
+     * the bundled font is used instead. A null value keeps the default font.
+     *
+     * To use any other font (e.g. a font of your company), load it in a CSS file
+     * added with addCssFile() and override the --font-family-sans-serif and
+     * --font-family-monospace CSS variables.
+     */
+    public function font(Font|string|null $base = null, Font|string|null $monospace = null): self
+    {
+        $this->baseFont = null === $base ? null : self::validateFont($base, monospace: false);
+        $this->monospaceFont = null === $monospace ? null : self::validateFont($monospace, monospace: true);
+
+        return $this;
+    }
+
     public function getAsDto(): ThemeDto
     {
         return new ThemeDto(
@@ -137,7 +165,46 @@ final class Theme
             $this->spacing,
             $this->grayRampPrefix,
             $this->darkGrayRampPrefix,
+            $this->baseFont,
+            $this->monospaceFont,
         );
+    }
+
+    // remote font names are emitted verbatim in a URL and inside an inline
+    // <style> element, so this validation is a security boundary against CSS and
+    // URL injection: only letters, digits and single spaces are accepted, which
+    // is enough for every Google Fonts family name
+    private static function validateFont(Font|string $font, bool $monospace): Font|string
+    {
+        $argumentName = $monospace ? 'monospace' : 'base';
+
+        if (\is_string($font)) {
+            $fontName = trim($font);
+            foreach (Font::cases() as $bundledFont) {
+                if (0 === strcasecmp($bundledFont->value, preg_replace('/\s+/', ' ', $fontName))) {
+                    $font = $bundledFont;
+                    break;
+                }
+            }
+
+            if (\is_string($font)) {
+                if (1 !== preg_match('/^[A-Za-z0-9]+(?: [A-Za-z0-9]+)*$/', $fontName) || \strlen($fontName) > 64) {
+                    throw new \InvalidArgumentException(sprintf('The "%s" value given as the %s font of the font() method is not a valid Google Fonts family name. Use the name of the font as displayed on fonts.google.com, which only contains letters, digits and spaces (e.g. "Open Sans").', $font, $argumentName));
+                }
+
+                return $fontName;
+            }
+        }
+
+        if ($monospace && !\in_array($font, [Font::System, Font::JetBrainsMono], true)) {
+            throw new \InvalidArgumentException(sprintf('The Font::%s font can\'t be used as the monospace font of the font() method because it\'s not a monospace font. Use Font::JetBrainsMono, Font::System or the name of a monospace font of Google Fonts (e.g. "Fira Code").', $font->name));
+        }
+
+        if (!$monospace && Font::JetBrainsMono === $font) {
+            throw new \InvalidArgumentException('The Font::JetBrainsMono font can\'t be used as the base font of the font() method because it\'s a monospace font. Use it as the monospace font instead (e.g. font(monospace: Font::JetBrainsMono)).');
+        }
+
+        return $font;
     }
 
     private static function validateGrayScale(string $grayScale): string

@@ -675,7 +675,7 @@
     background: var(--form-type-autocomplete-optgroup-bg);
     color: var(--form-type-autocomplete-optgroup-color);
     font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-semibold);
 }
 
 .ts-wrapper.multi,

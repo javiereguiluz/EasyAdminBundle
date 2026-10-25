@@ -2,6 +2,7 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Config;
 
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\Font;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\GrayScale;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Theme;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -238,5 +239,161 @@ class ThemeTest extends TestCase
         $this->assertSame($theme, $theme->radius('md'));
         $this->assertSame($theme, $theme->spacing('md'));
         $this->assertSame($theme, $theme->grays(GrayScale::NEUTRAL));
+        $this->assertSame($theme, $theme->font(Font::Inter));
+    }
+
+    public function testDefaultFontsEmitNoCssVariablesAndPreloadIbmPlexSans(): void
+    {
+        $themeDto = Theme::new()->getAsDto();
+
+        $this->assertNull($themeDto->getBaseFont());
+        $this->assertNull($themeDto->getMonospaceFont());
+        $this->assertSame(['fonts/ibm-plex-sans-latin-wght-normal.woff2'], $themeDto->getFontPreloadPaths());
+        $this->assertNull($themeDto->getRemoteFontStylesheetUrl());
+        $this->assertFalse($themeDto->hasCssVariables());
+    }
+
+    /** @dataProvider provideBundledBaseFonts */
+    public function testBundledBaseFont(Font $font, string $fontFamily, string $fileName): void
+    {
+        $themeDto = Theme::new()->font(base: $font)->getAsDto();
+        $cssVariables = $themeDto->getCssVariables()['common'];
+
+        $this->assertSame($font, $themeDto->getBaseFont());
+        $this->assertSame(sprintf('"%1$s", "%1$s Fallback", var(--font-family-system-sans-serif)', $fontFamily), $cssVariables['--font-family-sans-serif']);
+        $this->assertSame('0.508', $cssVariables['--font-size-adjust-base']);
+        $this->assertArrayNotHasKey('--font-family-monospace', $cssVariables);
+        $this->assertSame([sprintf('fonts/%s-latin-wght-normal.woff2', $fileName)], $themeDto->getFontPreloadPaths());
+        $this->assertNull($themeDto->getRemoteFontStylesheetUrl());
+    }
+
+    public static function provideBundledBaseFonts(): iterable
+    {
+        yield [Font::Inter, 'Inter Variable', 'inter'];
+        yield [Font::IbmPlexSans, 'IBM Plex Sans Variable', 'ibm-plex-sans'];
+        yield [Font::Geist, 'Geist Variable', 'geist'];
+    }
+
+    public function testBundledMonospaceFont(): void
+    {
+        $themeDto = Theme::new()->font(monospace: Font::JetBrainsMono)->getAsDto();
+        $cssVariables = $themeDto->getCssVariables()['common'];
+
+        $this->assertNull($themeDto->getBaseFont());
+        $this->assertSame('"JetBrains Mono Variable", "JetBrains Mono Variable Fallback", var(--font-family-system-monospace)', $cssVariables['--font-family-monospace']);
+        $this->assertSame('0.529', $cssVariables['--font-size-adjust-monospace']);
+        $this->assertArrayNotHasKey('--font-family-sans-serif', $cssVariables);
+        // the monospace font is never preloaded (most pages don't use it)
+        $this->assertSame(['fonts/ibm-plex-sans-latin-wght-normal.woff2'], $themeDto->getFontPreloadPaths());
+    }
+
+    public function testSystemFonts(): void
+    {
+        $themeDto = Theme::new()->font(base: Font::System, monospace: Font::System)->getAsDto();
+
+        $this->assertSame([
+            '--font-family-sans-serif' => 'var(--font-family-system-sans-serif)',
+            '--font-size-adjust-base' => 'none',
+            '--font-family-monospace' => 'var(--font-family-system-monospace)',
+            '--font-size-adjust-monospace' => 'none',
+        ], $themeDto->getCssVariables()['common']);
+        $this->assertSame([], $themeDto->getFontPreloadPaths());
+        $this->assertNull($themeDto->getRemoteFontStylesheetUrl());
+    }
+
+    public function testRemoteFonts(): void
+    {
+        $themeDto = Theme::new()->font(base: 'Open Sans', monospace: 'Fira Code')->getAsDto();
+        $cssVariables = $themeDto->getCssVariables()['common'];
+
+        $this->assertSame('Open Sans', $themeDto->getBaseFont());
+        $this->assertSame('"Open Sans", var(--font-family-system-sans-serif)', $cssVariables['--font-family-sans-serif']);
+        $this->assertSame('0.508', $cssVariables['--font-size-adjust-base']);
+        $this->assertSame('"Fira Code", var(--font-family-system-monospace)', $cssVariables['--font-family-monospace']);
+        $this->assertSame('0.529', $cssVariables['--font-size-adjust-monospace']);
+        $this->assertSame([], $themeDto->getFontPreloadPaths());
+        $this->assertSame('https://fonts.bunny.net/css2?family=Open+Sans:wght@400;500;600;700&family=Fira+Code:wght@400;500;600;700&display=swap', $themeDto->getRemoteFontStylesheetUrl());
+    }
+
+    public function testRemoteMonospaceFontKeepsTheDefaultBaseFont(): void
+    {
+        $themeDto = Theme::new()->font(monospace: 'Fira Code')->getAsDto();
+
+        $this->assertSame(['fonts/ibm-plex-sans-latin-wght-normal.woff2'], $themeDto->getFontPreloadPaths());
+        $this->assertSame('https://fonts.bunny.net/css2?family=Fira+Code:wght@400;500;600;700&display=swap', $themeDto->getRemoteFontStylesheetUrl());
+    }
+
+    /** @dataProvider provideBundledFontNames */
+    public function testRemoteFontNamesOfBundledFontsUseTheBundledFont(string $fontName, Font $font): void
+    {
+        $themeDto = Theme::new()->font(base: $fontName)->getAsDto();
+
+        $this->assertSame($font, $themeDto->getBaseFont());
+        $this->assertNull($themeDto->getRemoteFontStylesheetUrl());
+    }
+
+    public static function provideBundledFontNames(): iterable
+    {
+        yield ['Inter', Font::Inter];
+        yield ['inter', Font::Inter];
+        yield [' IBM  Plex  Sans ', Font::IbmPlexSans];
+        yield ['GEIST', Font::Geist];
+    }
+
+    /** @dataProvider provideInvalidRemoteFontNames */
+    public function testInvalidRemoteFontNamesAreRejected(string $fontName): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('is not a valid Google Fonts family name');
+
+        Theme::new()->font(base: $fontName);
+    }
+
+    public static function provideInvalidRemoteFontNames(): iterable
+    {
+        yield 'CSS injection' => ["Inter'); }"];
+        yield 'HTML injection' => ['Inter</style>'];
+        yield 'quotes' => ['"Open Sans"'];
+        yield 'URL injection' => ['Open Sans&family=Roboto'];
+        yield 'URL encoding' => ['Open%20Sans'];
+        yield 'CSS fallback' => ['Open Sans, sans-serif'];
+        yield 'new line' => ["Open\nSans"];
+        yield 'non-ASCII' => ['Ópen Sans'];
+        yield 'empty' => [''];
+        yield 'too long' => [str_repeat('a', 65)];
+    }
+
+    public function testInvalidRemoteMonospaceFontNamesAreRejected(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('given as the monospace font');
+
+        Theme::new()->font(monospace: 'Fira Code;}');
+    }
+
+    public function testMonospaceFontCantBeTheBaseFont(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The Font::JetBrainsMono font can\'t be used as the base font');
+
+        Theme::new()->font(base: Font::JetBrainsMono);
+    }
+
+    /** @dataProvider provideNonMonospaceFonts */
+    public function testNonMonospaceFontsCantBeTheMonospaceFont(Font|string $font): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('can\'t be used as the monospace font');
+
+        Theme::new()->font(monospace: $font);
+    }
+
+    public static function provideNonMonospaceFonts(): iterable
+    {
+        yield [Font::Inter];
+        yield [Font::IbmPlexSans];
+        yield [Font::Geist];
+        // the names of bundled fonts are resolved to the bundled fonts
+        yield ['Geist'];
     }
 }

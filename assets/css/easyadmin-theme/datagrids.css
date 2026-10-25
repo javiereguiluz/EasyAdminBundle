@@ -120,12 +120,22 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
         box-shadow: none;
     }
 }
+/* digits of the same width, so the numbers of a column line up */
+.datagrid
+    td:is(
+        .field-id,
+        .field-integer,
+        .field-number,
+        .field-money,
+        .field-percent,
+        .field-date,
+        .field-datetime,
+        .field-time
+    ) {
+    font-variant-numeric: tabular-nums;
+}
 .datagrid td.field-avatar {
     padding: var(--ea-sp-2) var(--ea-sp-4);
-}
-.datagrid thead .sorted a,
-.datagrid thead .sorted span {
-    font-weight: var(--font-weight-bold);
 }
 .datagrid thead i,
 .datagrid thead .icon {

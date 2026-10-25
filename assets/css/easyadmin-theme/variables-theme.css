@@ -12,10 +12,25 @@
  --------------------------------------------------------------------------- */
 :root,
 .ea-dark-scheme {
-    --font-family-sans-serif:
+    /* the fonts of the operating system, used after the configured font for the
+       scripts it doesn't include (e.g. Arabic, Hebrew or CJK) and selected with
+       Theme::font(base: Font::System) */
+    --font-family-system-sans-serif:
         system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    --font-family-monospace: "JetBrains Mono", ui-monospace, "Roboto Mono", SFMono-Regular, Menlo, Monaco, Consolas,
+    --font-family-system-monospace: ui-monospace, "Roboto Mono", SFMono-Regular, Menlo, Monaco, Consolas,
         "Liberation Mono", "Courier New", monospace;
+    /* the bundled fonts are defined in fonts.css; Theme::font() overrides these */
+    --font-family-sans-serif: "IBM Plex Sans Variable", "IBM Plex Sans Variable Fallback",
+        var(--font-family-system-sans-serif);
+    --font-family-monospace: "JetBrains Mono", var(--font-family-system-monospace);
+    /* different fonts look bigger or smaller at the same font size because their
+       lowercase letters (x-height) are taller or shorter; font-size-adjust
+       resizes any font (including the fallbacks) to the x-height of the system
+       fonts. The values are the x-height/font-size ratios of SF Pro (0.508) and
+       SF Mono (0.529), read from the OS/2 table of the macOS font files.
+       'none' keeps the font as is */
+    --font-size-adjust-base: 0.508;
+    --font-size-adjust-monospace: none;
     --font-family-base: var(--font-family-sans-serif);
 
     --font-size-xs: 12px;
@@ -33,6 +48,9 @@
     /* 600 instead of 700, like GitHub (Primer) and shadcn/ui: it still reads as a
        heading without looking heavy at large sizes */
     --heading-font-weight: var(--font-weight-semibold);
+    /* large text looks loose with the default tracking; applied only to the
+       headings of 18px or more */
+    --heading-letter-spacing: -0.025em;
 
     /* Icons are sized with font-size, because base.css renders them em-relative.
        That makes icon size its own axis: it is not type, so it does not take a
@@ -660,7 +678,6 @@
     --datagrid-noresults-placeholder-bg: var(--gray-700);
     --datagrid-hidden-results-gradient-bg: var(--gray-700);
     --table-thead-color: var(--gray-200);
-    --table-cell-color: var(--gray-300);
     --table-thead-marker-color: var(--gray-500);
     --table-cell-border-color: var(--gray-800);
     --table-hover-cell-bg: var(--gray-900);
@@ -731,7 +748,7 @@
     --form-global-error-bg: transparent;
     --form-global-error-color: var(--red-400);
     --form-global-error-border: var(--border-width) solid var(--red-400);
-    --form-help-color: var(--gray-500);
+    --form-help-color: var(--gray-400);
     --form-help-error-color: var(--gray-200);
     --form-help-active-color: var(--gray-300);
     --form-tabs-border-color: var(--gray-600);
@@ -927,8 +944,8 @@
     --button-invisible-danger-active-color: var(--white);
     --button-invisible-danger-hover-active-bg: #da3633;
 
-    --text-color: var(--gray-300);
-    --text-color-rgb: 212, 212, 212;
+    --text-color: var(--gray-50);
+    --text-color-rgb: 250, 250, 250;
     --text-color-light: var(--gray-400);
     --text-color-dark: var(--gray-200); /* deprecated: kept for backward compatibility, unused internally */
     --box-shadow-lg: var(--shadow-lg);
@@ -977,18 +994,12 @@
     --highlight-color: var(--gray-900);
 
     --text-on-primary: var(--ea-primary-foreground);
-    --text-muted: var(--gray-500);
+    --text-muted: var(--gray-400);
 
     --link-color: var(--ea-primary-text);
     --link-hover-color: color-mix(in oklab, var(--ea-primary-text) 70%, var(--white));
     --link-hover-decoration: none;
 
-    /* --text-muted is too dark for reading text on dark backgrounds (contrast
-       below 4.5:1), so prose uses lighter shades */
-    --prose-lead-color: var(--gray-400);
-    --prose-counter-color: var(--gray-400);
-    --prose-caption-color: var(--gray-400);
-    --prose-quote-color: var(--gray-400);
     --prose-bullet-color: var(--gray-600);
     --prose-th-border-color: var(--gray-700);
     --prose-mark-bg: color-mix(in oklab, var(--yellow-500) 35%, transparent);

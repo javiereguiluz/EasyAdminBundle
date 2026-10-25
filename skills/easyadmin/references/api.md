@@ -38,6 +38,7 @@ each class declares itself. A `self` return type means the call is chainable.
 - [Config\Option\ClickTrigger](#configoptionclicktrigger)
 - [Config\Option\ColorScheme](#configoptioncolorscheme)
 - [Config\Option\EA](#configoptionea)
+- [Config\Option\Font](#configoptionfont)
 - [Config\Option\GrayScale](#configoptiongrayscale)
 - [Config\Option\IconSet](#configoptioniconset)
 - [Config\Option\ReplacedFileBehavior](#configoptionreplacedfilebehavior)
@@ -496,6 +497,16 @@ const ROUTE_PARAMS = 'routeParams'
 const SORT = 'sort'
 ```
 
+## Config\Option\Font
+
+```
+const Geist = …
+const IbmPlexSans = …
+const Inter = …
+const JetBrainsMono = …
+const System = …
+```
+
 ## Config\Option\GrayScale
 
 ```
@@ -565,6 +576,7 @@ const RTL = 'rtl'
 ```
 static new(): self
 
+font(Font|string|null $base = null, Font|string|null $monospace = null): self
 getAsDto(): ThemeDto
 grays(string $grayScale, ?string $dark = null): self
 primaryColor(string $color, ?string $dark = null): self

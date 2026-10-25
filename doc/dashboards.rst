@@ -162,6 +162,7 @@ explained later)::
     use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
     use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
     use EasyCorp\Bundle\EasyAdminBundle\Config\Locale;
+    use EasyCorp\Bundle\EasyAdminBundle\Config\Option\Font;
     use EasyCorp\Bundle\EasyAdminBundle\Config\Theme;
     use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
@@ -246,7 +247,11 @@ explained later)::
                     // different gray scale for the dark color scheme (if not set, the
                     // same scale is used in both). Instead of magic strings, you can use
                     // the constants of EasyCorp\Bundle\EasyAdminBundle\Config\Option\GrayScale
-                    ->grays('zinc', dark: 'stone'))
+                    ->grays('zinc', dark: 'stone')
+                    // the font of the text and the font of code. Use a Font enum case
+                    // for the fonts bundled with EasyAdmin or a string with the name
+                    // of any Google Fonts family (e.g. 'Lexend'). Both are optional
+                    ->font(base: Font::Inter, monospace: Font::JetBrainsMono))
 
                 // by default, all backend URLs are generated as absolute URLs. If you
                 // need to generate relative URLs instead, call this method
@@ -283,6 +288,75 @@ boolean argument (which is ``true`` by default) so you can enable them condition
 The ``setTheme()`` method covers the most common visual customizations without
 writing any CSS. Read :doc:`the Design chapter </design>` to learn how to further
 customize the look of your backend with your own assets and templates.
+
+Fonts
+~~~~~
+
+By default, the backend displays text with the `IBM Plex Sans`_ font and code
+with the monospace fonts of the operating system. Use the ``font()`` method of
+the ``Theme`` object to change them. It defines two optional arguments: ``base``
+(the font of all the text) and ``monospace`` (the font of code, such as the
+contents of the code editor field).
+
+EasyAdmin includes some fonts, which are served by your own application, so
+the browser doesn't make any request to other websites. Select them with the
+cases of the ``Font`` enum::
+
+    use EasyCorp\Bundle\EasyAdminBundle\Config\Option\Font;
+    use EasyCorp\Bundle\EasyAdminBundle\Config\Theme;
+
+    // the bundled fonts for text are Font::Inter, Font::IbmPlexSans and Font::Geist
+    // and the bundled font for code is Font::JetBrainsMono
+    Theme::new()->font(base: Font::Geist, monospace: Font::JetBrainsMono);
+
+    // Font::System uses the fonts of the operating system (Segoe UI on Windows,
+    // San Francisco on macOS, etc.), which were the default fonts before EasyAdmin 5.7
+    Theme::new()->font(base: Font::System);
+
+You can also pass a string with the name of any font from `Google Fonts`_.
+These fonts are loaded from `Bunny Fonts`_, a privacy-friendly mirror of Google
+Fonts that doesn't track users::
+
+    // change only the font of text
+    Theme::new()->font(base: 'Lexend');
+
+    // change only the font of code
+    Theme::new()->font(monospace: 'Fira Code');
+
+If the name is the name of a bundled font (e.g. ``'Inter'``), EasyAdmin uses
+the bundled font instead of loading it from Bunny Fonts.
+
+If your application defines a `Content Security Policy`_, add the
+``https://fonts.bunny.net`` host to its ``style-src`` and ``font-src``
+directives to use Google Fonts.
+
+EasyAdmin applies some optimizations to make fonts fast and stable:
+
+* Fonts are split in parts for each group of languages (latin, cyrillic, greek,
+  etc.). Browsers only download the parts used by each page, so a page in
+  English only downloads the latin part;
+* Each font looks different at the same size (some fonts have taller lowercase
+  letters than others). EasyAdmin resizes all fonts automatically, so the
+  backend looks the same with any font;
+* The languages not supported by the selected font (e.g. Arabic, Hebrew or
+  Chinese) are displayed with the fonts of the operating system.
+
+To use any other font (e.g. the font of your company), load it in a CSS file
+added with :ref:`the addCssFile() method <crud-design-custom-web-assets>` and
+override the ``--font-family-sans-serif`` CSS variable (or the
+``--font-family-monospace`` variable for the font of code):
+
+.. code-block:: css
+
+    /* public/css/admin.css */
+    @font-face {
+        font-family: 'Acme Sans';
+        src: url('/fonts/acme-sans.woff2') format('woff2');
+    }
+
+    :root, .ea-dark-scheme {
+        --font-family-sans-serif: 'Acme Sans', var(--font-family-system-sans-serif);
+    }
 
 Customizing the Dashboard Contents
 ----------------------------------
@@ -1338,3 +1412,7 @@ forms and they will look exactly like the rest of the backend forms:
 .. _`custom Symfony route loader`: https://symfony.com/doc/current/routing/custom_route_loader.html
 .. _`Symfony UX Icons`: https://symfony.com/bundles/ux-icons/current/index.html
 .. _`Symfony Flex`: https://symfony.com/doc/current/setup/flex.html
+.. _`IBM Plex Sans`: https://www.ibm.com/plex/
+.. _`Google Fonts`: https://fonts.google.com/
+.. _`Bunny Fonts`: https://fonts.bunny.net/
+.. _`Content Security Policy`: https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP

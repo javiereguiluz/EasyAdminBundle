@@ -152,13 +152,14 @@
 :where(.ea-prose, body.page-content .content-body) :where(h1) {
     --ea-prose-element-scale: 1.714;
     font-size: calc(var(--ea-prose-element-scale) * 1em);
-    letter-spacing: -0.01em;
+    letter-spacing: var(--heading-letter-spacing);
     line-height: 1.3;
     margin-block-start: var(--ea-prose-spacing);
 }
 :where(.ea-prose, body.page-content .content-body) :where(h2) {
     --ea-prose-element-scale: 1.429;
     font-size: calc(var(--ea-prose-element-scale) * 1em);
+    letter-spacing: var(--heading-letter-spacing);
     line-height: 1.4;
     margin-block-start: calc(var(--ea-prose-spacing) * 1.4);
 }
