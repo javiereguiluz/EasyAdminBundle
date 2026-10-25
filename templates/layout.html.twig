@@ -474,6 +474,91 @@
             {{ htmlContent|raw }}
         {% endfor %}
     {% endblock %}
+
+    {# TEMPORARY typography debug knobs: remove this whole block #}
+    <div id="ea-debug-knobs" style="position: fixed; inset-block-end: 8px; inset-inline-end: 8px; z-index: 99999; display: flex; gap: 16px; padding: 8px 12px; background: #fff; color: #111; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.15); font: 12px/1.3 system-ui, sans-serif; -webkit-font-smoothing: auto;"></div>
+    <script>
+        (() => {
+            const knobs = {
+                antialiasing: { label: 'Antialiasing', options: ['Yes', 'No'] },
+                legibility: { label: 'optimizeLegibility', options: ['Yes', 'No'] },
+                font: { label: 'Font', options: ['System', 'Inter', 'Geist', 'IBM Plex'] },
+                text: { label: 'Text color', options: ['950', '900', '800'] },
+                linkWeight: { label: 'Link weight', options: ['400', '500', '600'] },
+            };
+            const fonts = {
+                'System': 'var(--font-family-system-sans-serif)',
+                'Inter': '"Inter Variable", "Inter Variable Fallback", var(--font-family-system-sans-serif)',
+                'Geist': '"Geist Variable", "Geist Variable Fallback", var(--font-family-system-sans-serif)',
+                'IBM Plex': '"IBM Plex Sans Variable", "IBM Plex Sans Variable Fallback", var(--font-family-system-sans-serif)',
+            };
+            // light step -> its mirror in dark mode
+            const textColors = {
+                light: { '950': 'var(--gray-950)', '900': 'var(--gray-900)', '800': 'var(--gray-800)' },
+                dark: { '950': 'var(--gray-50)', '900': 'var(--gray-100)', '800': 'var(--gray-200)' },
+            };
+            let state = {};
+            try { state = JSON.parse(localStorage.getItem('ea-debug-knobs')) || {}; } catch (e) {}
+
+            const apply = () => {
+                const targets = [document.documentElement, document.body];
+                const isDark = document.body.classList.contains('ea-dark-scheme') || document.documentElement.classList.contains('ea-dark-scheme');
+                for (const el of targets) {
+                    el.style.setProperty('text-rendering', 'Yes' === state.legibility ? 'optimizeLegibility' : '');
+                    const smoothing = 'No' === state.antialiasing ? 'auto' : '';
+                    el.style.setProperty('-webkit-font-smoothing', smoothing);
+                    el.style.setProperty('-moz-osx-font-smoothing', smoothing);
+                    if (state.font) {
+                        el.style.setProperty('--font-family-base', fonts[state.font]);
+                        el.style.setProperty('--font-size-adjust-base', 'System' === state.font ? 'none' : '0.508');
+                    }
+                    if (state.text) {
+                        el.style.setProperty('--text-color', textColors[isDark ? 'dark' : 'light'][state.text]);
+                    }
+                    if (state.linkWeight) {
+                        el.style.setProperty('--link-font-weight', state.linkWeight);
+                    }
+                }
+            };
+
+            const render = () => {
+                const root = document.getElementById('ea-debug-knobs');
+                root.replaceChildren();
+                for (const [key, knob] of Object.entries(knobs)) {
+                    const current = state[key] ?? { antialiasing: 'Yes', legibility: 'No', font: 'IBM Plex', text: '950', linkWeight: '500' }[key];
+                    const group = document.createElement('div');
+                    const label = document.createElement('div');
+                    label.textContent = knob.label;
+                    label.style.cssText = 'font-weight: 600; margin-block-end: 4px;';
+                    const buttons = document.createElement('div');
+                    buttons.style.cssText = 'display: flex; border: 1px solid #bbb; border-radius: 6px; overflow: hidden;';
+                    for (const option of knob.options) {
+                        const button = document.createElement('button');
+                        button.type = 'button';
+                        button.textContent = option;
+                        const active = option === current;
+                        button.style.cssText = `all: unset; cursor: pointer; padding: 3px 9px; font: inherit; border-inline-start: 1px solid #bbb; background: ${active ? '#111' : '#fff'}; color: ${active ? '#fff' : '#111'};`;
+                        button.addEventListener('click', () => {
+                            state[key] = option;
+                            try { localStorage.setItem('ea-debug-knobs', JSON.stringify(state)); } catch (e) {}
+                            apply();
+                            render();
+                        });
+                        buttons.append(button);
+                    }
+                    buttons.firstChild.style.borderInlineStart = '0';
+                    group.append(label, buttons);
+                    root.append(group);
+                }
+            };
+
+            apply();
+            render();
+            new MutationObserver(apply).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+            new MutationObserver(apply).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        })();
+    </script>
+    {# end of TEMPORARY typography debug knobs #}
     </body>
 {% endblock body %}
 </html>
