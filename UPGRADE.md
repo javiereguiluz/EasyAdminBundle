@@ -91,6 +91,7 @@ Other related design changes:
 
 * Headings use the `600` font weight instead of `700` and the large ones use a
   tighter letter spacing (new `--heading-font-weight`, `--heading-letter-spacing`);
+* The page title is `24px` on all screen sizes (it was `28px` on large screens);
 * The text of these contents is `15px` with a `1.75` line height (the rest of the
   backend keeps `14px`). Change it with the `--ea-prose-font-size` and
   `--ea-prose-line-height` CSS variables;

@@ -716,7 +716,7 @@
     align-content: center;
     justify-content: center;
     font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-semibold);
     block-size: var(--ea-sp-7);
     line-height: 0.65;
     padding: 0;

@@ -115,7 +115,7 @@ class ThemeControllerTest extends AbstractCrudTestCase
         $headHtmlContents = $crawler->filter('head')->html();
 
         static::assertSame('https://fonts.bunny.net', $crawler->filter('head link[rel="preconnect"]')->attr('href'));
-        static::assertSame('https://fonts.bunny.net/css2?family=Lexend:wght@400;500;600;700&family=Fira+Code:wght@400;500;600;700&display=swap', $crawler->filter('head link[rel="stylesheet"][href^="https://fonts.bunny.net"]')->attr('href'));
+        static::assertSame('https://fonts.bunny.net/css2?family=Lexend:wght@400;500;600&family=Fira+Code:wght@400;500;600&display=swap', $crawler->filter('head link[rel="stylesheet"][href^="https://fonts.bunny.net"]')->attr('href'));
         static::assertCount(0, $crawler->filter('head link[rel="preload"][as="font"]'));
         static::assertStringContainsString('--font-family-sans-serif: "Lexend", var(--font-family-system-sans-serif);', $headHtmlContents);
         static::assertStringContainsString('--font-family-monospace: "Fira Code", var(--font-family-system-monospace);', $headHtmlContents);

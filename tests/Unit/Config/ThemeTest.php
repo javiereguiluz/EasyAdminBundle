@@ -306,7 +306,7 @@ class ThemeTest extends TestCase
         $this->assertSame('"Open Sans", var(--font-family-system-sans-serif)', $cssVariables['--font-family-sans-serif']);
         $this->assertSame('"Fira Code", var(--font-family-system-monospace)', $cssVariables['--font-family-monospace']);
         $this->assertSame([], $themeDto->getFontPreloadPaths());
-        $this->assertSame('https://fonts.bunny.net/css2?family=Open+Sans:wght@400;500;600;700&family=Fira+Code:wght@400;500;600;700&display=swap', $themeDto->getRemoteFontStylesheetUrl());
+        $this->assertSame('https://fonts.bunny.net/css2?family=Open+Sans:wght@400;500;600&family=Fira+Code:wght@400;500;600&display=swap', $themeDto->getRemoteFontStylesheetUrl());
     }
 
     public function testRemoteMonospaceFontKeepsTheDefaultBaseFont(): void
@@ -314,7 +314,7 @@ class ThemeTest extends TestCase
         $themeDto = Theme::new()->font(monospace: 'Fira Code')->getAsDto();
 
         $this->assertSame(['fonts/ibm-plex-sans-latin-wght-normal.woff2'], $themeDto->getFontPreloadPaths());
-        $this->assertSame('https://fonts.bunny.net/css2?family=Fira+Code:wght@400;500;600;700&display=swap', $themeDto->getRemoteFontStylesheetUrl());
+        $this->assertSame('https://fonts.bunny.net/css2?family=Fira+Code:wght@400;500;600&display=swap', $themeDto->getRemoteFontStylesheetUrl());
     }
 
     #[DataProvider('provideBundledFontNames')]

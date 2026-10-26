@@ -476,17 +476,18 @@
     {% endblock %}
 
     {# TEMPORARY typography debug knobs: remove this whole block #}
-    <div id="ea-debug-knobs" style="position: fixed; inset-block-end: 8px; inset-inline-end: 8px; z-index: 99999; display: flex; gap: 16px; padding: 8px 12px; background: #fff; color: #111; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.15); font: 12px/1.3 system-ui, sans-serif; -webkit-font-smoothing: auto;"></div>
+    <div id="ea-debug-knobs" style="position: fixed; inset-block-end: 8px; inset-inline-end: 8px; z-index: 99999; display: flex; flex-wrap: wrap; max-inline-size: calc(100vw - 16px); gap: 8px 16px; padding: 8px 12px; background: #fff; color: #111; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.15); font: 12px/1.3 system-ui, sans-serif; -webkit-font-smoothing: auto;"></div>
     <script>
         (() => {
             const knobs = {
                 antialiasing: { label: 'Antialiasing', options: ['Yes', 'No'] },
                 legibility: { label: 'optimizeLegibility', options: ['Yes', 'No'] },
-                font: { label: 'Font', options: ['System', 'Inter', 'Geist', 'IBM Plex', 'Noto Sans'] },
+                font: { label: 'Font', options: ['System', 'Inter', 'Geist', 'IBM Plex', 'Fira Sans', 'Roboto', 'Google Sans', 'DM Sans', 'Arimo', 'Archivo', 'Schibsted Grotesk', 'Figtree'] },
+                interOpsz: { label: 'Inter opsz', options: ['14', '18', '22', '32'] },
                 text: { label: 'Text color', options: ['950', '900', '800'] },
                 linkWeight: { label: 'Link weight', options: ['400', '500', '600'] },
                 rowHeight: { label: 'Row height', options: ['38', '41', '44'] },
-                titleSize: { label: 'Page title', options: ['28', '24', '22', '20'] },
+                titleSize: { label: 'Page title', options: ['24', '22', '20'] },
             };
             const fonts = {
                 'System': 'var(--font-family-system-sans-serif)',
@@ -494,7 +495,25 @@
                 'Geist': '"Geist Variable", "Geist Variable Fallback", var(--font-family-system-sans-serif)',
                 'IBM Plex': '"IBM Plex Sans Variable", "IBM Plex Sans Variable Fallback", var(--font-family-system-sans-serif)',
                 // not bundled: loaded from the same package that would be bundled
-                'Noto Sans': '"Noto Sans Variable", var(--font-family-system-sans-serif)',
+                'Roboto': '"Roboto Variable", var(--font-family-system-sans-serif)',
+                'Google Sans': '"Google Sans Variable", var(--font-family-system-sans-serif)',
+                'Fira Sans': '"Fira Sans", var(--font-family-system-sans-serif)',
+                'DM Sans': '"DM Sans Variable", var(--font-family-system-sans-serif)',
+                'Arimo': '"Arimo Variable", var(--font-family-system-sans-serif)',
+                'Archivo': '"Archivo Variable", var(--font-family-system-sans-serif)',
+                'Schibsted Grotesk': '"Schibsted Grotesk Variable", var(--font-family-system-sans-serif)',
+                'Figtree': '"Figtree Variable", var(--font-family-system-sans-serif)',
+            };
+            // Fira Sans has no variable version, so it loads the static files of the theme weights; bold text (700) uses 600
+            const remoteFontStylesheets = {
+                'Roboto': ['https://cdn.jsdelivr.net/npm/@fontsource-variable/roboto@5.3.0/wght.css'],
+                'Google Sans': ['https://cdn.jsdelivr.net/npm/@fontsource-variable/google-sans@5.3.1/wght.css'],
+                'DM Sans': ['https://cdn.jsdelivr.net/npm/@fontsource-variable/dm-sans@5.3.0/wght.css'],
+                'Arimo': ['https://cdn.jsdelivr.net/npm/@fontsource-variable/arimo@5.2.8/wght.css'],
+                'Archivo': ['https://cdn.jsdelivr.net/npm/@fontsource-variable/archivo@5.2.8/wght.css'],
+                'Schibsted Grotesk': ['https://cdn.jsdelivr.net/npm/@fontsource-variable/schibsted-grotesk@5.2.8/wght.css'],
+                'Figtree': ['https://cdn.jsdelivr.net/npm/@fontsource-variable/figtree@5.2.8/wght.css'],
+                'Fira Sans': ['400', '500', '600'].map((weight) => `https://cdn.jsdelivr.net/npm/@fontsource/fira-sans@5.2.7/${weight}.css`),
             };
             // light step -> its mirror in dark mode
             const textColors = {
@@ -513,10 +532,9 @@
                     document.head.append(knobStyle);
                 }
                 const rowHeight = state.rowHeight ?? '38';
-                // the page title is 24px on small screens and 28px on large ones
-                const titleSize = state.titleSize ?? '28';
+                const titleSize = state.titleSize ?? '24';
                 knobStyle.textContent = ('38' === rowHeight ? '' : `.datagrid tbody tr { height: ${rowHeight}px; }`)
-                    + ('28' === titleSize ? '' : `.content-header-title .title { font-size: ${titleSize}px; }`);
+                    + ('24' === titleSize ? '' : `.content-header-title .title { font-size: ${titleSize}px; }`);
                 const targets = [document.documentElement, document.body];
                 const isDark = document.body.classList.contains('ea-dark-scheme') || document.documentElement.classList.contains('ea-dark-scheme');
                 for (const el of targets) {
@@ -524,15 +542,28 @@
                     const smoothing = 'No' === state.antialiasing ? 'auto' : '';
                     el.style.setProperty('-webkit-font-smoothing', smoothing);
                     el.style.setProperty('-moz-osx-font-smoothing', smoothing);
-                    if (state.font) {
+                    if (fonts[state.font]) {
                         el.style.setProperty('--font-family-base', fonts[state.font]);
                     }
-                    if ('Noto Sans' === state.font && null === document.getElementById('ea-debug-knobs-noto-sans')) {
+                    // the bundled Inter only has the wght axis; the opsz file at 14 renders the same as the bundled one
+                    const interOpsz = 'Inter' === state.font ? (state.interOpsz ?? '14') : '14';
+                    if ('14' !== interOpsz && null === document.getElementById('ea-debug-knobs-inter-opsz')) {
                         const link = document.createElement('link');
-                        link.id = 'ea-debug-knobs-noto-sans';
+                        link.id = 'ea-debug-knobs-inter-opsz';
                         link.rel = 'stylesheet';
-                        link.href = 'https://cdn.jsdelivr.net/npm/@fontsource-variable/noto-sans@5.3.0/wght.css';
+                        link.href = 'https://cdn.jsdelivr.net/npm/@fontsource-variable/inter@5.2.8/opsz.css';
                         document.head.append(link);
+                    }
+                    el.style.setProperty('font-variation-settings', '14' === interOpsz ? '' : `"opsz" ${interOpsz}`);
+                    for (const [index, href] of (remoteFontStylesheets[state.font] ?? []).entries()) {
+                        const linkId = `ea-debug-knobs-font-${state.font.replaceAll(' ', '-')}-${index}`;
+                        if (null === document.getElementById(linkId)) {
+                            const link = document.createElement('link');
+                            link.id = linkId;
+                            link.rel = 'stylesheet';
+                            link.href = href;
+                            document.head.append(link);
+                        }
                     }
                     if (state.text) {
                         el.style.setProperty('--text-color', textColors[isDark ? 'dark' : 'light'][state.text]);
@@ -547,7 +578,7 @@
                 const root = document.getElementById('ea-debug-knobs');
                 root.replaceChildren();
                 for (const [key, knob] of Object.entries(knobs)) {
-                    const current = state[key] ?? { antialiasing: 'Yes', legibility: 'No', font: 'IBM Plex', text: '950', linkWeight: '500', rowHeight: '38', titleSize: '28' }[key];
+                    const current = state[key] ?? { antialiasing: 'Yes', legibility: 'No', font: 'IBM Plex', text: '950', linkWeight: '500', rowHeight: '38', titleSize: '24', interOpsz: '14' }[key];
                     const group = document.createElement('div');
                     const label = document.createElement('div');
                     label.textContent = knob.label;

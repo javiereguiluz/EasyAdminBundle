@@ -417,11 +417,6 @@ a.user-menu-wrapper .user-details:hover {
     margin: 0;
     padding-inline-end: var(--ea-sp-8);
 }
-@media (min-width: 992px) {
-    .content-header-title .title {
-        font-size: var(--font-size-xxxl);
-    }
-}
 .content-header-title .title small {
     color: var(--text-muted);
     font-size: var(--font-size-lg);

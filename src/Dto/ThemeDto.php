@@ -26,9 +26,9 @@ final readonly class ThemeDto
     // used by the pages rendered without a dashboard (e.g. the login page)
     public const DEFAULT_FONT_PRELOAD_PATH = 'fonts/'.self::BUNDLED_FONT_FILE_PREFIXES[self::DEFAULT_BASE_FONT->name].'-latin-wght-normal.woff2';
 
-    // the weights defined by the --font-weight-* CSS variables; Bunny Fonts serves
-    // static font files, so the stylesheet only lists the weights used by the theme
-    private const REMOTE_FONT_WEIGHTS = '400;500;600;700';
+    // Bunny Fonts serves static font files, so the stylesheet only lists the weights
+    // used by the theme; bold text (700) uses the 600 file, the closest one available
+    private const REMOTE_FONT_WEIGHTS = '400;500;600';
 
     public function __construct(
         private ?string $primaryColor = null,
