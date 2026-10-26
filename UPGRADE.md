@@ -11,8 +11,9 @@ The default colors of the backend changed:
   almost white in the dark one) instead of indigo;
 * The grays are now neutral (true gray) in both color schemes, instead of slate
   (blue gray) in the light scheme;
-* Links use the text color; the links inside contents (field values, help texts,
-  etc.) are underlined.
+* Links use the text color; the links inside texts (help messages, etc.) are
+  underlined, and the links that are the whole value of a table cell or a detail
+  field look like regular text and are only underlined on hover.
 
 `Theme::primaryColor()` now also accepts the name of a predefined color (e.g.
 `primaryColor('blue')`), tuned for both color schemes. The names are available

@@ -103,6 +103,16 @@ a:not([class], [data-bs-toggle]):hover {
 .datagrid thead a:not([class]) {
     text-decoration: none;
 }
+/* a link that is the whole value of a table cell or a detail field isn't
+   surrounded by text, so it looks like regular text and it's only underlined on
+   hover (tables can have many link columns and already have many lines) */
+:is(.datagrid td, .ea-detail .field-value) > a:not([class], [data-bs-toggle]) {
+    text-decoration-line: none;
+}
+:is(.datagrid td, .ea-detail .field-value) > a:not([class], [data-bs-toggle]):hover {
+    text-decoration-line: underline;
+    text-decoration-color: var(--link-hover-underline-color);
+}
 
 /* these Bootstrap components color their own anchors, but their rules live in
    the 'vendor' layer, so the generic 'a' rules above would always beat them
