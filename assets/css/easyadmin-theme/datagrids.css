@@ -334,10 +334,17 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 }
 
 .datagrid mark {
-    border-radius: var(--border-radius-none);
     background: var(--highlight-bg);
+    border-radius: var(--border-radius);
+    /* each line of a highlighted text that wraps gets its own rounded ends */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
     color: var(--highlight-color);
-    padding: 0;
+    /* the background reaches a bit past the text without moving the words around it */
+    margin-inline: calc(-1 * var(--ea-sp-1));
+    padding: 0 var(--ea-sp-1);
+    text-decoration: underline var(--ea-sp-1) var(--highlight-underline-color);
+    text-underline-offset: var(--ea-sp-3);
 }
 
 .datagrid .header-for-field-boolean {

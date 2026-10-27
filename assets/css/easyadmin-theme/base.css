@@ -195,7 +195,13 @@ pre {
     }
 }
 
+/* in wide screens, the content with the default width is centered (the header
+   with the search box and the user menu keeps using the full width) */
 body:not(.ea-content-width-full) .content-wrapper {
+    /* the explicit width is needed because the auto margins disable the
+       stretching of this element inside its flex container */
+    inline-size: 100%;
+    margin-inline: auto;
     max-inline-size: var(--body-max-width);
 }
 @media (min-width: 992px) {
@@ -272,6 +278,16 @@ a.user-menu-wrapper .user-details:hover {
     max-inline-size: 21px;
     inline-size: 2em;
     text-align: center;
+}
+/* flex centers the icons of the content header vertically; otherwise the generic
+   'text-bottom' alignment of icons places them lower than the center of the text */
+.user-menu-wrapper .user-details span.user-avatar,
+.user-menu-wrapper .user-details span.user-avatar .icon,
+.dropdown-settings .dropdown-settings-button,
+.dropdown-settings .dropdown-settings-button .icon {
+    align-items: center;
+    display: flex;
+    justify-content: center;
 }
 .user-menu-wrapper .dropdown-user-details .user-avatar .icon {
     display: block;
@@ -371,14 +387,8 @@ a.user-menu-wrapper .user-details:hover {
 
 .content-top {
     align-items: center;
-    box-shadow: 0 1px 0 var(--content-top-border-color);
     display: flex;
     padding: var(--ea-sp-2) var(--ea-sp-8) var(--ea-sp-2) var(--content-padding-left); /* 5px 15px 5px */
-}
-@media (max-width: 992px) {
-    .content-top.ea-search-disabled {
-        box-shadow: none;
-    }
 }
 
 @media (min-width: 992px) {
@@ -386,8 +396,7 @@ a.user-menu-wrapper .user-details:hover {
         display: flex;
         block-size: 56px;
         justify-content: space-between;
-        padding: var(--ea-sp-6) calc(var(--lg-content-padding-right) + var(--resize-handler-width)) var(--ea-sp-6)
-            var(--lg-content-padding-left);
+        padding: var(--ea-sp-6);
         position: relative;
     }
 }

@@ -113,12 +113,13 @@
     --resize-handler-width: 10px;
     --content-section-border-color: var(--gray-200);
     --resize-handler-hover-bg: var(--ea-primary-strong);
-    --content-search-input-bg: var(--body-bg);
+    --content-search-bg: var(--gray-100);
+    --content-search-input-bg: transparent;
     --content-search-icon-color: var(--gray-500);
-    --content-search-reset-button-bg: var(--gray-300);
-    --content-search-reset-button-color: var(--gray-600);
-    --content-search-reset-button-hover-bg: var(--gray-600);
-    --content-search-reset-button-hover-color: var(--gray-200);
+    --content-search-reset-button-bg: transparent;
+    --content-search-reset-button-color: var(--gray-500);
+    --content-search-reset-button-hover-bg: var(--gray-200);
+    --content-search-reset-button-hover-color: var(--gray-700);
     --content-top-border-color: var(--gray-200);
     --content-bg: var(--white);
     --content-padding-left: var(--ea-sp-8);
@@ -172,8 +173,8 @@
     --pagination-color: var(--gray-600);
     --pagination-hover-border-color: var(--gray-300);
     --pagination-disabled-color: var(--gray-400);
-    --pagination-active-bg: var(--ea-primary);
-    --pagination-active-color: var(--text-on-primary);
+    --pagination-active-bg: transparent;
+    --pagination-active-color: var(--text-color);
     --field-country-flag-border-color: var(--gray-200);
     --modal-bg: var(--white);
     --modal-border-color: var(--border-secondary-color);
@@ -525,8 +526,10 @@
     --color-danger: #cf222e; /* GitHub red, matches the danger button */
     --color-danger-rgb: 207, 34, 46; /* keep in sync with --color-danger */
 
-    --highlight-bg: var(--yellow-300);
+    /* the highlighted text of search results: a soft amber background */
+    --highlight-bg: var(--amber-200);
     --highlight-color: var(--text-color);
+    --highlight-underline-color: transparent;
 
     --text-on-primary: var(--ea-primary-foreground);
     --text-muted: var(--gray-500);
@@ -575,13 +578,15 @@
         color-mix(in srgb, var(--black) 30%, transparent);
     --shadow-xl: 0 20px 25px -5px color-mix(in srgb, var(--black) 40%, transparent), 0 8px 10px -6px
         color-mix(in srgb, var(--black) 40%, transparent);
-    --body-bg: var(--gray-950);
+    /* the opposite of the light scheme: the page frame is the darkest (deepest)
+       surface and the main content box sits above it */
+    --body-bg: var(--gray-900);
     --responsive-header-bg: var(--gray-800);
     --responsive-header-border-color: var(--gray-600);
     --responsive-header-logo-color: var(--gray-300);
     --responsive-table-label-color: var(--gray-500);
     --responsive-table-row-border-color: var(--gray-700);
-    --sidebar-bg: var(--gray-900);
+    --sidebar-bg: var(--gray-950);
     --sidebar-border-color: var(--gray-800);
     --sidebar-logo-color: var(--gray-200);
     --sidebar-menu-color: var(--gray-300);
@@ -592,10 +597,12 @@
     --sidebar-menu-submenu-color: var(--gray-400);
     --sidebar-menu-header-color: var(--gray-400);
     --sidebar-menu-icon-color: var(--gray-400);
-    --sidebar-menu-active-item-bg: var(--gray-300);
-    --sidebar-menu-active-item-color: var(--gray-950);
+    /* like the light scheme: the hover background is one step lighter than the
+       sidebar and the active item background two steps lighter */
+    --sidebar-menu-active-item-bg: var(--gray-800);
+    --sidebar-menu-active-item-color: var(--color-primary);
     --sidebar-menu-hover-color: var(--ea-primary-text);
-    --sidebar-item-hover-bg: var(--gray-800);
+    --sidebar-item-hover-bg: var(--gray-900);
     --sidebar-item-icon-tile-hover-bg: var(--gray-700);
     --sidebar-badge-dot-bg: var(--indigo-400);
     --sidebar-badge-dot-border-color: var(--indigo-400);
@@ -604,10 +611,11 @@
     --main-content-border-color: var(--gray-800);
     --resize-handler-hover-bg: var(--ea-primary-strong);
     --content-section-border-color: var(--gray-700);
-    --content-search-input-bg: var(--body-bg);
+    --content-search-bg: var(--gray-800);
+    --content-search-input-bg: transparent;
     --content-search-icon-color: var(--gray-500);
-    --content-search-reset-button-bg: var(--gray-800);
-    --content-search-reset-button-color: var(--gray-300);
+    --content-search-reset-button-bg: transparent;
+    --content-search-reset-button-color: var(--gray-400);
     --content-search-reset-button-hover-bg: var(--gray-700);
     --content-search-reset-button-hover-color: var(--gray-200);
     --content-top-border-color: var(--gray-700);
@@ -648,7 +656,7 @@
     --table-cell-color: var(--gray-300);
     --table-thead-marker-color: var(--gray-500);
     --table-cell-border-color: var(--gray-800);
-    --table-hover-cell-bg: var(--gray-900);
+    --table-hover-cell-bg: color-mix(in oklab, var(--gray-800) 50%, var(--gray-900));
     --table-selected-cell-bg: var(--gray-800);
     --table-thead-sorted-color: var(--color-primary);
     --table-thead-sorted-marker-color: var(--color-primary);
@@ -657,8 +665,8 @@
     --datalist-value-color: var(--gray-300);
     --pagination-color: var(--gray-400);
     --pagination-hover-border-color: var(--gray-600);
-    --pagination-active-bg: var(--ea-primary);
-    --pagination-active-color: var(--text-on-primary);
+    --pagination-active-bg: transparent;
+    --pagination-active-color: var(--text-color);
     --field-country-flag-border-color: var(--gray-600);
     --modal-bg: var(--gray-800);
     --modal-border-color: var(--border-secondary-color);
@@ -919,7 +927,7 @@
     --text-color-light: var(--gray-400);
     --text-color-dark: var(--gray-200); /* deprecated: kept for backward compatibility, unused internally */
     --box-shadow-lg: var(--shadow-lg);
-    --content-panel-bg: var(--gray-900);
+    --content-panel-bg: color-mix(in oklab, var(--gray-800) 50%, var(--gray-900));
     --fieldset-bg: var(--blue-gray-50); /* deprecated: kept for backward compatibility, unused internally */
     --code-color: var(--orange-700);
     --code-editor-string-color: var(--blue-300);
@@ -960,8 +968,11 @@
     --color-danger: var(--red-500);
     --color-danger-rgb: 239, 68, 68; /* keep in sync with --color-danger */
 
-    --highlight-bg: var(--yellow-300);
-    --highlight-color: var(--gray-900);
+    /* color backgrounds look muddy on dark surfaces, so the highlighted text
+       uses a yellow color and a soft underline instead */
+    --highlight-bg: transparent;
+    --highlight-color: var(--yellow-300);
+    --highlight-underline-color: color-mix(in oklab, var(--yellow-400) 15%, transparent);
 
     --text-on-primary: var(--ea-primary-foreground);
     --text-muted: var(--gray-500);

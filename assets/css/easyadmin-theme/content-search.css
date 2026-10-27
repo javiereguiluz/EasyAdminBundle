@@ -16,9 +16,17 @@
 }
 .content-top .content-search .form-widget {
     align-items: center;
-    display: flex;
+    border-radius: var(--border-radius-lg);
+    display: inline-flex;
     flex: unset;
     gap: var(--ea-sp-2);
+    padding-inline: var(--ea-sp-5) var(--ea-sp-3);
+}
+/* the subtle background shows the area of the whole search box (icon included)
+   when the user is about to use it or when it has contents */
+.content-top .content-search .form-widget:hover,
+.content-top .content-search .form-widget:has(input:not(:placeholder-shown)) {
+    background: var(--content-search-bg);
 }
 /* flex centers the SVG inside the icon box; otherwise the generic 'text-bottom'
    alignment of icons places it lower than the center of the search text */
@@ -29,12 +37,26 @@
     justify-content: center;
     margin-inline-end: 0;
 }
+/* a square button almost as tall as the search box, with a small gap to its
+   top, bottom and end edges, so its radius is concentric with the radius of
+   the search box */
 .content-top .content-search .content-search-reset {
+    align-items: center;
     background: var(--content-search-reset-button-bg);
-    border-radius: var(--border-radius);
+    block-size: var(--ea-sp-12);
+    border-radius: calc(var(--border-radius-lg) - var(--ea-sp-1));
     color: var(--content-search-reset-button-color);
+    display: flex;
+    flex-shrink: 0;
     font-size: var(--font-size-sm);
-    padding: var(--ea-sp-1) var(--ea-sp-1);
+    inline-size: var(--ea-sp-12);
+    justify-content: center;
+    margin-inline-end: calc(var(--ea-sp-1) - var(--ea-sp-3));
+    padding: 0;
+}
+.content-top .content-search .content-search-reset .icon {
+    display: flex;
+    justify-content: center;
 }
 .content-top .content-search .content-search-reset:hover {
     background: var(--content-search-reset-button-hover-bg);

@@ -35,10 +35,22 @@
     white-space: nowrap;
 }
 .page-item.active .page-link,
+.page-item.active .page-link:focus,
 .page-item.active .page-link:hover {
     background: var(--pagination-active-bg);
     border-color: var(--pagination-active-bg);
     color: var(--pagination-active-color);
+    position: relative;
+}
+/* the rounded bar under the active page, the same marker as the active menu item */
+.page-item.active .page-link::after {
+    background: var(--ea-primary-on-surface);
+    border-radius: var(--border-radius-pill);
+    block-size: var(--ea-sp-1);
+    content: "";
+    inset-block-end: 0;
+    inset-inline: 0;
+    position: absolute;
 }
 .page-item.disabled .page-link {
     background: transparent;
