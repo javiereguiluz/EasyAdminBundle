@@ -133,6 +133,11 @@ return [
         'locale' => 'زمان',
     ],
 
+    'layout' => [
+        'collapse' => 'داخستن',
+        'expand' => 'کردنەوە',
+    ],
+
     'login_page' => [
         'username' => 'ناوی بەکارهێنەر',
         'password' => 'وشەی نهێنی',

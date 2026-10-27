@@ -133,6 +133,11 @@ return [
         'locale' => 'Kalba',
     ],
 
+    'layout' => [
+        'collapse' => 'Suskleisti',
+        'expand' => 'Išskleisti',
+    ],
+
     'login_page' => [
         'username' => 'Vartotojo vardas',
         'password' => 'Slaptažodis',

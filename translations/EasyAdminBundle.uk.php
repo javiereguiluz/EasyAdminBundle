@@ -133,6 +133,11 @@ return [
         'locale' => 'Мова',
     ],
 
+    'layout' => [
+        'collapse' => 'Згорнути',
+        'expand' => 'Розгорнути',
+    ],
+
     'login_page' => [
         'username' => 'Логін',
         'password' => 'Пароль',

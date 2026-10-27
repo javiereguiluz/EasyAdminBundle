@@ -133,6 +133,11 @@ return [
         'locale' => 'لغة',
     ],
 
+    'layout' => [
+        'collapse' => 'طي',
+        'expand' => 'توسيع',
+    ],
+
     'login_page' => [
         'username' => 'إسم المستخدم',
         'password' => 'كلمة السّر',

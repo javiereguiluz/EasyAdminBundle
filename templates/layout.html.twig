@@ -316,6 +316,15 @@
                         {{ sidebar_contents }}
                     </twig:ea:Sidebar>
                 </div>
+                {% set is_sidebar_compact = 'compact' == (ea.crud.sidebarWidth ?? ea.dashboardSidebarWidth ?? 'normal') %}
+                <button type="button" class="ea-layout-toggle ea-layout-toggle-sidebar"
+                        aria-expanded="{{ is_sidebar_compact ? 'false' : 'true' }}"
+                        aria-label="{{ (is_sidebar_compact ? 'layout.expand' : 'layout.collapse')|trans(domain: 'EasyAdminBundle') }}"
+                        data-ea-collapse-label="{{ 'layout.collapse'|trans(domain: 'EasyAdminBundle') }}"
+                        data-ea-expand-label="{{ 'layout.expand'|trans(domain: 'EasyAdminBundle') }}">
+                    <span class="ea-layout-toggle-marker" aria-hidden="true"></span>
+                    <span class="ea-layout-toggle-label" aria-hidden="true">{{ (is_sidebar_compact ? 'layout.expand' : 'layout.collapse')|trans(domain: 'EasyAdminBundle') }}</span>
+                </button>
                 {% block main_content_wrapper %}
                 <section class="main-content">
                     {% set has_search = ea.crud is not null and ea.crud.isSearchEnabled %}
@@ -458,7 +467,17 @@
                             </article>
                         {% endblock content %}
 
-                        <div id="content-resizer-handler" class="resizer-handler resizer-handler-right"></div>
+                        {% set is_content_full = 'full' == (ea.crud.contentWidth ?? ea.dashboardContentWidth ?? 'normal') %}
+                        <div class="ea-layout-toggle-content-rail">
+                            <button type="button" class="ea-layout-toggle ea-layout-toggle-content"
+                                    aria-expanded="{{ is_content_full ? 'true' : 'false' }}"
+                                    aria-label="{{ (is_content_full ? 'layout.collapse' : 'layout.expand')|trans(domain: 'EasyAdminBundle') }}"
+                                    data-ea-collapse-label="{{ 'layout.collapse'|trans(domain: 'EasyAdminBundle') }}"
+                                    data-ea-expand-label="{{ 'layout.expand'|trans(domain: 'EasyAdminBundle') }}">
+                                <span class="ea-layout-toggle-marker" aria-hidden="true"></span>
+                                <span class="ea-layout-toggle-label" aria-hidden="true">{{ (is_content_full ? 'layout.collapse' : 'layout.expand')|trans(domain: 'EasyAdminBundle') }}</span>
+                            </button>
+                        </div>
                     </div>
                 </section>
                 {% endblock main_content_wrapper %}

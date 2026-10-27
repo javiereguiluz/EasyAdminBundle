@@ -133,6 +133,11 @@ return [
         'locale' => '语',
     ],
 
+    'layout' => [
+        'collapse' => '收起',
+        'expand' => '展开',
+    ],
+
     'login_page' => [
         'username' => '用户名',
         'password' => '密码',

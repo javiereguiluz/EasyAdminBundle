@@ -582,14 +582,6 @@ span.icon.ea-sidebar-item-chevron svg {
         opacity: 1;
     }
 
-    /* while hovered, raise the item above the resizer handler that overlays the last
-       pixels of the rail; otherwise the pointer crosses a strip that doesn't belong to
-       the item and the :hover chain (and the flyout) is lost on its way to the panel */
-    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item:hover,
-    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item:focus-within {
-        z-index: 1;
-    }
-
     /* submenus become a flyout panel displayed on the side of the icon; the panel
        overlaps the rail a bit, so the pointer can never fall in a gap between the
        icon and the panel that would close it */
@@ -669,27 +661,6 @@ span.icon.ea-sidebar-item-chevron svg {
         .ea-sidebar-item-link:hover {
         background: var(--sidebar-item-hover-bg);
     }
-}
-
-/* Resizer handler (toggles between the normal and compact modes)
-   ========================================================================= */
-#sidebar-resizer-handler {
-    cursor: w-resize; /* left arrow: clicking collapses the sidebar */
-    position: absolute;
-    inset-block-start: 0;
-    inset-block-end: 0;
-    inset-inline-end: 0;
-    min-block-size: 100vh;
-}
-body.ea-sidebar-width-compact #sidebar-resizer-handler {
-    cursor: e-resize; /* right arrow: clicking expands the sidebar */
-}
-/* cursor keywords are physical, so they must be swapped in RTL layouts */
-#sidebar-resizer-handler:dir(rtl) {
-    cursor: e-resize;
-}
-body.ea-sidebar-width-compact #sidebar-resizer-handler:dir(rtl) {
-    cursor: w-resize;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -133,6 +133,11 @@ return [
         'locale' => 'שפה',
     ],
 
+    'layout' => [
+        'collapse' => 'כיווץ',
+        'expand' => 'הרחבה',
+    ],
+
     'login_page' => [
         'username' => 'שם משתמש',
         'password' => 'סיסמה',

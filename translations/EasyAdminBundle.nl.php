@@ -133,6 +133,11 @@ return [
         'locale' => 'Taal',
     ],
 
+    'layout' => [
+        'collapse' => 'Inklappen',
+        'expand' => 'Uitklappen',
+    ],
+
     'login_page' => [
         'username' => 'Gebruikersnaam',
         'password' => 'Wachtwoord',

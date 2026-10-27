@@ -133,6 +133,11 @@ return [
         'locale' => 'زبان',
     ],
 
+    'layout' => [
+        'collapse' => 'جمع کردن',
+        'expand' => 'باز کردن',
+    ],
+
     'login_page' => [
         'username' => 'نام کاربری',
         'password' => 'رمزعبور',

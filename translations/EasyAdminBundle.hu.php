@@ -133,6 +133,11 @@ return [
         'locale' => 'Nyelv',
     ],
 
+    'layout' => [
+        'collapse' => 'Összecsukás',
+        'expand' => 'Kibontás',
+    ],
+
     'login_page' => [
         'username' => 'Felhasználónév',
         'password' => 'Jelszó',

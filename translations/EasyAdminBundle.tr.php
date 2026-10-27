@@ -133,6 +133,11 @@ return [
         'locale' => 'Dil',
     ],
 
+    'layout' => [
+        'collapse' => 'Daralt',
+        'expand' => 'Genişlet',
+    ],
+
     'login_page' => [
         'username' => 'Kullanıcı adı',
         'password' => 'Şifre',

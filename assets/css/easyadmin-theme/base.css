@@ -354,8 +354,6 @@ a.user-menu-wrapper .user-details:hover {
 }
 @media (min-width: 992px) {
     .content-wrapper {
-        display: grid;
-        grid-template-columns: auto var(--resize-handler-width);
         padding: 0 var(--lg-content-padding-right) var(--lg-content-padding-bottom) var(--lg-content-padding-left);
     }
 }
@@ -364,25 +362,164 @@ a.user-menu-wrapper .user-details:hover {
     margin-block-start: 1px;
 }
 
-.resizer-handler {
+/* The buttons that collapse/expand the sidebar and the content width (like the
+   Stripe dashboard): a short vertical line at the vertical center of the screen
+   that turns into an arrow pointing where the edge will move and shows a label */
+.ea-layout-toggle,
+.ea-layout-toggle-content-rail {
     display: none;
 }
 @media (min-width: 992px) {
-    .resizer-handler {
-        cursor: col-resize;
-        display: block;
-        margin: 0 0 0 var(--ea-sp-4);
-        min-block-size: 100vh;
-        transition: background var(--ea-duration-slower);
-        inline-size: 3px;
+    .ea-layout-toggle {
+        align-items: center;
+        background: none;
+        block-size: var(--ea-sp-32);
+        border: 0;
+        cursor: pointer;
+        display: flex;
+        /* both toggles are centered in the screen area below the content header
+           (the top gap of the content box + the 56px-high .content-top); they use
+           'vh' units because one is 'fixed' and the other one 'sticky', and their '%'
+           units would refer to different boxes (e.g. with a horizontal scrollbar) */
+        inset-block-start: calc(50vh + (var(--main-content-gap) + var(--ea-sp-28)) / 2 - var(--ea-sp-32) / 2);
+        /* the arrow and the label that appear on focus already show the focus */
+        outline: 0;
+        padding: 0;
+        position: fixed;
+        z-index: calc(var(--zindex-modal-backdrop) - 1);
     }
-    .resizer-handler:hover {
-        background: var(--resize-handler-hover-bg);
+    /* both lines are inside the content box, a bit away from its edges (like the
+       Stripe dashboard); to make them easy to click, the buttons cover all the empty
+       space around the lines: the paddings of the content box and of the sidebar,
+       and the gap between the content box and the window edge
+       (--ea-layout-toggle-line-offset is the distance from the button edge to the line) */
+    .ea-layout-toggle-sidebar {
+        --ea-layout-toggle-arrow: 1;
+        --ea-layout-toggle-line-offset: calc(var(--sidebar-padding-right) + var(--ea-sp-4));
+        inline-size: calc(var(--sidebar-padding-right) + var(--lg-content-padding-left) - var(--ea-sp-2));
+        inset-inline-start: calc(var(--sidebar-max-width) - var(--sidebar-padding-right));
+        justify-content: flex-start;
+        padding-inline-start: var(--ea-layout-toggle-line-offset);
+    }
+    /* in the compact sidebar, the items span the whole rail and their submenus open
+       on its side, so the button doesn't cover any part of the rail */
+    body.ea-sidebar-width-compact .ea-layout-toggle-sidebar {
+        --ea-layout-toggle-arrow: -1;
+        --ea-layout-toggle-line-offset: var(--ea-sp-4);
+        inline-size: calc(var(--lg-content-padding-left) - var(--ea-sp-2));
+        inset-inline-start: 64px;
+    }
+    /* the content toggle is displayed next to the element whose width it changes:
+       a column that fills the end padding of .content-wrapper, inside which the
+       toggle sticks to the vertical center of the screen */
+    .content-wrapper {
+        position: relative;
+    }
+    .ea-layout-toggle-content-rail {
+        display: block;
+        inline-size: var(--lg-content-padding-right);
+        inset-block: 0;
+        inset-inline-end: 0;
+        position: absolute;
+    }
+    .ea-layout-toggle-content {
+        --ea-layout-toggle-arrow: -1;
+        --ea-layout-toggle-line-offset: var(--ea-sp-4);
+        inline-size: 100%;
+        justify-content: flex-end;
+        padding-inline-end: var(--ea-layout-toggle-line-offset);
+        position: sticky;
+    }
+    body.ea-content-width-full .ea-layout-toggle-content {
+        --ea-layout-toggle-arrow: 1;
     }
 }
-/* it stretches to the height of .content-wrapper, which fills .main-content */
-#content-resizer-handler {
-    min-block-size: 0;
+
+/* two bars joined at the middle that rotate around that joint to form an arrow:
+   '<' when --ea-layout-toggle-arrow is 1 and '>' when it's -1 */
+.ea-layout-toggle-marker {
+    /* 1 in LTR and -1 in RTL, where the arrow is flipped horizontally */
+    --ea-layout-toggle-direction: 1;
+    block-size: var(--ea-sp-8);
+    inline-size: var(--ea-sp-1);
+    position: relative;
+    transition: translate var(--ea-duration-slow) var(--ea-ease-out);
+}
+.ea-layout-toggle-marker:dir(rtl) {
+    --ea-layout-toggle-direction: -1;
+    scale: -1 1;
+}
+/* the arrow also moves a bit toward where the edge will move */
+.ea-layout-toggle:is(:hover, :focus-visible) .ea-layout-toggle-marker {
+    translate: calc(-1 * var(--ea-layout-toggle-arrow) * var(--ea-layout-toggle-direction) * var(--ea-sp-2)) 0;
+}
+.ea-layout-toggle-marker::before,
+.ea-layout-toggle-marker::after {
+    background: var(--layout-toggle-marker-color);
+    block-size: 50%;
+    content: "";
+    inline-size: 100%;
+    inset-inline-start: 0;
+    position: absolute;
+    transition: rotate var(--ea-duration-fast) linear, background-color var(--ea-duration-fast) linear;
+}
+.ea-layout-toggle-marker::before {
+    border-start-end-radius: var(--border-radius-pill);
+    border-start-start-radius: var(--border-radius-pill);
+    inset-block-start: 0;
+    transform-origin: bottom center;
+}
+.ea-layout-toggle-marker::after {
+    border-end-end-radius: var(--border-radius-pill);
+    border-end-start-radius: var(--border-radius-pill);
+    inset-block-end: 0;
+    transform-origin: top center;
+}
+.ea-layout-toggle:is(:hover, :focus-visible) .ea-layout-toggle-marker::before,
+.ea-layout-toggle:is(:hover, :focus-visible) .ea-layout-toggle-marker::after {
+    background: var(--layout-toggle-marker-hover-color);
+}
+.ea-layout-toggle:is(:hover, :focus-visible) .ea-layout-toggle-marker::before {
+    rotate: calc(var(--ea-layout-toggle-arrow) * 40deg);
+}
+.ea-layout-toggle:is(:hover, :focus-visible) .ea-layout-toggle-marker::after {
+    rotate: calc(var(--ea-layout-toggle-arrow) * -40deg);
+}
+
+.ea-layout-toggle-label {
+    background: var(--layout-toggle-label-bg);
+    border-radius: var(--border-radius);
+    color: var(--layout-toggle-label-color);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    opacity: 0;
+    padding: var(--ea-sp-1) var(--ea-sp-4);
+    pointer-events: none;
+    position: absolute;
+    transition: opacity var(--ea-duration-slow) var(--ea-ease-out), translate var(--ea-duration-slow) var(--ea-ease-out);
+    white-space: nowrap;
+}
+/* the labels are displayed 10px away from the line */
+.ea-layout-toggle-sidebar .ea-layout-toggle-label {
+    inset-inline-start: calc(var(--ea-layout-toggle-line-offset) + var(--ea-sp-6));
+    translate: calc(-1 * var(--ea-sp-1)) 0;
+}
+.ea-layout-toggle-content .ea-layout-toggle-label {
+    inset-inline-end: calc(var(--ea-layout-toggle-line-offset) + var(--ea-sp-6));
+    translate: var(--ea-sp-1) 0;
+}
+.ea-layout-toggle:is(:hover, :focus-visible) .ea-layout-toggle-label {
+    opacity: 1;
+    translate: 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ea-layout-toggle-marker,
+    .ea-layout-toggle-marker::before,
+    .ea-layout-toggle-marker::after,
+    .ea-layout-toggle-label {
+        transition: none;
+    }
 }
 
 .content-top {

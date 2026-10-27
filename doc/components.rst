@@ -459,8 +459,10 @@ block in your dashboard templates.
 
 The sidebar supports two widths: the default one and a
 :ref:`compact mode <dashboard-configuration>` that only displays the item
-icons. Users switch between them by clicking on the sidebar edge, and the
-selected mode is persisted in the browser local storage. In compact mode,
+icons. Users switch between them with the button displayed in the middle of
+the sidebar edge (the main content width has a similar button on the other
+side of the page), and the selected mode is persisted in the browser local
+storage. In compact mode,
 hovering an item shows a tooltip with its label, hovering an item with a
 submenu shows the submenu as a flyout panel, and the footer is hidden
 (arbitrary contents can't fit in the icon rail).

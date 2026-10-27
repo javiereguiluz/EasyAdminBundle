@@ -90,7 +90,8 @@
     --sidebar-padding-right: var(--ea-sp-5);
     --sidebar-menu-items-padding-left: var(--ea-sp-3);
     --sidebar-menu-items-padding-right: var(--ea-sp-5);
-    --sidebar-menu-color: var(--gray-700);
+    /* half a step lighter than gray-700: readable but not as strong as the regular text */
+    --sidebar-menu-color: color-mix(in oklab, var(--gray-700) 50%, var(--gray-600));
     --sidebar-menu-badge-bg: var(--ea-primary-soft);
     --sidebar-menu-badge-color: var(--gray-500);
     --sidebar-menu-badge-active-bg: var(--ea-primary);
@@ -110,9 +111,13 @@
     --main-content-gap: var(--ea-sp-4);
     --main-content-border-color: var(--gray-200);
     --main-content-border-radius: var(--border-radius-xl);
-    --resize-handler-width: 10px;
+    --resize-handler-width: 10px; /* deprecated: kept for backward compatibility, unused internally */
     --content-section-border-color: var(--gray-200);
-    --resize-handler-hover-bg: var(--ea-primary-strong);
+    --resize-handler-hover-bg: var(--ea-primary-strong); /* deprecated: kept for backward compatibility, unused internally */
+    --layout-toggle-marker-color: var(--gray-400);
+    --layout-toggle-marker-hover-color: var(--gray-600);
+    --layout-toggle-label-bg: var(--gray-900);
+    --layout-toggle-label-color: var(--white);
     --content-search-bg: var(--gray-100);
     --content-search-input-bg: transparent;
     --content-search-icon-color: var(--gray-500);
@@ -589,7 +594,8 @@
     --sidebar-bg: var(--gray-950);
     --sidebar-border-color: var(--gray-800);
     --sidebar-logo-color: var(--gray-200);
-    --sidebar-menu-color: var(--gray-300);
+    /* half a step darker than gray-300: readable but not as bright as the regular text */
+    --sidebar-menu-color: color-mix(in oklab, var(--gray-300) 50%, var(--gray-400));
     --sidebar-menu-badge-bg: var(--gray-800);
     --sidebar-menu-badge-color: var(--gray-300);
     --sidebar-menu-badge-active-bg: var(--ea-primary-strong);
@@ -609,7 +615,11 @@
     --sidebar-tooltip-bg: var(--gray-200);
     --sidebar-tooltip-color: var(--gray-900);
     --main-content-border-color: var(--gray-800);
-    --resize-handler-hover-bg: var(--ea-primary-strong);
+    --resize-handler-hover-bg: var(--ea-primary-strong); /* deprecated: kept for backward compatibility, unused internally */
+    --layout-toggle-marker-color: var(--gray-600);
+    --layout-toggle-marker-hover-color: var(--gray-400);
+    --layout-toggle-label-bg: var(--gray-100);
+    --layout-toggle-label-color: var(--gray-900);
     --content-section-border-color: var(--gray-700);
     --content-search-bg: var(--gray-800);
     --content-search-input-bg: transparent;

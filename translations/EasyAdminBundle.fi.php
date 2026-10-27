@@ -133,6 +133,11 @@ return [
         'locale' => 'Kieli',
     ],
 
+    'layout' => [
+        'collapse' => 'Pienennä',
+        'expand' => 'Laajenna',
+    ],
+
     'login_page' => [
         'username' => 'Username',
         'password' => 'Password',

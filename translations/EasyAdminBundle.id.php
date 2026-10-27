@@ -133,6 +133,11 @@ return [
         'locale' => 'Bahasa',
     ],
 
+    'layout' => [
+        'collapse' => 'Ciutkan',
+        'expand' => 'Perluas',
+    ],
+
     'login_page' => [
         'username' => 'Nama pengguna',
         'password' => 'Kata sandi',

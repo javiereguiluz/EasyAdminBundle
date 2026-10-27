@@ -133,6 +133,11 @@ return [
         'locale' => 'Γλώσσα',
     ],
 
+    'layout' => [
+        'collapse' => 'Σύμπτυξη',
+        'expand' => 'Ανάπτυξη',
+    ],
+
     'login_page' => [
         'username' => 'Όνομα χρήστη',
         'password' => 'Κωδικός πρόσβασης',

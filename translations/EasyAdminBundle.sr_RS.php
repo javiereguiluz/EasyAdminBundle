@@ -133,6 +133,11 @@ return [
         'locale' => 'Jezik',
     ],
 
+    'layout' => [
+        'collapse' => 'Skupi',
+        'expand' => 'Proširi',
+    ],
+
     'login_page' => [
         'username' => 'Korisničko ime',
         'password' => 'Lozinka',

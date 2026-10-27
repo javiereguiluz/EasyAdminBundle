@@ -133,6 +133,11 @@ return [
         'locale' => 'Sprog',
     ],
 
+    'layout' => [
+        'collapse' => 'Fold sammen',
+        'expand' => 'Fold ud',
+    ],
+
     'login_page' => [
         'username' => 'Username',
         'password' => 'Password',

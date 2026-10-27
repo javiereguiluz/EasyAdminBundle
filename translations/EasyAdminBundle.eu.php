@@ -133,6 +133,11 @@ return [
         'locale' => 'Hizkuntza',
     ],
 
+    'layout' => [
+        'collapse' => 'Tolestu',
+        'expand' => 'Zabaldu',
+    ],
+
     'login_page' => [
         'username' => 'Erabiltzailea',
         'password' => 'Pasahitza',

@@ -13,7 +13,11 @@ The default colors of the backend changed:
   (blue gray) in the light scheme;
 * Links use the text color; the links inside texts (help messages, etc.) are
   underlined, and the links that are the whole value of a table cell or a detail
-  field look like regular text and are only underlined on hover.
+  field look like regular text and are only underlined on hover;
+* The thin vertical bars to collapse/expand the sidebar and the content width
+  (`#sidebar-resizer-handler` and `#content-resizer-handler`) were replaced by
+  `button.ea-layout-toggle-sidebar` and `button.ea-layout-toggle-content`, displayed
+  in the vertical middle of the screen, next to the sidebar and next to the content.
 
 `Theme::primaryColor()` now also accepts the name of a predefined color (e.g.
 `primaryColor('blue')`), tuned for both color schemes. The names are available

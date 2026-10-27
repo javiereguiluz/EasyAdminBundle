@@ -112,29 +112,56 @@ class App {
     }
 
     #createLayoutResizeControls() {
-        const sidebarResizerHandler = document.querySelector('#sidebar-resizer-handler');
-        if (null !== sidebarResizerHandler) {
-            sidebarResizerHandler.addEventListener('click', () => {
-                const oldValue = localStorage.getItem(this.#sidebarWidthLocalStorageKey) || 'normal';
-                const newValue = 'normal' === oldValue ? 'compact' : 'normal';
+        this.#createLayoutToggle(
+            '.ea-layout-toggle-sidebar',
+            this.#sidebarWidthLocalStorageKey,
+            'sidebar',
+            'compact',
+            false
+        );
+        this.#createLayoutToggle(
+            '.ea-layout-toggle-content',
+            this.#contentWidthLocalStorageKey,
+            'content',
+            'full',
+            true
+        );
+    }
 
-                document.querySelector('body').classList.remove(`ea-sidebar-width-${oldValue}`);
-                document.querySelector('body').classList.add(`ea-sidebar-width-${newValue}`);
-                localStorage.setItem(this.#sidebarWidthLocalStorageKey, newValue);
-            });
+    // each layout part has a 'normal' width and an alternative one ('compact' sidebar,
+    // 'full' content); the last argument tells if the alternative width is the expanded state
+    #createLayoutToggle(selector, localStorageKey, layoutPart, alternativeWidth, isAlternativeWidthExpanded) {
+        const toggle = document.querySelector(selector);
+        if (null === toggle) {
+            return;
         }
 
-        const contentResizerHandler = document.querySelector('#content-resizer-handler');
-        if (null !== contentResizerHandler) {
-            contentResizerHandler.addEventListener('click', () => {
-                const oldValue = localStorage.getItem(this.#contentWidthLocalStorageKey) || 'normal';
-                const newValue = 'normal' === oldValue ? 'full' : 'normal';
+        const isExpanded = () =>
+            document.body.classList.contains(`ea-${layoutPart}-width-${alternativeWidth}`) ===
+            isAlternativeWidthExpanded;
 
-                document.querySelector('body').classList.remove(`ea-content-width-${oldValue}`);
-                document.querySelector('body').classList.add(`ea-content-width-${newValue}`);
-                localStorage.setItem(this.#contentWidthLocalStorageKey, newValue);
-            });
-        }
+        const updateToggle = () => {
+            const label = isExpanded() ? toggle.dataset.eaCollapseLabel : toggle.dataset.eaExpandLabel;
+            toggle.setAttribute('aria-expanded', String(isExpanded()));
+            toggle.setAttribute('aria-label', label);
+            toggle.querySelector('.ea-layout-toggle-label').textContent = label;
+        };
+
+        // the initial width can come from the browser local storage (see page-layout.js)
+        // instead of the backend config used to render the toggle
+        updateToggle();
+
+        toggle.addEventListener('click', () => {
+            const oldValue = document.body.classList.contains(`ea-${layoutPart}-width-${alternativeWidth}`)
+                ? alternativeWidth
+                : 'normal';
+            const newValue = 'normal' === oldValue ? alternativeWidth : 'normal';
+
+            document.body.classList.remove(`ea-${layoutPart}-width-${oldValue}`);
+            document.body.classList.add(`ea-${layoutPart}-width-${newValue}`);
+            localStorage.setItem(localStorageKey, newValue);
+            updateToggle();
+        });
     }
 
     #createNavigationToggler() {

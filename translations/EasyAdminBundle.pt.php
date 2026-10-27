@@ -133,6 +133,11 @@ return [
         'locale' => 'Configurações de idioma',
     ],
 
+    'layout' => [
+        'collapse' => 'Recolher',
+        'expand' => 'Expandir',
+    ],
+
     'login_page' => [
         'username' => 'Nome de utilizador',
         'password' => 'Palavra-passe',

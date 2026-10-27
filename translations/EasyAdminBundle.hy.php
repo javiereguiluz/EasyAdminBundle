@@ -133,6 +133,11 @@ return [
         'locale' => 'Լեզու',
     ],
 
+    'layout' => [
+        'collapse' => 'Ծալել',
+        'expand' => 'Ընդլայնել',
+    ],
+
     'login_page' => [
         'username' => 'Օգտանուն',
         'password' => 'Գաղտնաբառ',
