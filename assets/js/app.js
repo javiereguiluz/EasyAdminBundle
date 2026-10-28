@@ -348,6 +348,13 @@ class App {
             return;
         }
 
+        // templates that override the 'batch_actions' block may still hide it with 'd-none';
+        // remove it on page load because elements with 'display: none' can't be animated
+        document.querySelectorAll('.page-actions-stack .batch-actions.d-none').forEach((batchActions) => {
+            batchActions.classList.remove('d-none');
+            batchActions.inert = true;
+        });
+
         const rowCheckboxes = document.querySelectorAll('input[type="checkbox"].form-batch-checkbox');
         selectAllCheckbox.addEventListener('change', () => {
             rowCheckboxes.forEach((rowCheckbox) => {
@@ -400,14 +407,25 @@ class App {
                 }
 
                 const rowsAreSelected = 0 !== selectedRowCheckboxes.length;
-                const contentTitle = document.querySelector('.content-header-title > .title');
+                const pageActionsStack = content.querySelector('.page-actions-stack');
                 const filters = content.querySelector('.datagrid-filters');
                 const globalActions = content.querySelector('.global-actions');
                 const batchActions = content.querySelector('.batch-actions');
 
-                if (null !== contentTitle) {
-                    toggleVisibilityClasses(contentTitle, rowsAreSelected);
+                if (null !== pageActionsStack) {
+                    pageActionsStack.classList.toggle('rows-are-selected', rowsAreSelected);
+                    const defaultActions = pageActionsStack.querySelector('.page-actions-default');
+                    if (null !== defaultActions) {
+                        defaultActions.inert = rowsAreSelected;
+                    }
+                    if (null !== batchActions) {
+                        batchActions.inert = !rowsAreSelected;
+                    }
+
+                    return;
                 }
+
+                // templates that override the 'page_actions' block don't define the stack of actions
                 if (null !== filters) {
                     toggleVisibilityClasses(filters, rowsAreSelected);
                 }

@@ -27,7 +27,12 @@ The default colors of the backend changed:
   alerts and `--color-info`) is now cyan instead of sky;
 * The header of the datagrids uses a smaller and lighter text, a border at the
   top and the bottom, and chevrons as the sort icons. The sorted column no longer
-  uses the primary color of the theme.
+  uses the primary color of the theme;
+* When selecting rows in the index page, the page title is no longer hidden and the
+  batch actions slide up and replace the filters and global actions with an
+  animation. The `page_actions` block now wraps them in `.page-actions-stack`, and
+  the `.batch-actions` element is hidden with CSS and the `inert` attribute instead
+  of the `d-none` class.
 
 `Theme::primaryColor()` now also accepts the name of a predefined color (e.g.
 `primaryColor('blue')`), tuned for both color schemes. The names are available

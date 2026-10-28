@@ -983,7 +983,7 @@
        uses a yellow color and a soft underline instead */
     --highlight-bg: transparent;
     --highlight-color: var(--yellow-300);
-    --highlight-underline-color: color-mix(in oklab, var(--yellow-400) 15%, transparent);
+    --highlight-underline-color: color-mix(in oklab, var(--yellow-400) 50%, transparent);
 
     --text-on-primary: var(--ea-primary-foreground);
     --text-muted: var(--gray-500);

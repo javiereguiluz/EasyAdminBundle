@@ -672,7 +672,8 @@ a.user-menu-wrapper .user-details:hover {
 }
 
 .content-header .global-actions,
-.content-header .page-actions {
+.content-header .page-actions,
+.content-header .page-actions-default {
     justify-content: right;
     flex-wrap: wrap;
     gap: var(--ea-sp-5);
@@ -689,6 +690,41 @@ a.user-menu-wrapper .user-details:hover {
 }
 .content-header .page-actions:empty {
     display: none;
+}
+
+/* when rows are selected, the batch actions slide up from below and push the default
+   actions out through the top edge; only that edge is clipped, so the dropdowns of the
+   actions (which open downwards) are never cut */
+.page-actions-stack {
+    clip-path: inset(0 -100vw -100vh -100vw);
+    display: grid;
+    justify-items: end;
+}
+.page-actions-stack > * {
+    grid-area: 1 / 1;
+    transition: transform 260ms cubic-bezier(0.3, 0.7, 0.2, 1), opacity 200ms ease-out, visibility 0s linear 0s;
+}
+.page-actions-stack > .batch-actions {
+    opacity: 0;
+    transform: translateY(100%);
+    transition-delay: 0s, 0s, 260ms;
+    visibility: hidden;
+}
+.page-actions-stack.rows-are-selected > .page-actions-default {
+    transform: translateY(-100%);
+    transition-delay: 0s, 0s, 260ms;
+    visibility: hidden;
+}
+.page-actions-stack.rows-are-selected > .batch-actions {
+    opacity: 1;
+    transform: none;
+    transition-delay: 0s;
+    visibility: visible;
+}
+@media (prefers-reduced-motion: reduce) {
+    .page-actions-stack > * {
+        transition: none;
+    }
 }
 
 .batch-actions form {
