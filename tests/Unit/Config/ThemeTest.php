@@ -249,6 +249,10 @@ class ThemeTest extends TestCase
         yield [GrayScale::ZINC, '--neutral-gray-'];
         yield [GrayScale::GRAY, '--cool-gray-'];
         yield [GrayScale::SLATE, '--blue-gray-'];
+        yield [GrayScale::MAUVE, '--mauve-'];
+        yield [GrayScale::OLIVE, '--olive-'];
+        yield [GrayScale::MIST, '--mist-'];
+        yield [GrayScale::TAUPE, '--taupe-'];
     }
 
     public function testGraysDarkVariant(): void
@@ -265,14 +269,14 @@ class ThemeTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        Theme::new()->grays('mauve');
+        Theme::new()->grays('purple');
     }
 
     public function testInvalidDarkGraysAreRejected(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        Theme::new()->grays(GrayScale::ZINC, dark: 'mauve');
+        Theme::new()->grays(GrayScale::ZINC, dark: 'purple');
     }
 
     public function testEmptyThemeHasNoCssVariables(): void

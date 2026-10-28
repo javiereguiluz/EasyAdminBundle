@@ -95,16 +95,17 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 }
 .datagrid thead th {
     border: 0;
-    box-shadow: inset 0 -2px 0 var(--table-cell-border-color);
+    box-shadow: inset 0 1px 0 var(--table-cell-border-color), inset 0 -1px 0 var(--table-cell-border-color);
     padding: 0;
 }
 .datagrid thead a,
 .datagrid thead span:not(.icon) {
     color: var(--table-thead-color);
     display: block;
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     line-height: var(--line-height-snug);
-    padding: var(--ea-sp-6) var(--ea-sp-4);
+    padding: var(--ea-sp-4);
     white-space: nowrap;
 }
 .datagrid td {
@@ -131,9 +132,6 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 .datagrid thead .icon {
     color: var(--table-thead-marker-color);
     margin-inline-start: var(--ea-sp-1);
-}
-.datagrid thead .sorted {
-    box-shadow: inset 0 -2px 0 var(--color-primary);
 }
 .datagrid thead .sorted a,
 .datagrid thead .sorted span {
@@ -255,6 +253,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 
 .datagrid .dropdown-actions {
     display: inline-block;
+    vertical-align: middle;
 }
 .datagrid .dropdown-actions > .dropdown-toggle {
     border: var(--border-width) solid transparent;
@@ -265,8 +264,10 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
     overflow: visible;
 }
 
+/* flex instead of block, so the icon doesn't create a line box (which is taller
+   than the SVG and places it at the bottom instead of the middle) */
 .datagrid .dropdown-actions > .dropdown-toggle .icon {
-    display: block;
+    display: flex;
     font-size: var(--icon-size-md);
     inline-size: unset;
 }
@@ -353,7 +354,7 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 .datagrid .field-boolean {
     text-align: center;
 }
-.datagrid .field-boolean.has-switch {
+.datagrid td.field-boolean.has-switch {
     padding: var(--ea-sp-3) var(--ea-sp-4);
 }
 

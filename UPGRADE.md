@@ -17,7 +17,17 @@ The default colors of the backend changed:
 * The thin vertical bars to collapse/expand the sidebar and the content width
   (`#sidebar-resizer-handler` and `#content-resizer-handler`) were replaced by
   `button.ea-layout-toggle-sidebar` and `button.ea-layout-toggle-content`, displayed
-  in the vertical middle of the screen, next to the sidebar and next to the content.
+  in the vertical middle of the screen, next to the sidebar and next to the content;
+* The color palette (`--blue-600`, `--red-500`, etc.) now uses the values of
+  Tailwind CSS 4 (in the `oklch()` format) instead of Tailwind CSS 3, so most
+  colors are a bit more vivid. The chromatic colors also define a new `950` step;
+* The `primary` badges and alerts (and the `true` value of boolean badges) are
+  now blue and don't use the primary color of the theme anymore, so all badge and
+  alert colors look different with any primary color. The `info` color (badges,
+  alerts and `--color-info`) is now cyan instead of sky;
+* The header of the datagrids uses a smaller and lighter text, a border at the
+  top and the bottom, and chevrons as the sort icons. The sorted column no longer
+  uses the primary color of the theme.
 
 `Theme::primaryColor()` now also accepts the name of a predefined color (e.g.
 `primaryColor('blue')`), tuned for both color schemes. The names are available

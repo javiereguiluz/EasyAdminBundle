@@ -247,11 +247,13 @@ explained later)::
                     // EasyCorp\Bundle\EasyAdminBundle\Config\Option\Size)
                     ->spacing('md')
                     // the gray scale used by all neutral surfaces, borders and text
-                    // colors: 'neutral', 'stone' (warmer), 'zinc', 'gray' or 'slate'
-                    // (cooler). The default look uses 'neutral' in both the light and
-                    // dark color schemes. The optional 'dark' argument sets a
-                    // different gray scale for the dark color scheme (if not set, the
-                    // same scale is used in both). Instead of magic strings, you can use
+                    // colors: 'neutral', 'stone' (warmer), 'zinc', 'gray', 'slate'
+                    // (cooler), 'mauve' (purple tint), 'olive' (green tint), 'mist'
+                    // (blue-green tint) or 'taupe' (brown tint). The default look uses
+                    // 'neutral' in both the light and dark color schemes. The optional
+                    // 'dark' argument sets a different gray scale for the dark color
+                    // scheme (if not set, the same scale is used in both). Instead of
+                    // magic strings, you can use
                     // the constants of EasyCorp\Bundle\EasyAdminBundle\Config\Option\GrayScale
                     ->grays('zinc', dark: 'stone'))
 

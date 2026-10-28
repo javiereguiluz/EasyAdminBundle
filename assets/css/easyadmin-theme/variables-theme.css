@@ -92,14 +92,15 @@
     --sidebar-menu-items-padding-right: var(--ea-sp-5);
     /* half a step lighter than gray-700: readable but not as strong as the regular text */
     --sidebar-menu-color: color-mix(in oklab, var(--gray-700) 50%, var(--gray-600));
-    --sidebar-menu-badge-bg: var(--ea-primary-soft);
+    --sidebar-menu-badge-bg: var(--gray-200);
     --sidebar-menu-badge-color: var(--gray-500);
     --sidebar-menu-badge-active-bg: var(--ea-primary);
     --sidebar-menu-badge-active-color: var(--text-on-primary);
     --sidebar-menu-submenu-color: var(--gray-600);
     --sidebar-menu-header-color: var(--gray-400);
     --sidebar-menu-icon-color: var(--gray-500);
-    --sidebar-menu-active-item-bg: var(--gray-200);
+    /* half a step lighter than gray-200, but still darker than the gray-100 hover background */
+    --sidebar-menu-active-item-bg: color-mix(in oklab, var(--gray-200) 50%, var(--gray-100));
     --sidebar-menu-active-item-color: var(--color-primary);
     --sidebar-menu-hover-color: var(--color-primary);
     --sidebar-item-hover-bg: var(--gray-100);
@@ -135,7 +136,7 @@
     --user-avatar-icon-bg: var(--gray-200);
     --user-avatar-icon-color: var(--gray-500);
     --user-name-color: var(--gray-500);
-    --user-menu-impersonated-link-color: var(--color-primary);
+    --user-menu-impersonated-link-color: var(--user-name-color);
     --popover-bg: var(--gray-100);
     --popover-border-color: var(--gray-300);
     --popover-color: var(--text-color);
@@ -164,14 +165,14 @@
     --dropdown-item-danger-color: var(--red-600);
     --datagrid-noresults-placeholder-bg: var(--gray-100);
     --datagrid-hidden-results-gradient-bg: var(--gray-50);
-    --table-thead-color: var(--gray-800);
+    --table-thead-color: var(--gray-500);
     --table-cell-color: var(--gray-600);
     --table-thead-marker-color: var(--gray-400);
     --table-cell-border-color: var(--gray-200);
     --table-hover-cell-bg: var(--gray-50);
     --table-selected-cell-bg: var(--gray-200);
-    --table-thead-sorted-color: var(--gray-900);
-    --table-thead-sorted-marker-color: var(--color-primary);
+    --table-thead-sorted-color: var(--table-cell-color);
+    --table-thead-sorted-marker-color: var(--table-cell-color);
     --datalist-border-color: var(--gray-200);
     --datalist-label-color: var(--gray-500);
     --datalist-value-color: var(--gray-600);
@@ -269,9 +270,10 @@
     --badge-tint-border-amount: 15%;
     --badge-solid-amount: 100%;
     --badge-solid-mix-base: var(--black);
-    /* primary is a stronger tint than the other colors, so it doesn't look like the gray secondary color */
-    --badge-primary-tint-bg-amount: 13%;
-    --badge-primary-tint-border-amount: 25%;
+    /* badge colors don't depend on the theme primary color, so a backend with any
+       primary color can use all the badge colors and they still look different */
+    --badge-primary-tint-bg-amount: 10%;
+    --badge-primary-tint-border-amount: 15%;
     /* yellow is very light, so its border needs more color to be visible on light surfaces */
     --badge-warning-tint-border-amount: 35%;
     /* the light color is almost white, so its border is invisible on white surfaces with the default amount */
@@ -280,10 +282,9 @@
     --badge-secondary-tone: var(--gray-500);
     --badge-secondary-color: var(--gray-700);
     --badge-secondary-solid-color: var(--white);
-    --badge-primary-tone: var(--ea-primary);
-    /* derived from --ea-primary-on-surface (not --ea-primary) so it's also readable with light primary colors */
-    --badge-primary-color: color-mix(in oklab, var(--ea-primary-on-surface) 80%, var(--ea-primary-contrast-base));
-    --badge-primary-solid-color: var(--ea-primary-foreground);
+    --badge-primary-tone: var(--blue-600);
+    --badge-primary-color: var(--blue-800);
+    --badge-primary-solid-color: var(--white);
     --badge-success-tone: var(--green-600);
     --badge-success-color: var(--text-green-600);
     --badge-success-solid-color: var(--white);
@@ -298,9 +299,9 @@
     --badge-danger-tone: var(--red-600);
     --badge-danger-color: var(--text-red-600);
     --badge-danger-solid-color: var(--white);
-    /* sky instead of blue, like alerts, so info doesn't compete with blue/indigo primary colors */
-    --badge-info-tone: var(--sky-600);
-    --badge-info-color: var(--sky-800);
+    /* cyan instead of sky, which looks too similar to the blue primary badges */
+    --badge-info-tone: var(--cyan-600);
+    --badge-info-color: var(--cyan-800);
     --badge-info-solid-color: var(--white);
     --badge-light-tone: var(--gray-300);
     --badge-light-color: var(--gray-600);
@@ -311,11 +312,11 @@
     --badge-boolean-false-color: var(--gray-500);
     /* without the tinted background of the light variant, the outline and dot variants
        need brighter text colors so each color is still recognizable */
-    --badge-primary-outline-color: var(--ea-primary-on-surface);
+    --badge-primary-outline-color: var(--blue-700);
     --badge-success-outline-color: var(--green-700);
     --badge-warning-outline-color: var(--yellow-700);
     --badge-danger-outline-color: var(--red-700);
-    --badge-info-outline-color: var(--sky-700);
+    --badge-info-outline-color: var(--cyan-700);
     --badge-secondary-bg: color-mix(in srgb, var(--badge-secondary-tone) var(--badge-tint-bg-amount), transparent);
     --badge-primary-bg: color-mix(in srgb, var(--badge-primary-tone) var(--badge-primary-tint-bg-amount), transparent);
     --badge-success-bg: color-mix(in srgb, var(--badge-success-tone) var(--badge-tint-bg-amount), transparent);
@@ -324,18 +325,19 @@
     --badge-info-bg: color-mix(in srgb, var(--badge-info-tone) var(--badge-tint-bg-amount), transparent);
     --badge-light-bg: color-mix(in srgb, var(--badge-light-tone) var(--badge-tint-bg-amount), transparent);
     --badge-dark-bg: color-mix(in srgb, var(--badge-dark-tone) var(--badge-tint-bg-amount), transparent);
-    --alert-primary-bg: var(--ea-primary-soft);
-    --alert-primary-color: var(--ea-primary-text);
-    --alert-primary-border-color: var(--ea-primary-muted);
+    /* like badges, primary alerts are blue instead of the theme primary color */
+    --alert-primary-bg: var(--blue-100);
+    --alert-primary-color: var(--blue-800);
+    --alert-primary-border-color: var(--blue-200);
     --alert-secondary-bg: var(--gray-100);
     --alert-secondary-color: var(--gray-800);
     --alert-secondary-border-color: var(--gray-200);
     --alert-success-bg: var(--emerald-100);
     --alert-success-color: var(--emerald-900);
     --alert-success-border-color: var(--emerald-200);
-    --alert-info-bg: var(--sky-100);
-    --alert-info-color: var(--sky-800);
-    --alert-info-border-color: var(--sky-200);
+    --alert-info-bg: var(--cyan-100);
+    --alert-info-color: var(--cyan-800);
+    --alert-info-border-color: var(--cyan-200);
     --alert-warning-bg: var(--orange-100);
     --alert-warning-color: var(--orange-800);
     --alert-warning-border-color: var(--orange-200);
@@ -526,7 +528,7 @@
 
     --color-primary: var(--ea-primary-on-surface);
     --color-success: var(--emerald-600);
-    --color-info: var(--sky-600);
+    --color-info: var(--cyan-600);
     --color-warning: var(--amber-600);
     --color-danger: #cf222e; /* GitHub red, matches the danger button */
     --color-danger-rgb: 207, 34, 46; /* keep in sync with --color-danger */
@@ -610,8 +612,8 @@
     --sidebar-menu-hover-color: var(--ea-primary-text);
     --sidebar-item-hover-bg: var(--gray-900);
     --sidebar-item-icon-tile-hover-bg: var(--gray-700);
-    --sidebar-badge-dot-bg: var(--indigo-400);
-    --sidebar-badge-dot-border-color: var(--indigo-400);
+    --sidebar-badge-dot-bg: var(--blue-400);
+    --sidebar-badge-dot-border-color: var(--blue-400);
     --sidebar-tooltip-bg: var(--gray-200);
     --sidebar-tooltip-color: var(--gray-900);
     --main-content-border-color: var(--gray-800);
@@ -633,7 +635,7 @@
     --user-avatar-icon-bg: var(--gray-700);
     --user-avatar-icon-color: var(--gray-400);
     --user-name-color: var(--gray-400);
-    --user-menu-impersonated-link-color: var(--color-primary);
+    --user-menu-impersonated-link-color: var(--user-name-color);
     --popover-bg: var(--gray-900);
     --popover-border-color: var(--gray-700);
     --popover-color: var(--text-color);
@@ -662,14 +664,14 @@
     --dropdown-item-danger-color: var(--red-400);
     --datagrid-noresults-placeholder-bg: var(--gray-700);
     --datagrid-hidden-results-gradient-bg: var(--gray-700);
-    --table-thead-color: var(--gray-200);
+    --table-thead-color: var(--gray-400);
     --table-cell-color: var(--gray-300);
     --table-thead-marker-color: var(--gray-500);
     --table-cell-border-color: var(--gray-800);
     --table-hover-cell-bg: color-mix(in oklab, var(--gray-800) 50%, var(--gray-900));
     --table-selected-cell-bg: var(--gray-800);
-    --table-thead-sorted-color: var(--color-primary);
-    --table-thead-sorted-marker-color: var(--color-primary);
+    --table-thead-sorted-color: var(--table-cell-color);
+    --table-thead-sorted-marker-color: var(--table-cell-color);
     --datalist-border-color: var(--gray-600);
     --datalist-label-color: var(--gray-400);
     --datalist-value-color: var(--gray-300);
@@ -760,20 +762,19 @@
     /* solid colors are toned down on dark surfaces, where full-intensity colors look too bright */
     --badge-solid-amount: 80%;
     --badge-primary-tint-bg-amount: 15%;
-    /* the primary color is usually dark, so on dark surfaces its border needs more color */
-    --badge-primary-tint-border-amount: 50%;
+    --badge-primary-tint-border-amount: 25%;
     --badge-warning-tint-border-amount: 25%;
     --badge-warning-solid-tone: var(--badge-warning-tone);
     --badge-success-solid-tone: var(--badge-success-tone);
     --badge-dark-solid-tone: var(--gray-700);
     --badge-light-tint-border-amount: 25%;
-    --badge-primary-color: color-mix(in oklab, var(--ea-primary) 40%, var(--ea-primary-contrast-base));
+    --badge-primary-color: var(--blue-300);
     --badge-outline-border-color: var(--gray-700);
     --badge-secondary-tone: var(--gray-500);
     --badge-secondary-color: var(--gray-200);
     /* pure white text on solid badges is too bright on dark surfaces */
     --badge-secondary-solid-color: var(--gray-100);
-    --badge-primary-solid-color: color-mix(in oklab, var(--ea-primary-foreground) 90%, var(--ea-primary));
+    --badge-primary-solid-color: var(--gray-100);
     --badge-success-solid-color: var(--gray-100);
     --badge-danger-solid-color: var(--gray-100);
     --badge-info-solid-color: var(--gray-100);
@@ -782,7 +783,7 @@
     --badge-warning-color: var(--yellow-400);
     /* between red-300 (too little contrast) and red-200 (looks pink instead of red) */
     --badge-danger-color: color-mix(in oklab, var(--red-300) 50%, var(--red-200));
-    --badge-info-color: var(--sky-300);
+    --badge-info-color: var(--cyan-300);
     --badge-light-tone: var(--gray-300);
     --badge-light-color: var(--gray-200);
     /* black is invisible as a tint or border on dark surfaces */
@@ -795,18 +796,18 @@
     --badge-warning-outline-color: var(--badge-warning-color);
     --badge-danger-outline-color: var(--badge-danger-color);
     --badge-info-outline-color: var(--badge-info-color);
-    --alert-primary-bg: var(--ea-primary-soft);
-    --alert-primary-color: var(--ea-primary-text);
-    --alert-primary-border-color: var(--ea-primary-muted);
+    --alert-primary-bg: var(--blue-800);
+    --alert-primary-color: var(--blue-100);
+    --alert-primary-border-color: var(--blue-700);
     --alert-secondary-bg: var(--gray-700);
     --alert-secondary-color: var(--gray-300);
     --alert-secondary-border-color: var(--gray-600);
     --alert-success-bg: var(--emerald-800);
     --alert-success-color: var(--emerald-100);
     --alert-success-border-color: var(--emerald-700);
-    --alert-info-bg: var(--sky-800);
-    --alert-info-color: var(--sky-100);
-    --alert-info-border-color: var(--sky-700);
+    --alert-info-bg: var(--cyan-800);
+    --alert-info-color: var(--cyan-100);
+    --alert-info-border-color: var(--cyan-700);
     --alert-warning-bg: var(--orange-800);
     --alert-warning-color: var(--orange-100);
     --alert-warning-border-color: var(--orange-700);
@@ -973,10 +974,10 @@
        block with their own per-scheme recipes, so they are not affected) */
     --color-primary: var(--ea-primary-text);
     --color-success: var(--emerald-600);
-    --color-info: var(--sky-600);
+    --color-info: var(--cyan-600);
     --color-warning: var(--amber-600);
     --color-danger: var(--red-500);
-    --color-danger-rgb: 239, 68, 68; /* keep in sync with --color-danger */
+    --color-danger-rgb: 251, 44, 54; /* keep in sync with --color-danger */
 
     /* color backgrounds look muddy on dark surfaces, so the highlighted text
        uses a yellow color and a soft underline instead */

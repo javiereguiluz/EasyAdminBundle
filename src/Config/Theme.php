@@ -41,6 +41,10 @@ final class Theme
         GrayScale::ZINC => '--neutral-gray-',
         GrayScale::GRAY => '--cool-gray-',
         GrayScale::SLATE => '--blue-gray-',
+        GrayScale::MAUVE => '--mauve-',
+        GrayScale::OLIVE => '--olive-',
+        GrayScale::MIST => '--mist-',
+        GrayScale::TAUPE => '--taupe-',
     ];
 
     // the shadcn/ui color themes: each value is [light color, light foreground,

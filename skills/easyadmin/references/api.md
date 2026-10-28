@@ -501,9 +501,13 @@ const SORT = 'sort'
 
 ```
 const GRAY = 'gray'
+const MAUVE = 'mauve'
+const MIST = 'mist'
 const NEUTRAL = 'neutral'
+const OLIVE = 'olive'
 const SLATE = 'slate'
 const STONE = 'stone'
+const TAUPE = 'taupe'
 const ZINC = 'zinc'
 ```
 
