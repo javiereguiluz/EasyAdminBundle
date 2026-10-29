@@ -91,12 +91,12 @@ Other related design changes:
   `p` elements written directly in the modal body, not to the elements nested
   inside other elements.
 
-### The Default Font Is IBM Plex Sans
+### The Default Fonts Are Inter and JetBrains Mono
 
-The backend now displays text with the IBM Plex Sans font, which is bundled with
-EasyAdmin (it doesn't make requests to other websites). To keep using the fonts
-of the operating system, as in previous versions, use the new `font()` method of
-the theme:
+The backend now displays text with the Inter font and code with the JetBrains
+Mono font, which are bundled with EasyAdmin (they don't make requests to other
+websites). To keep using the fonts of the operating system, as in previous
+versions, use the new `font()` method of the theme:
 
 ```php
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\Font;
@@ -106,13 +106,19 @@ public function configureDashboard(): Dashboard
 {
     return Dashboard::new()
         // ...
-        ->setTheme(Theme::new()->font(base: Font::System));
+        ->setTheme(Theme::new()->font(base: Font::System, monospace: Font::System));
 }
 ```
 
 The previous font stacks are now defined in the `--font-family-system-sans-serif`
 and `--font-family-system-monospace` CSS variables, which are used at the end of
 `--font-family-sans-serif` and `--font-family-monospace`.
+
+Regular text now uses a `435` font weight (the new value of `--font-weight-normal`)
+instead of `400`, because the default font looked too thin on macOS. Each bundled
+font defines its own weight, and all fonts are scaled to the same x-height with the
+new `--font-size-adjust` variable (`0.54`), so they look the same size and equally
+bold. System fonts and Bunny Fonts keep the `400` weight.
 
 ## EasyAdmin 5.8.0
 

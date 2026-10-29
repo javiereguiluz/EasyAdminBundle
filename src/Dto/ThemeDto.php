@@ -18,18 +18,30 @@ final readonly class ThemeDto
 
     // the base font used when Theme::font() doesn't set one; its CSS variables are
     // the defaults of variables-theme.css, so only its preload is emitted
-    private const DEFAULT_BASE_FONT = Font::IbmPlexSans;
+    private const DEFAULT_BASE_FONT = Font::Inter;
 
     // the names of the font files defined in fonts.css
     private const BUNDLED_FONT_FILE_PREFIXES = [
         'Inter' => 'inter',
         'IbmPlexSans' => 'ibm-plex-sans',
-        'Geist' => 'geist',
+        'Rubik' => 'rubik',
+        'AtkinsonHyperlegibleNext' => 'atkinson-hyperlegible-next',
         'JetBrainsMono' => 'jetbrains-mono',
     ];
 
     // used by the pages rendered without a dashboard (e.g. the login page)
     public const DEFAULT_FONT_PRELOAD_PATH = 'fonts/'.self::BUNDLED_FONT_FILE_PREFIXES[self::DEFAULT_BASE_FONT->name].'-latin-wght-normal.woff2';
+
+    // the weight of regular text for each bundled font, chosen so all of them look
+    // equally bold (with the same stroke width relative to their x-height); system
+    // fonts and Bunny Fonts use 400 because their files usually have static weights
+    private const BUNDLED_FONT_TEXT_WEIGHTS = [
+        'Inter' => 435,
+        'IbmPlexSans' => 435,
+        'Rubik' => 390,
+        'AtkinsonHyperlegibleNext' => 410,
+    ];
+    private const STATIC_FONT_TEXT_WEIGHT = 400;
 
     // Bunny Fonts serves static font files, so the stylesheet only lists the weights
     // used by the theme; bold text (700) uses the 600 file, the closest one available
@@ -47,6 +59,9 @@ final readonly class ThemeDto
         private ?string $primaryOnSurface = null,
         private Font|string|null $baseFont = null,
         private Font|string|null $monospaceFont = null,
+        private ?int $baseFontWeight = null,
+        /** @var list<string>|null */
+        private ?array $baseFontFeatures = null,
     ) {
     }
 
@@ -103,6 +118,19 @@ final readonly class ThemeDto
     public function getMonospaceFont(): Font|string|null
     {
         return $this->monospaceFont;
+    }
+
+    public function getBaseFontWeight(): ?int
+    {
+        return $this->baseFontWeight;
+    }
+
+    /**
+     * @return list<string>|null
+     */
+    public function getBaseFontFeatures(): ?array
+    {
+        return $this->baseFontFeatures;
     }
 
     /**
@@ -196,6 +224,15 @@ final readonly class ThemeDto
 
         if (null !== $this->baseFont) {
             $common['--font-family-sans-serif'] = self::getFontFamily($this->baseFont, '--font-family-system-sans-serif');
+            $common['--font-weight-normal'] = (string) ($this->baseFont instanceof Font ? self::BUNDLED_FONT_TEXT_WEIGHTS[$this->baseFont->name] ?? self::STATIC_FONT_TEXT_WEIGHT : self::STATIC_FONT_TEXT_WEIGHT);
+        }
+
+        if (null !== $this->baseFontWeight) {
+            $common['--font-weight-normal'] = (string) $this->baseFontWeight;
+        }
+
+        if (null !== $this->baseFontFeatures) {
+            $common['--font-feature-settings'] = [] === $this->baseFontFeatures ? 'normal' : implode(', ', $this->baseFontFeatures);
         }
 
         if (null !== $this->monospaceFont) {

@@ -3,6 +3,7 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Config;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\Font;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\FontFeature;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\GrayScale;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ThemeColor;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\ThemeDto;
@@ -85,6 +86,9 @@ final class Theme
     private ?string $primaryOnSurface = null;
     private Font|string|null $baseFont = null;
     private Font|string|null $monospaceFont = null;
+    private ?int $baseFontWeight = null;
+    /** @var list<string>|null */
+    private ?array $baseFontFeatures = null;
 
     private function __construct()
     {
@@ -188,9 +192,8 @@ final class Theme
     /**
      * Sets the fonts of the backend: $base is used for all the text and
      * $monospace for code (e.g. the contents of code fields). By default, the
-     * backend uses IBM Plex Sans for text and the monospace fonts of the
-     * operating system for code (pass Font::System to use the fonts of the
-     * operating system for text too).
+     * backend uses Inter for text and JetBrains Mono for code (pass
+     * Font::System to use the fonts of the operating system instead).
      *
      * A Font enum case selects a font bundled with EasyAdmin, served by your
      * own application. A string is a Google Fonts family name, served through
@@ -198,14 +201,31 @@ final class Theme
      * Google Fonts; if the string is the name of a bundled font (e.g. 'Inter'),
      * the bundled font is used instead. A null value keeps the default font.
      *
+     * $baseWeight is the font weight of regular text (by default, each bundled
+     * font defines a weight slightly above 400 so all of them look equally bold,
+     * and the other fonts use 400). In-between weights (e.g. 430) only work as
+     * expected with variable fonts, such as the bundled ones; with fonts that
+     * have static weights, browsers use the 500 weight for values from 401 to 500.
+     *
+     * $features are the OpenType features of the base font, as FontFeature cases
+     * or as the 4-character tags of the features to enable (e.g. 'ss01'). They
+     * apply to all the text except code. Fonts only apply the features included
+     * in their files (e.g. none of the bundled fonts include the slashed zero).
+     * A null value applies no features; an empty array explicitly disables them.
+     *
      * To use any other font (e.g. a font of your company), load it in a CSS file
      * added with addCssFile() and override the --font-family-sans-serif and
      * --font-family-monospace CSS variables.
      */
-    public function font(Font|string|null $base = null, Font|string|null $monospace = null): self
+    /**
+     * @param list<FontFeature|string>|null $features
+     */
+    public function font(Font|string|null $base = null, Font|string|null $monospace = null, ?int $baseWeight = null, ?array $features = null): self
     {
         $this->baseFont = null === $base ? null : self::validateFont($base, monospace: false);
         $this->monospaceFont = null === $monospace ? null : self::validateFont($monospace, monospace: true);
+        $this->baseFontWeight = null === $baseWeight ? null : self::validateFontWeight($baseWeight);
+        $this->baseFontFeatures = null === $features ? null : self::validateFontFeatures($features);
 
         return $this;
     }
@@ -224,7 +244,45 @@ final class Theme
             $this->primaryOnSurface,
             $this->baseFont,
             $this->monospaceFont,
+            $this->baseFontWeight,
+            $this->baseFontFeatures,
         );
+    }
+
+    private static function validateFontWeight(int $weight): int
+    {
+        if ($weight < 100 || $weight > 900) {
+            throw new \InvalidArgumentException(sprintf('The "%d" value given as the base weight of the font() method is not valid. Use a number between 100 and 900 (e.g. 400 for regular text).', $weight));
+        }
+
+        return $weight;
+    }
+
+    /**
+     * @param array<mixed> $features
+     *
+     * @return list<string>
+     */
+    private static function validateFontFeatures(array $features): array
+    {
+        $settings = [];
+        foreach ($features as $feature) {
+            if ($feature instanceof FontFeature) {
+                $settings[] = $feature->value;
+
+                continue;
+            }
+
+            // the tags are emitted verbatim inside an inline <style> element, so this
+            // validation also prevents CSS injection
+            if (!\is_string($feature) || 1 !== preg_match('/^[A-Za-z0-9]{4}$/', $feature)) {
+                throw new \InvalidArgumentException(sprintf('The "%s" value given in the features of the font() method is not valid. Use a FontFeature case (e.g. FontFeature::TabularNumbers) or the 4-character tag of an OpenType feature (e.g. "ss01").', \is_string($feature) ? $feature : get_debug_type($feature)));
+            }
+
+            $settings[] = sprintf('"%s" 1', $feature);
+        }
+
+        return array_values(array_unique($settings));
     }
 
     // remote font names are emitted verbatim in a URL and inside an inline

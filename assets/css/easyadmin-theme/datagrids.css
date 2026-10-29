@@ -110,7 +110,8 @@ table.datagrid:not(.datagrid-empty) tr:not(.empty-row) td.actions.actions-as-dro
 }
 .datagrid td {
     box-shadow: inset 0 1px 0 var(--table-cell-border-color);
-    padding: var(--ea-sp-4);
+    /* 41px rows at the default spacing; they shrink with the rest of the UI */
+    padding: var(--ea-sp-5) var(--ea-sp-4);
     line-height: var(--line-height-normal);
 }
 .datagrid tbody {

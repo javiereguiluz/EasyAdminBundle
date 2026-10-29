@@ -26,11 +26,20 @@ body {
     color: var(--text-color);
     font-family: var(--font-family-base);
     font-size: var(--font-size-base);
+    font-feature-settings: var(--font-feature-settings);
+    font-size-adjust: var(--font-size-adjust);
+    font-weight: var(--font-weight-normal);
     /* grayscale antialiasing on macOS (the only platform where these apply), as
        shadcn/ui, Radix and most modern UIs do; text looks crisper and lighter,
        especially light text on dark backgrounds */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+/* icon fonts are drawn at the font size, so 'font-size-adjust' (which scales text
+   fonts by their x-height) must not change them */
+:where(.fa, .fas, .far, .fab, .fal, .fad, .fa-solid, .fa-regular, .fa-brands, [class^="fa-"], [class*=" fa-"]) {
+    font-size-adjust: none;
 }
 
 /* Needed because we always add 'fa fa-' to the given icon name, so these
@@ -155,6 +164,14 @@ pre {
     color: var(--code-color);
     font-family: var(--font-family-monospace);
     font-size: var(--font-size-sm);
+}
+/* the font features of Theme::font() only apply to the base font, so the elements
+   that use the monospace font don't inherit them */
+code,
+kbd,
+pre,
+samp {
+    font-feature-settings: normal;
 }
 pre {
     line-height: var(--line-height-relaxed);
@@ -778,6 +795,11 @@ a.user-menu-wrapper .user-details:hover {
     clip-path: inset(0 -100vw -100vh -100vw);
     display: grid;
     justify-items: end;
+    /* 'clip-path' creates a stacking context, so the z-index of the dropdowns opened
+       from these actions only works inside it; this puts the whole stack (and so its
+       dropdowns) above the rest of the page contents */
+    position: relative;
+    z-index: var(--zindex-900);
 }
 .page-actions-stack > * {
     grid-area: 1 / 1;

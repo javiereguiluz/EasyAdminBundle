@@ -86,6 +86,7 @@ class ThemeControllerTest extends AbstractCrudTestCase
         static::assertSame('', $fontPreloads->attr('crossorigin'));
 
         static::assertStringContainsString('--font-family-sans-serif: "Inter Variable", "Inter Variable Fallback", var(--font-family-system-sans-serif);', $headHtmlContents);
+        static::assertStringContainsString('--font-weight-normal: 435;', $headHtmlContents);
         static::assertStringContainsString('--font-family-monospace: "JetBrains Mono Variable", "JetBrains Mono Variable Fallback", var(--font-family-system-monospace);', $headHtmlContents);
 
         static::assertCount(0, $crawler->filter('head link[rel="preconnect"]'));
@@ -118,6 +119,9 @@ class ThemeControllerTest extends AbstractCrudTestCase
         static::assertSame('https://fonts.bunny.net/css2?family=Lexend:wght@400;500;600&family=Fira+Code:wght@400;500;600&display=swap', $crawler->filter('head link[rel="stylesheet"][href^="https://fonts.bunny.net"]')->attr('href'));
         static::assertCount(0, $crawler->filter('head link[rel="preload"][as="font"]'));
         static::assertStringContainsString('--font-family-sans-serif: "Lexend", var(--font-family-system-sans-serif);', $headHtmlContents);
+        static::assertStringContainsString('--font-weight-normal: 400;', $headHtmlContents);
+        // the quotes of the feature tags must not be escaped inside the <style> element
+        static::assertStringContainsString('--font-feature-settings: "tnum" 1, "ss01" 1;', $headHtmlContents);
         static::assertStringContainsString('--font-family-monospace: "Fira Code", var(--font-family-system-monospace);', $headHtmlContents);
     }
 
@@ -128,7 +132,7 @@ class ThemeControllerTest extends AbstractCrudTestCase
 
         $fontPreloads = $crawler->filter('head link[rel="preload"][as="font"]');
         static::assertCount(1, $fontPreloads);
-        static::assertMatchesRegularExpression('#/bundles/easyadmin/fonts/ibm-plex-sans-latin-wght-normal\.[0-9a-f]+\.woff2$#', $fontPreloads->attr('href'));
+        static::assertMatchesRegularExpression('#/bundles/easyadmin/fonts/inter-latin-wght-normal\.[0-9a-f]+\.woff2$#', $fontPreloads->attr('href'));
         static::assertCount(0, $crawler->filter('head link[rel="preconnect"]'));
         static::assertStringNotContainsString('--font-family', $headHtmlContents);
     }

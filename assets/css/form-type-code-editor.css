@@ -6,6 +6,7 @@
 @layer ea.components {
     .CodeMirror {
         font-family: var(--font-family-monospace);
+        font-feature-settings: normal;
         font-size: var(--font-size-sm);
         line-height: var(--line-height-normal);
         block-size: auto;

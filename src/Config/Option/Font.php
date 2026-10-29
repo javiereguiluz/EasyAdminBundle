@@ -14,7 +14,8 @@ enum Font: string
     case System = 'System';
     case Inter = 'Inter';
     case IbmPlexSans = 'IBM Plex Sans';
-    case Geist = 'Geist';
+    case Rubik = 'Rubik';
+    case AtkinsonHyperlegibleNext = 'Atkinson Hyperlegible Next';
     // the only monospace font of this list
     case JetBrainsMono = 'JetBrains Mono';
 }

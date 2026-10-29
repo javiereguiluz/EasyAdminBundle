@@ -239,6 +239,7 @@ label.form-check-label {
 .code input.form-control,
 .code textarea.form-control {
     font-family: var(--font-family-monospace) !important;
+    font-feature-settings: normal;
 }
 
 .field-group .long .form-control,

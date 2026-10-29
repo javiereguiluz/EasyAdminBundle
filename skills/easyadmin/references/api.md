@@ -39,6 +39,7 @@ each class declares itself. A `self` return type means the call is chainable.
 - [Config\Option\ColorScheme](#configoptioncolorscheme)
 - [Config\Option\EA](#configoptionea)
 - [Config\Option\Font](#configoptionfont)
+- [Config\Option\FontFeature](#configoptionfontfeature)
 - [Config\Option\GrayScale](#configoptiongrayscale)
 - [Config\Option\IconSet](#configoptioniconset)
 - [Config\Option\ReplacedFileBehavior](#configoptionreplacedfilebehavior)
@@ -501,11 +502,21 @@ const SORT = 'sort'
 ## Config\Option\Font
 
 ```
-const Geist = …
+const AtkinsonHyperlegibleNext = …
 const IbmPlexSans = …
 const Inter = …
 const JetBrainsMono = …
+const Rubik = …
 const System = …
+```
+
+## Config\Option\FontFeature
+
+```
+const NoContextualAlternates = …
+const NoLigatures = …
+const SlashedZero = …
+const TabularNumbers = …
 ```
 
 ## Config\Option\GrayScale
@@ -604,7 +615,7 @@ const YELLOW = 'yellow'
 ```
 static new(): self
 
-font(Font|string|null $base = null, Font|string|null $monospace = null): self
+font(Font|string|null $base = null, Font|string|null $monospace = null, ?int $baseWeight = null, ?array $features = null): self
 getAsDto(): ThemeDto
 grays(string $grayScale, ?string $dark = null): self
 primaryColor(string $color, ?string $dark = null): self

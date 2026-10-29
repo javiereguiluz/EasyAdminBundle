@@ -38,7 +38,7 @@ Encore
 
     // the font files are copied by the url() of assets/css/easyadmin-theme/fonts.css;
     // their OFL license must be distributed with them
-    .copyFiles(['inter', 'ibm-plex-sans', 'geist', 'jetbrains-mono'].map((font) => ({
+    .copyFiles(['inter', 'ibm-plex-sans', 'rubik', 'atkinson-hyperlegible-next', 'jetbrains-mono'].map((font) => ({
         from: `./node_modules/@fontsource-variable/${font}`,
         pattern: /LICENSE$/,
         includeSubdirectories: false,

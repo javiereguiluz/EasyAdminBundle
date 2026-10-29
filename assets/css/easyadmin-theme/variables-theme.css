@@ -20,9 +20,11 @@
     --font-family-system-monospace: ui-monospace, "Roboto Mono", SFMono-Regular, Menlo, Monaco, Consolas,
         "Liberation Mono", "Courier New", monospace;
     /* the bundled fonts are defined in fonts.css; Theme::font() overrides these */
-    --font-family-sans-serif: "IBM Plex Sans Variable", "IBM Plex Sans Variable Fallback",
-        var(--font-family-system-sans-serif);
-    --font-family-monospace: "JetBrains Mono", var(--font-family-system-monospace);
+    --font-family-sans-serif: "Inter Variable", "Inter Variable Fallback", var(--font-family-system-sans-serif);
+    /* a locally installed "JetBrains Mono" goes before the metric-matched fallback, so
+       it's displayed while the bundled font loads */
+    --font-family-monospace: "JetBrains Mono Variable", "JetBrains Mono", "JetBrains Mono Variable Fallback",
+        var(--font-family-system-monospace);
     --font-family-base: var(--font-family-sans-serif);
 
     --font-size-xs: 12px;
@@ -33,7 +35,17 @@
     --font-size-xxl: 24px;
     --font-size-xxxl: 28px;
 
-    --font-weight-normal: 400;
+    /* the weight of regular text; it's a bit more than 400 because, with the grayscale
+       antialiasing of macOS, the default font looks too thin at 400 (the weight of
+       each font is set so all of them look equally bold, see ThemeDto) */
+    --font-weight-normal: 435;
+    /* all fonts (bundled, from Bunny Fonts and the system ones) are scaled so their
+       x-height is this ratio of the font size; then, they all look the same size at
+       the same font size (0.54 is a bit less than the x-height of Inter, the biggest
+       of the bundled fonts) */
+    --font-size-adjust: 0.54;
+    /* the OpenType features of the base font (see Theme::font()) */
+    --font-feature-settings: normal;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
@@ -104,14 +116,14 @@
     --sidebar-menu-items-padding-left: var(--ea-sp-3);
     --sidebar-menu-items-padding-right: var(--ea-sp-5);
     /* half a step lighter than gray-700: readable but not as strong as the regular text */
-    --sidebar-menu-color: color-mix(in oklab, var(--gray-700) 50%, var(--gray-600));
+    --sidebar-menu-color: var(--gray-800);
     --sidebar-menu-badge-bg: var(--gray-200);
     --sidebar-menu-badge-color: var(--gray-500);
     --sidebar-menu-badge-active-bg: var(--ea-primary);
     --sidebar-menu-badge-active-color: var(--text-on-primary);
     --sidebar-menu-submenu-color: var(--gray-600);
     --sidebar-menu-header-color: var(--gray-400);
-    --sidebar-menu-icon-color: var(--gray-500);
+    --sidebar-menu-icon-color: var(--gray-600);
     /* half a step lighter than gray-200, but still darker than the gray-100 hover background */
     --sidebar-menu-active-item-bg: color-mix(in oklab, var(--gray-200) 50%, var(--gray-100));
     --sidebar-menu-active-item-color: var(--color-primary);
@@ -183,7 +195,7 @@
     --table-thead-marker-color: var(--gray-400);
     --table-cell-border-color: var(--gray-200);
     --table-hover-cell-bg: var(--gray-50);
-    --table-selected-cell-bg: var(--gray-200);
+    --table-selected-cell-bg: color-mix(in oklab, var(--gray-200) 50%, var(--gray-100));
     --table-thead-sorted-color: var(--table-cell-color);
     --table-thead-sorted-marker-color: var(--table-cell-color);
     --datalist-border-color: var(--gray-200);
@@ -632,14 +644,14 @@
     --sidebar-border-color: var(--gray-800);
     --sidebar-logo-color: var(--gray-200);
     /* half a step darker than gray-300: readable but not as bright as the regular text */
-    --sidebar-menu-color: color-mix(in oklab, var(--gray-300) 50%, var(--gray-400));
+    --sidebar-menu-color: var(--gray-300);
     --sidebar-menu-badge-bg: var(--gray-800);
     --sidebar-menu-badge-color: var(--gray-300);
     --sidebar-menu-badge-active-bg: var(--ea-primary-strong);
     --sidebar-menu-badge-active-color: var(--text-on-primary);
     --sidebar-menu-submenu-color: var(--gray-400);
     --sidebar-menu-header-color: var(--gray-400);
-    --sidebar-menu-icon-color: var(--gray-400);
+    --sidebar-menu-icon-color: color-mix(in oklab, var(--gray-300) 50%, var(--gray-400));
     /* like the light scheme: the hover background is one step lighter than the
        sidebar and the active item background two steps lighter */
     --sidebar-menu-active-item-bg: var(--gray-800);
@@ -1043,7 +1055,7 @@
     --bs-body-color: var(--text-color);
     --bs-body-font-family: var(--font-family-base);
     --bs-body-font-size: var(--font-size-base);
-    --bs-body-font-weight: normal;
+    --bs-body-font-weight: var(--font-weight-normal);
     --bs-border-color: var(--border-color);
     --bs-border-radius-lg: var(--border-radius-lg);
     --bs-border-radius-sm: var(--border-radius-sm);

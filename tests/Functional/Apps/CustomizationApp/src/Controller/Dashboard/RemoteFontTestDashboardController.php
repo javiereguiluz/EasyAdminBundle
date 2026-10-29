@@ -5,6 +5,7 @@ namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Functional\Apps\CustomizationApp
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\FontFeature;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Theme;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
@@ -30,7 +31,7 @@ class RemoteFontTestDashboardController extends AbstractDashboardController
     {
         return Dashboard::new()
             ->setTitle('Remote Font Test')
-            ->setTheme(Theme::new()->font(base: 'Lexend', monospace: 'Fira Code'));
+            ->setTheme(Theme::new()->font(base: 'Lexend', monospace: 'Fira Code', features: [FontFeature::TabularNumbers, 'ss01']));
     }
 
     public function configureMenuItems(): iterable

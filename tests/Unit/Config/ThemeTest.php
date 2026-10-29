@@ -3,6 +3,7 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Unit\Config;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\Font;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\FontFeature;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\GrayScale;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ThemeColor;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Theme;
@@ -330,25 +331,26 @@ class ThemeTest extends TestCase
         $this->assertSame($theme, $theme->font(Font::Inter));
     }
 
-    public function testDefaultFontsEmitNoCssVariablesAndPreloadIbmPlexSans(): void
+    public function testDefaultFontsEmitNoCssVariablesAndPreloadInter(): void
     {
         $themeDto = Theme::new()->getAsDto();
 
         $this->assertNull($themeDto->getBaseFont());
         $this->assertNull($themeDto->getMonospaceFont());
-        $this->assertSame(['fonts/ibm-plex-sans-latin-wght-normal.woff2'], $themeDto->getFontPreloadPaths());
+        $this->assertSame(['fonts/inter-latin-wght-normal.woff2'], $themeDto->getFontPreloadPaths());
         $this->assertNull($themeDto->getRemoteFontStylesheetUrl());
         $this->assertFalse($themeDto->hasCssVariables());
     }
 
     #[DataProvider('provideBundledBaseFonts')]
-    public function testBundledBaseFont(Font $font, string $fontFamily, string $fileName): void
+    public function testBundledBaseFont(Font $font, string $fontFamily, string $fileName, string $textWeight): void
     {
         $themeDto = Theme::new()->font(base: $font)->getAsDto();
         $cssVariables = $themeDto->getCssVariables()['common'];
 
         $this->assertSame($font, $themeDto->getBaseFont());
         $this->assertSame(sprintf('"%1$s", "%1$s Fallback", var(--font-family-system-sans-serif)', $fontFamily), $cssVariables['--font-family-sans-serif']);
+        $this->assertSame($textWeight, $cssVariables['--font-weight-normal']);
         $this->assertArrayNotHasKey('--font-family-monospace', $cssVariables);
         $this->assertSame([sprintf('fonts/%s-latin-wght-normal.woff2', $fileName)], $themeDto->getFontPreloadPaths());
         $this->assertNull($themeDto->getRemoteFontStylesheetUrl());
@@ -356,9 +358,10 @@ class ThemeTest extends TestCase
 
     public static function provideBundledBaseFonts(): iterable
     {
-        yield [Font::Inter, 'Inter Variable', 'inter'];
-        yield [Font::IbmPlexSans, 'IBM Plex Sans Variable', 'ibm-plex-sans'];
-        yield [Font::Geist, 'Geist Variable', 'geist'];
+        yield [Font::Inter, 'Inter Variable', 'inter', '435'];
+        yield [Font::IbmPlexSans, 'IBM Plex Sans Variable', 'ibm-plex-sans', '435'];
+        yield [Font::Rubik, 'Rubik Variable', 'rubik', '390'];
+        yield [Font::AtkinsonHyperlegibleNext, 'Atkinson Hyperlegible Next Variable', 'atkinson-hyperlegible-next', '410'];
     }
 
     public function testBundledMonospaceFont(): void
@@ -369,8 +372,9 @@ class ThemeTest extends TestCase
         $this->assertNull($themeDto->getBaseFont());
         $this->assertSame('"JetBrains Mono Variable", "JetBrains Mono Variable Fallback", var(--font-family-system-monospace)', $cssVariables['--font-family-monospace']);
         $this->assertArrayNotHasKey('--font-family-sans-serif', $cssVariables);
+        $this->assertArrayNotHasKey('--font-weight-normal', $cssVariables);
         // the monospace font is never preloaded (most pages don't use it)
-        $this->assertSame(['fonts/ibm-plex-sans-latin-wght-normal.woff2'], $themeDto->getFontPreloadPaths());
+        $this->assertSame(['fonts/inter-latin-wght-normal.woff2'], $themeDto->getFontPreloadPaths());
     }
 
     public function testSystemFonts(): void
@@ -379,6 +383,7 @@ class ThemeTest extends TestCase
 
         $this->assertSame([
             '--font-family-sans-serif' => 'var(--font-family-system-sans-serif)',
+            '--font-weight-normal' => '400',
             '--font-family-monospace' => 'var(--font-family-system-monospace)',
         ], $themeDto->getCssVariables()['common']);
         $this->assertSame([], $themeDto->getFontPreloadPaths());
@@ -392,6 +397,8 @@ class ThemeTest extends TestCase
 
         $this->assertSame('Open Sans', $themeDto->getBaseFont());
         $this->assertSame('"Open Sans", var(--font-family-system-sans-serif)', $cssVariables['--font-family-sans-serif']);
+        // Bunny Fonts serves static weights, so in-between weights would fall back to 400 anyway
+        $this->assertSame('400', $cssVariables['--font-weight-normal']);
         $this->assertSame('"Fira Code", var(--font-family-system-monospace)', $cssVariables['--font-family-monospace']);
         $this->assertSame([], $themeDto->getFontPreloadPaths());
         $this->assertSame('https://fonts.bunny.net/css2?family=Open+Sans:wght@400;500;600&family=Fira+Code:wght@400;500;600&display=swap', $themeDto->getRemoteFontStylesheetUrl());
@@ -401,7 +408,7 @@ class ThemeTest extends TestCase
     {
         $themeDto = Theme::new()->font(monospace: 'Fira Code')->getAsDto();
 
-        $this->assertSame(['fonts/ibm-plex-sans-latin-wght-normal.woff2'], $themeDto->getFontPreloadPaths());
+        $this->assertSame(['fonts/inter-latin-wght-normal.woff2'], $themeDto->getFontPreloadPaths());
         $this->assertSame('https://fonts.bunny.net/css2?family=Fira+Code:wght@400;500;600&display=swap', $themeDto->getRemoteFontStylesheetUrl());
     }
 
@@ -419,7 +426,82 @@ class ThemeTest extends TestCase
         yield ['Inter', Font::Inter];
         yield ['inter', Font::Inter];
         yield [' IBM  Plex  Sans ', Font::IbmPlexSans];
-        yield ['GEIST', Font::Geist];
+        yield ['IBM PLEX SANS', Font::IbmPlexSans];
+        yield ['Rubik', Font::Rubik];
+        yield ['atkinson hyperlegible next', Font::AtkinsonHyperlegibleNext];
+    }
+
+    public function testBaseFontWeight(): void
+    {
+        $themeDto = Theme::new()->font(base: Font::Inter, baseWeight: 450)->getAsDto();
+
+        $this->assertSame(450, $themeDto->getBaseFontWeight());
+        $this->assertSame('450', $themeDto->getCssVariables()['common']['--font-weight-normal']);
+    }
+
+    public function testBaseFontWeightOfTheDefaultFont(): void
+    {
+        $cssVariables = Theme::new()->font(baseWeight: 400)->getAsDto()->getCssVariables()['common'];
+
+        $this->assertSame(['--font-weight-normal' => '400'], $cssVariables);
+    }
+
+    #[DataProvider('provideInvalidFontWeights')]
+    public function testInvalidBaseFontWeightsAreRejected(int $weight): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('given as the base weight of the font() method is not valid');
+
+        Theme::new()->font(baseWeight: $weight);
+    }
+
+    public static function provideInvalidFontWeights(): iterable
+    {
+        yield [0];
+        yield [99];
+        yield [901];
+    }
+
+    public function testFontFeatures(): void
+    {
+        $themeDto = Theme::new()->font(features: [FontFeature::TabularNumbers, FontFeature::NoContextualAlternates, 'ss01', FontFeature::TabularNumbers])->getAsDto();
+
+        $this->assertSame(['"tnum" 1', '"calt" 0', '"ss01" 1'], $themeDto->getBaseFontFeatures());
+        $this->assertSame('"tnum" 1, "calt" 0, "ss01" 1', $themeDto->getCssVariables()['common']['--font-feature-settings']);
+    }
+
+    public function testFontFeaturesAreNotDefinedByDefault(): void
+    {
+        $themeDto = Theme::new()->font(base: Font::Inter)->getAsDto();
+
+        $this->assertNull($themeDto->getBaseFontFeatures());
+        $this->assertArrayNotHasKey('--font-feature-settings', $themeDto->getCssVariables()['common']);
+    }
+
+    public function testEmptyFontFeaturesDisableAllFeatures(): void
+    {
+        $cssVariables = Theme::new()->font(features: [])->getAsDto()->getCssVariables()['common'];
+
+        $this->assertSame('normal', $cssVariables['--font-feature-settings']);
+    }
+
+    #[DataProvider('provideInvalidFontFeatures')]
+    public function testInvalidFontFeaturesAreRejected(mixed $feature): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('given in the features of the font() method is not valid');
+
+        Theme::new()->font(features: [$feature]);
+    }
+
+    public static function provideInvalidFontFeatures(): iterable
+    {
+        yield 'too short' => ['ss1'];
+        yield 'too long' => ['ss010'];
+        yield 'CSS value' => ['"zero" 1'];
+        yield 'CSS injection' => ['a;}b'];
+        yield 'empty' => [''];
+        yield 'not a string' => [42];
     }
 
     #[DataProvider('provideInvalidRemoteFontNames')]
@@ -474,8 +556,9 @@ class ThemeTest extends TestCase
     {
         yield [Font::Inter];
         yield [Font::IbmPlexSans];
-        yield [Font::Geist];
+        yield [Font::Rubik];
+        yield [Font::AtkinsonHyperlegibleNext];
         // the names of bundled fonts are resolved to the bundled fonts
-        yield ['Geist'];
+        yield ['Inter'];
     }
 }

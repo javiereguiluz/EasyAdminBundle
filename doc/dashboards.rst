@@ -260,7 +260,7 @@ explained later)::
                     // the font of the text and the font of code. Use a Font enum case
                     // for the fonts bundled with EasyAdmin or a string with the name
                     // of any Google Fonts family (e.g. 'Lexend'). Both are optional
-                    ->font(base: Font::Inter, monospace: Font::JetBrainsMono))
+                    ->font(base: Font::IbmPlexSans, monospace: Font::JetBrainsMono))
 
                 // by default, all backend URLs are generated as absolute URLs. If you
                 // need to generate relative URLs instead, call this method
@@ -301,8 +301,8 @@ customize the look of your backend with your own assets and templates.
 Fonts
 ~~~~~
 
-By default, the backend displays text with the `IBM Plex Sans`_ font and code
-with the monospace fonts of the operating system. Use the ``font()`` method of
+By default, the backend displays text with the `Inter`_ font and code
+with the `JetBrains Mono`_ font. Use the ``font()`` method of
 the ``Theme`` object to change them. It defines two optional arguments: ``base``
 (the font of all the text) and ``monospace`` (the font of code, such as the
 contents of the code editor field).
@@ -314,13 +314,14 @@ cases of the ``Font`` enum::
     use EasyCorp\Bundle\EasyAdminBundle\Config\Option\Font;
     use EasyCorp\Bundle\EasyAdminBundle\Config\Theme;
 
-    // the bundled fonts for text are Font::Inter, Font::IbmPlexSans and Font::Geist
-    // and the bundled font for code is Font::JetBrainsMono
-    Theme::new()->font(base: Font::Geist, monospace: Font::JetBrainsMono);
+    // the bundled fonts for text are Font::Inter, Font::IbmPlexSans,
+    // Font::Rubik and Font::AtkinsonHyperlegibleNext, and the bundled
+    // font for code is Font::JetBrainsMono
+    Theme::new()->font(base: Font::IbmPlexSans);
 
     // Font::System uses the fonts of the operating system (Segoe UI on Windows,
-    // San Francisco on macOS, etc.), which were the default fonts before EasyAdmin 5.7
-    Theme::new()->font(base: Font::System);
+    // San Francisco on macOS, etc.), which were the default fonts before EasyAdmin 5.9
+    Theme::new()->font(base: Font::System, monospace: Font::System);
 
 You can also pass a string with the name of any font from `Google Fonts`_.
 These fonts are loaded from `Bunny Fonts`_, a privacy-friendly mirror of Google
@@ -349,6 +350,42 @@ EasyAdmin applies some optimizations to make fonts fast and stable:
   ready;
 * The languages not supported by the selected font (e.g. Arabic, Hebrew or
   Chinese) are displayed with the fonts of the operating system.
+* Each bundled font defines its own font weight for regular text (a bit more
+  than ``400``), so all of them look equally bold;
+* All fonts (including the ones of Google Fonts and the system fonts) are
+  scaled with the ``font-size-adjust`` CSS property so their lowercase letters
+  have the same height and they look the same size. To change this, override
+  the ``--font-size-adjust`` CSS variable (e.g. ``0.5`` makes the text a bit
+  smaller and ``none`` disables the scaling).
+
+The ``font()`` method also defines two optional arguments to customize the font
+of the text. ``baseWeight`` is the font weight of regular text. ``features``
+enables or disables some `OpenType features`_ of the font. Use the cases of the
+``FontFeature`` enum for the most common features, or the 4-character tag of any
+other feature::
+
+    use EasyCorp\Bundle\EasyAdminBundle\Config\Option\Font;
+    use EasyCorp\Bundle\EasyAdminBundle\Config\Option\FontFeature;
+    use EasyCorp\Bundle\EasyAdminBundle\Config\Theme;
+
+    Theme::new()->font(
+        base: Font::Inter,
+        baseWeight: 450,
+        // displays all digits with the same width and enables the 'ss01' feature
+        features: [FontFeature::TabularNumbers, 'ss01'],
+    );
+
+Keep in mind that:
+
+* In-between weights (e.g. ``450``) only work as expected with variable fonts,
+  such as the bundled fonts. With other fonts, browsers display the ``500``
+  weight for any value between ``401`` and ``500``;
+* Fonts only apply the features included in their files. The files of Google
+  Fonts (and of the bundled fonts, which come from them) often include fewer
+  features than the original fonts. The features don't apply to code, which
+  uses the monospace font;
+* Each call to ``font()`` defines all the font options, so the arguments that
+  you don't pass use their default values.
 
 To use any other font (e.g. the font of your company), load it in a CSS file
 added with :ref:`the addCssFile() method <crud-design-custom-web-assets>` and
@@ -1421,7 +1458,9 @@ forms and they will look exactly like the rest of the backend forms:
 .. _`custom Symfony route loader`: https://symfony.com/doc/current/routing/custom_route_loader.html
 .. _`Symfony UX Icons`: https://symfony.com/bundles/ux-icons/current/index.html
 .. _`Symfony Flex`: https://symfony.com/doc/current/setup/flex.html
-.. _`IBM Plex Sans`: https://www.ibm.com/plex/
+.. _`Inter`: https://rsms.me/inter/
+.. _`JetBrains Mono`: https://www.jetbrains.com/lp/mono/
 .. _`Google Fonts`: https://fonts.google.com/
 .. _`Bunny Fonts`: https://fonts.bunny.net/
+.. _`OpenType features`: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_fonts/OpenType_fonts_guide
 .. _`Content Security Policy`: https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP

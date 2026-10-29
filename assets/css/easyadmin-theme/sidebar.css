@@ -166,7 +166,7 @@ body.ea-mobile-sidebar-visible .ea-sidebar {
 /* Items
    ========================================================================= */
 .ea-sidebar-item {
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-lg);
     padding-inline-start: var(--sidebar-menu-items-padding-left);
     padding-inline-end: var(--ea-sp-2);
     position: relative;
@@ -193,7 +193,9 @@ body.ea-mobile-sidebar-visible .ea-sidebar {
     display: flex;
     font: inherit;
     inline-size: 100%;
-    padding: var(--ea-sp-2) 0;
+    /* 20px at the default 14px font size, so the items are 32px tall */
+    line-height: calc(20em / 14);
+    padding: var(--ea-sp-3) 0;
     text-align: start;
 }
 
@@ -215,7 +217,7 @@ body.ea-mobile-sidebar-visible .ea-sidebar {
 .ea-sidebar-item-icon {
     color: var(--sidebar-menu-icon-color);
     flex-shrink: 0;
-    margin-inline-end: var(--ea-sp-5);
+    margin-inline-end: var(--ea-sp-4);
     text-align: center;
     /* no explicit block-size: the natural line box keeps the baseline (and so the
        icon) aligned with the first line of the label */
