@@ -19,6 +19,9 @@
 .list-pagination-counter {
     color: var(--pagination-color);
 }
+.list-pagination-counter strong {
+    font-weight: var(--font-weight-medium);
+}
 
 .pager .pagination {
     --bs-pagination-font-size: var(--font-size-sm);
@@ -32,6 +35,7 @@
     }
 }
 .page-item .page-link {
+    font-weight: var(--font-weight-normal);
     white-space: nowrap;
 }
 .page-item.active .page-link,

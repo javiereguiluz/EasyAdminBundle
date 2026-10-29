@@ -109,7 +109,7 @@ the same pages are installed locally under `vendor/easycorp/easyadmin-bundle/doc
 - Link CRUD controllers with
   `MenuItem::linkTo(ProductCrudController::class, 'Products', 'fa fa-box')`:
   controller class first, then label, then icon. `MenuItem::linkToCrud()` was
-  removed in 5.0. <!-- src/Config/MenuItem.php::linkTo; UPGRADE.md:122-131 -->
+  removed in 5.0. <!-- src/Config/MenuItem.php::linkTo; UPGRADE.md:105-183 -->
 - The other factories put the label first:
   `MenuItem::linkToRoute('Reports', 'fa fa-chart-bar', 'app_reports', ['year' => 2026])`,
   `MenuItem::linkToUrl('Website', 'fa fa-globe', 'https://example.com')`,
@@ -139,7 +139,7 @@ the same pages are installed locally under `vendor/easycorp/easyadmin-bundle/doc
 <!-- rules:start -->
 - Declare `public static function getEntityFqcn(): string` (the base class
   does not) and add `/** @extends AbstractCrudController<Product> */` above
-  the class, otherwise PHPStan reports a missing generic type. <!-- src/Contracts/Controller/CrudControllerInterface.php::getEntityFqcn; UPGRADE.md:329-345 -->
+  the class, otherwise PHPStan reports a missing generic type. <!-- src/Contracts/Controller/CrudControllerInterface.php::getEntityFqcn; UPGRADE.md:382-397 -->
 - Overrides must keep the interface signatures: `createEntity(string $entityFqcn): ?object`
   (overrides may keep `: object`),
   `persistEntity(EntityManagerInterface $entityManager, object $entityInstance): void`,
@@ -201,7 +201,7 @@ the same pages are installed locally under `vendor/easycorp/easyadmin-bundle/doc
 - Form layout uses the static methods `FormField::addTab('Details')`,
   `FormField::addFieldset('Pricing')`, `FormField::addColumn(6)` and
   `FormField::addRow()`. `FormField::addPanel()` was removed in 5.0. The first
-  argument of `addColumn()` is the column width, not a label. <!-- src/Field/FormField.php::addFieldset; src/Field/FormField.php::addColumn; UPGRADE.md:246-257 -->
+  argument of `addColumn()` is the column width, not a label. <!-- src/Field/FormField.php::addFieldset; src/Field/FormField.php::addColumn; UPGRADE.md:299-309 -->
 - `ChoiceField`: `setChoices(['Draft' => 'draft'])`,
   `renderAsBadges(['draft' => 'warning', 'published' => 'success'])` (types:
   success, warning, danger, info, primary, secondary, light, dark),
@@ -277,7 +277,7 @@ the same pages are installed locally under `vendor/easycorp/easyadmin-bundle/doc
   `asPrimaryAction()`, `asSuccessAction()`, `asWarningAction()`,
   `asDangerAction()`, `asInfoAction()`, `asTextLink()`, and
   `askConfirmation()` for a confirmation modal. Groups use `ActionGroup::new()`
-  with `asPrimaryActionGroup()` and friends. <!-- src/Config/Action.php::renderAsForm; src/Config/Action.php::askConfirmation; src/Config/ActionGroup.php::asPrimaryActionGroup; UPGRADE.md:209-224 -->
+  with `asPrimaryActionGroup()` and friends. <!-- src/Config/Action.php::renderAsForm; src/Config/Action.php::askConfirmation; src/Config/ActionGroup.php::asPrimaryActionGroup; UPGRADE.md:262-276 -->
 - `reorder()` disables automatic ordering; `setCssClass()` and `addCssClass()`
   drop the default `.btn-*` and `.action-<name>` classes (and with them the
   selectors used by the test helpers); `displayIf()` on a global action
@@ -349,7 +349,7 @@ the same pages are installed locally under `vendor/easycorp/easyadmin-bundle/doc
 
 <!-- rules:start -->
 - The `ea` Twig global was removed; call the `ea()` function, which returns
-  `null` outside the admin. `ea_url()` returns the URL generator. <!-- src/Twig/EasyAdminTwigExtension.php::getFunctions; UPGRADE.md:108-120 -->
+  `null` outside the admin. `ea_url()` returns the URL generator. <!-- src/Twig/EasyAdminTwigExtension.php::getFunctions; UPGRADE.md:91-172 -->
 - Override page templates with `Crud::overrideTemplate('crud/index', 'admin/product/index.html.twig')`
   and field templates with `->setTemplatePath()`. The `new` and `edit` pages
   render form fields through Symfony form themes (`Crud::addFormTheme()`),
@@ -394,7 +394,7 @@ described in `vendor/easycorp/easyadmin-bundle/UPGRADE.md`.
 
 `linkToCrudAction()` itself still exists: 4.x code that uses it compiles and
 fails at render time until the target method gets `#[AdminRoute]`.
-<!-- UPGRADE.md:95-131; UPGRADE.md:139-145; UPGRADE.md:209-263; UPGRADE.md:268-278; UPGRADE.md:30-41; UPGRADE.md:329-345 -->
+<!-- UPGRADE.md:78-183; UPGRADE.md:192-197; UPGRADE.md:262-315; UPGRADE.md:321-330; UPGRADE.md:30-41; UPGRADE.md:382-397 -->
 
 ## If you see this error, do this
 

@@ -26,6 +26,11 @@ body {
     color: var(--text-color);
     font-family: var(--font-family-base);
     font-size: var(--font-size-base);
+    /* grayscale antialiasing on macOS (the only platform where these apply), as
+       shadcn/ui, Radix and most modern UIs do; text looks crisper and lighter,
+       especially light text on dark backgrounds */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Needed because we always add 'fa fa-' to the given icon name, so these
@@ -80,6 +85,7 @@ body[data-ea-icon-prefix="tabler"] span.icon svg {
 
 a {
     color: var(--link-color);
+    font-weight: var(--link-font-weight);
     text-decoration: none;
 }
 a:hover {
@@ -114,11 +120,12 @@ a:not([class], [data-bs-toggle]):hover {
     text-decoration-color: var(--link-hover-underline-color);
 }
 
-/* these Bootstrap components color their own anchors, but their rules live in
+/* these Bootstrap components style their own anchors, but their rules live in
    the 'vendor' layer, so the generic 'a' rules above would always beat them
-   (layer order trumps specificity); hand the color back to Bootstrap's own
-   cascade, which handles all their variants and states (#7768). The second
-   selector is needed because 'a:hover' out-specifies single-class selectors */
+   (layer order trumps specificity); hand the color and font weight back to
+   Bootstrap's own cascade, which handles all their variants and states (#7768).
+   The second selector is needed because 'a:hover' out-specifies single-class
+   selectors */
 :is(
         .alert-link,
         .nav-link,
@@ -140,6 +147,7 @@ a:not([class], [data-bs-toggle]):hover {
         .carousel-control-next
     ):is(:hover, :focus, :active) {
     color: revert-layer;
+    font-weight: revert-layer;
 }
 
 code,
@@ -197,16 +205,82 @@ pre {
 
 /* in wide screens, the content with the default width is centered (the header
    with the search box and the user menu keeps using the full width) */
-body:not(.ea-content-width-full) .content-wrapper {
+.content-wrapper {
     /* the explicit width is needed because the auto margins disable the
        stretching of this element inside its flex container */
     inline-size: 100%;
     margin-inline: auto;
     max-inline-size: var(--body-max-width);
 }
+/* '100%' instead of 'none' so the change of width can be animated */
+body.ea-content-width-full .content-wrapper {
+    max-inline-size: 100%;
+}
 @media (min-width: 992px) {
     body.ea-sidebar-width-compact .wrapper {
         grid-template-columns: 64px auto;
+    }
+
+    /* JavaScript adds these classes when clicking the sidebar and content toggles,
+       so the widths restored when loading the page aren't animated */
+    body.ea-content-transitions .content-wrapper {
+        transition: max-inline-size 200ms cubic-bezier(0.2, 0, 0, 1);
+    }
+    body.ea-sidebar-transitions .wrapper {
+        transition: grid-template-columns 300ms cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    body.ea-sidebar-transitions .ea-layout-toggle-sidebar {
+        transition: inset-inline-start 300ms cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    /* the compact sidebar has a different layout (centered icons, no labels, another
+       logo), so instead of showing that change, the new layout fades in while the
+       column changes its width; the sidebar is clipped meanwhile because its
+       contents are wider than the column (it uses 'clip-path' because 'overflow'
+       must stay 'visible' for its sticky footer). There are two animations with the
+       same keyframes because the animation only restarts when its name changes */
+    body.ea-sidebar-transitions.ea-sidebar-width-normal .ea-sidebar {
+        animation: ea-sidebar-clip 300ms;
+    }
+    body.ea-sidebar-transitions.ea-sidebar-width-compact .ea-sidebar {
+        animation: ea-sidebar-clip-compact 300ms;
+    }
+    body.ea-sidebar-transitions.ea-sidebar-width-normal .ea-sidebar > * {
+        animation: ea-sidebar-fade-in 250ms ease-out;
+    }
+    body.ea-sidebar-transitions.ea-sidebar-width-compact .ea-sidebar > * {
+        animation: ea-sidebar-fade-in-compact 250ms ease-out;
+    }
+}
+@keyframes ea-sidebar-clip {
+    from,
+    to {
+        clip-path: inset(0);
+    }
+}
+@keyframes ea-sidebar-clip-compact {
+    from,
+    to {
+        clip-path: inset(0);
+    }
+}
+@keyframes ea-sidebar-fade-in {
+    from {
+        opacity: 0;
+    }
+}
+@keyframes ea-sidebar-fade-in-compact {
+    from {
+        opacity: 0;
+    }
+}
+@media (min-width: 992px) and (prefers-reduced-motion: reduce) {
+    body:is(.ea-content-transitions, .ea-sidebar-transitions)
+        :is(.wrapper, .content-wrapper, .ea-layout-toggle-sidebar) {
+        transition: none;
+    }
+    body.ea-sidebar-transitions .ea-sidebar,
+    body.ea-sidebar-transitions .ea-sidebar > * {
+        animation: none;
     }
 }
 
@@ -258,6 +332,7 @@ a.user-menu-wrapper .user-details:hover {
     color: var(--user-name-color);
     cursor: pointer;
     display: flex;
+    font-weight: var(--font-weight-normal);
     -webkit-appearance: none; /* needed for Safari */
 }
 .user-menu-wrapper.user-is-impersonated a.user-details,
@@ -330,6 +405,7 @@ a.user-menu-wrapper .user-details:hover {
 .dropdown-settings .dropdown-settings-button {
     color: var(--dropdown-settings-icon-color);
     font-size: var(--icon-size-md);
+    font-weight: var(--font-weight-normal);
     padding-inline-start: var(--ea-sp-8);
 }
 
@@ -360,6 +436,13 @@ a.user-menu-wrapper .user-details:hover {
 
 .content {
     margin-block-start: 1px;
+}
+/* by default, grid items can't be narrower than the longest line of their
+   contents, so a wide table or code block would make the whole page wider
+   instead of scrolling inside its own element */
+.main-content,
+.content {
+    min-inline-size: 0;
 }
 
 /* The buttons that collapse/expand the sidebar and the content width (like the
@@ -587,18 +670,14 @@ a.user-menu-wrapper .user-details:hover {
 }
 .content-header-title .title {
     font-size: var(--font-size-xxl);
-    font-weight: var(--font-weight-bold);
+    font-weight: var(--heading-font-weight);
+    letter-spacing: var(--heading-letter-spacing);
     line-height: var(--line-height-tight);
     margin: 0;
     padding-inline-end: var(--ea-sp-8);
 }
-@media (min-width: 992px) {
-    .content-header-title .title {
-        font-size: var(--font-size-xxxl);
-    }
-}
 .content-header-title .title small {
-    color: var(--gray-600);
+    color: var(--text-muted);
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
     line-height: var(--font-size-lg);
@@ -912,6 +991,7 @@ a.user-menu-wrapper .user-details:hover {
     overflow: hidden;
     padding: var(--ea-sp-2) var(--ea-sp-3);
     font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
     line-height: 1.25rem; /* fixed length: pins the item height for the ellipsis clamp, not a type ratio */
     text-overflow: ellipsis;
 }

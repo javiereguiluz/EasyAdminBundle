@@ -17,6 +17,10 @@
         {% endguard %}
     {% endblock head_metas %}
 
+    {% block head_fonts %}
+        {{ include('@EasyAdmin/includes/_fonts.html.twig', {theme: ea.dashboardTheme, asset_package: ea.assets.defaultAssetPackageName}, with_context: false) }}
+    {% endblock head_fonts %}
+
     {% set page_title_block_output %}{% block page_title %}{{ block('content_title') }}{% endblock %}{% endset %}
     <title>{{ page_title_block_output|striptags|raw }}</title>
 
@@ -33,6 +37,9 @@
        configured by the user, so their CSS can override the theme #}
     {# these lines are not indented on purpose: Twig removes the newline found
        after each tag, so the CSS newlines must belong to the content lines #}
+    {# the values are printed with 'raw' because browsers don't decode HTML entities
+       inside <style> (e.g. the quotes of font names); it's safe because the Theme
+       class only accepts strictly validated values #}
     {% block head_theme %}
         {% set theme = ea.dashboardTheme %}
         {% if theme is not null and theme.hasCssVariables %}
@@ -45,7 +52,7 @@
 {% if themeCssVariables.common is not empty %}
 :root, .ea-dark-scheme {
 {% for name, value in themeCssVariables.common %}
-    {{ name }}: {{ value }};
+    {{ name }}: {{ value|raw }};
 {% endfor %}
 }
 {% endif %}
@@ -59,7 +66,7 @@
 {% if themeCssVariables.dark is not empty %}
 .ea-dark-scheme {
 {% for name, value in themeCssVariables.dark %}
-    {{ name }}: {{ value }};
+    {{ name }}: {{ value|raw }};
 {% endfor %}
 }
 {% endif %}
@@ -492,6 +499,102 @@
             {{ htmlContent|raw }}
         {% endfor %}
     {% endblock %}
+
+    {# TEMPORARY typography debug knobs: remove this whole block #}
+    <div id="ea-debug-knobs" style="position: fixed; inset-block-end: 8px; inset-inline-end: 8px; z-index: 99999; display: flex; flex-wrap: wrap; max-inline-size: calc(100vw - 16px); gap: 8px 16px; padding: 8px 12px; background: #fff; color: #111; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.15); font: 12px/1.3 system-ui, sans-serif; -webkit-font-smoothing: auto;"></div>
+    <script>
+        (() => {
+            const knobs = {
+                font: { label: 'Font', options: ['System', 'Inter', 'Geist', 'IBM Plex', 'Roboto', 'Atkinson Next', 'Plus Jakarta', 'Rubik'] },
+                rowHeight: { label: 'Row height', options: ['38', '41', '44'] },
+                titleSize: { label: 'Page title', options: ['24', '22', '20'] },
+            };
+            const fonts = {
+                'System': 'var(--font-family-system-sans-serif)',
+                'Inter': '"Inter Variable", "Inter Variable Fallback", var(--font-family-system-sans-serif)',
+                'Geist': '"Geist Variable", "Geist Variable Fallback", var(--font-family-system-sans-serif)',
+                'IBM Plex': '"IBM Plex Sans Variable", "IBM Plex Sans Variable Fallback", var(--font-family-system-sans-serif)',
+                // not bundled: loaded from the same package that would be bundled
+                'Roboto': '"Roboto Variable", var(--font-family-system-sans-serif)',
+                'Atkinson Next': '"Atkinson Hyperlegible Next Variable", var(--font-family-system-sans-serif)',
+                'Plus Jakarta': '"Plus Jakarta Sans Variable", var(--font-family-system-sans-serif)',
+                'Rubik': '"Rubik Variable", var(--font-family-system-sans-serif)',
+            };
+            const remoteFontStylesheets = {
+                'Roboto': ['https://cdn.jsdelivr.net/npm/@fontsource-variable/roboto@5.3.0/wght.css'],
+                'Atkinson Next': ['https://cdn.jsdelivr.net/npm/@fontsource-variable/atkinson-hyperlegible-next@5.3.0/wght.css'],
+                'Plus Jakarta': ['https://cdn.jsdelivr.net/npm/@fontsource-variable/plus-jakarta-sans@5.3.0/wght.css'],
+                'Rubik': ['https://cdn.jsdelivr.net/npm/@fontsource-variable/rubik@5.3.0/wght.css'],
+            };
+            let state = {};
+            try { state = JSON.parse(localStorage.getItem('ea-debug-knobs')) || {}; } catch (e) {}
+
+            const apply = () => {
+                // the rows are 38px tall by default; the height of a table row works as its minimum height
+                let knobStyle = document.getElementById('ea-debug-knobs-style');
+                if (null === knobStyle) {
+                    knobStyle = document.createElement('style');
+                    knobStyle.id = 'ea-debug-knobs-style';
+                    document.head.append(knobStyle);
+                }
+                const rowHeight = state.rowHeight ?? '38';
+                const titleSize = state.titleSize ?? '24';
+                knobStyle.textContent = ('38' === rowHeight ? '' : `.datagrid tbody tr { height: ${rowHeight}px; }`)
+                    + ('24' === titleSize ? '' : `.content-header-title .title { font-size: ${titleSize}px; }`);
+                const targets = [document.documentElement, document.body];
+                for (const el of targets) {
+                    if (fonts[state.font]) {
+                        el.style.setProperty('--font-family-base', fonts[state.font]);
+                    }
+                    for (const [index, href] of (remoteFontStylesheets[state.font] ?? []).entries()) {
+                        const linkId = `ea-debug-knobs-font-${state.font.replaceAll(' ', '-')}-${index}`;
+                        if (null === document.getElementById(linkId)) {
+                            const link = document.createElement('link');
+                            link.id = linkId;
+                            link.rel = 'stylesheet';
+                            link.href = href;
+                            document.head.append(link);
+                        }
+                    }
+                }
+            };
+
+            const render = () => {
+                const root = document.getElementById('ea-debug-knobs');
+                root.replaceChildren();
+                for (const [key, knob] of Object.entries(knobs)) {
+                    const current = state[key] ?? { font: 'IBM Plex', rowHeight: '38', titleSize: '24' }[key];
+                    const group = document.createElement('div');
+                    const label = document.createElement('div');
+                    label.textContent = knob.label;
+                    label.style.cssText = 'font-weight: 600; margin-block-end: 4px;';
+                    const buttons = document.createElement('div');
+                    buttons.style.cssText = 'display: flex; border: 1px solid #bbb; border-radius: 6px; overflow: hidden;';
+                    for (const option of knob.options) {
+                        const button = document.createElement('button');
+                        button.type = 'button';
+                        button.textContent = option;
+                        const active = option === current;
+                        button.style.cssText = `all: unset; cursor: pointer; padding: 3px 9px; font: inherit; border-inline-start: 1px solid #bbb; background: ${active ? '#111' : '#fff'}; color: ${active ? '#fff' : '#111'};`;
+                        button.addEventListener('click', () => {
+                            state[key] = option;
+                            try { localStorage.setItem('ea-debug-knobs', JSON.stringify(state)); } catch (e) {}
+                            apply();
+                            render();
+                        });
+                        buttons.append(button);
+                    }
+                    buttons.firstChild.style.borderInlineStart = '0';
+                    group.append(label, buttons);
+                    root.append(group);
+                }
+            };
+
+            apply();
+            render();
+        })();
+    </script>
+    {# end of TEMPORARY typography debug knobs #}
     </body>
 {% endblock body %}
 </html>

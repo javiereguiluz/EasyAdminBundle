@@ -157,6 +157,7 @@ class App {
                 : 'normal';
             const newValue = 'normal' === oldValue ? alternativeWidth : 'normal';
 
+            document.body.classList.add(`ea-${layoutPart}-transitions`);
             document.body.classList.remove(`ea-${layoutPart}-width-${oldValue}`);
             document.body.classList.add(`ea-${layoutPart}-width-${newValue}`);
             localStorage.setItem(localStorageKey, newValue);
