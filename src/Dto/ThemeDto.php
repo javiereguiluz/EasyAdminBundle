@@ -32,16 +32,18 @@ final readonly class ThemeDto
     // used by the pages rendered without a dashboard (e.g. the login page)
     public const DEFAULT_FONT_PRELOAD_PATH = 'fonts/'.self::BUNDLED_FONT_FILE_PREFIXES[self::DEFAULT_BASE_FONT->name].'-latin-wght-normal.woff2';
 
-    // the weight of regular text for each bundled font, chosen so all of them look
-    // equally bold (with the same stroke width relative to their x-height); system
-    // fonts and Bunny Fonts use 400 because their files usually have static weights
-    private const BUNDLED_FONT_TEXT_WEIGHTS = [
-        'Inter' => 435,
-        'IbmPlexSans' => 435,
-        'Rubik' => 390,
-        'AtkinsonHyperlegibleNext' => 410,
+    // the normal, medium, semibold and bold weights of each bundled font, chosen so all
+    // of them look equally bold (with the same stroke width relative to their x-height
+    // as Inter); e.g. Rubik is a heavy font, so its 500 weight looks like Inter 570;
+    // system fonts and Bunny Fonts use the standard weights because their files
+    // usually have static weights
+    private const BUNDLED_FONT_WEIGHTS = [
+        'Inter' => [435, 500, 600, 700],
+        'IbmPlexSans' => [435, 480, 565, 655],
+        'Rubik' => [390, 425, 475, 550],
+        'AtkinsonHyperlegibleNext' => [410, 450, 550, 665],
     ];
-    private const STATIC_FONT_TEXT_WEIGHT = 400;
+    private const STATIC_FONT_WEIGHTS = [400, 500, 600, 700];
 
     // Bunny Fonts serves static font files, so the stylesheet only lists the weights
     // used by the theme; bold text (700) uses the 600 file, the closest one available
@@ -224,7 +226,10 @@ final readonly class ThemeDto
 
         if (null !== $this->baseFont) {
             $common['--font-family-sans-serif'] = self::getFontFamily($this->baseFont, '--font-family-system-sans-serif');
-            $common['--font-weight-normal'] = (string) ($this->baseFont instanceof Font ? self::BUNDLED_FONT_TEXT_WEIGHTS[$this->baseFont->name] ?? self::STATIC_FONT_TEXT_WEIGHT : self::STATIC_FONT_TEXT_WEIGHT);
+            $fontWeights = $this->baseFont instanceof Font ? self::BUNDLED_FONT_WEIGHTS[$this->baseFont->name] ?? self::STATIC_FONT_WEIGHTS : self::STATIC_FONT_WEIGHTS;
+            foreach (['normal', 'medium', 'semibold', 'bold'] as $i => $weightName) {
+                $common['--font-weight-'.$weightName] = (string) $fontWeights[$i];
+            }
         }
 
         if (null !== $this->baseFontWeight) {

@@ -36,8 +36,9 @@
     --font-size-xxxl: 28px;
 
     /* the weight of regular text; it's a bit more than 400 because, with the grayscale
-       antialiasing of macOS, the default font looks too thin at 400 (the weight of
-       each font is set so all of them look equally bold, see ThemeDto) */
+       antialiasing of macOS, the default font looks too thin at 400 (each font sets
+       its own normal, medium, semibold and bold weights so all of them look equally
+       bold, see ThemeDto) */
     --font-weight-normal: 435;
     /* all fonts (bundled, from Bunny Fonts and the system ones) are scaled so their
        x-height is this ratio of the font size; then, they all look the same size at

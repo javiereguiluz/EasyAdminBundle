@@ -686,6 +686,11 @@ etc.) so they look good without writing any CSS. These styles are called
   badges, buttons, tables with the ``table`` class, etc.), Bootstrap
   typography classes (``h1`` to ``h6``, ``display-*``, ``list-unstyled``,
   etc.) and forms keep their own styles;
+* Other elements (such as ``<div>``, ``<section>`` and components) get the
+  same space above them as a paragraph when they follow a text element, so
+  they never stick to it. The items of Bootstrap flex and grid containers
+  (``d-flex``, ``d-grid``, ``row``, etc.) don't get that space, so they stay
+  aligned;
 * Add the ``ea-not-prose`` CSS class (or the ``data-ea-not-prose`` attribute)
   to exclude any other part of the contents. Excluded elements use the default
   typography of the backend.

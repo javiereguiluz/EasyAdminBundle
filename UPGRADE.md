@@ -116,9 +116,11 @@ and `--font-family-system-monospace` CSS variables, which are used at the end of
 
 Regular text now uses a `435` font weight (the new value of `--font-weight-normal`)
 instead of `400`, because the default font looked too thin on macOS. Each bundled
-font defines its own weight, and all fonts are scaled to the same x-height with the
-new `--font-size-adjust` variable (`0.54`), so they look the same size and equally
-bold. System fonts and Bunny Fonts keep the `400` weight.
+font defines its own weights (`--font-weight-normal`, `--font-weight-medium`,
+`--font-weight-semibold` and `--font-weight-bold`), and all fonts are scaled to the
+same x-height with the new `--font-size-adjust` variable (`0.54`), so they look the
+same size and equally bold. System fonts and Bunny Fonts keep the `400`, `500`, `600`
+and `700` weights.
 
 ## EasyAdmin 5.8.0
 

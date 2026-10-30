@@ -150,21 +150,21 @@
     margin-block-end: 0;
 }
 :where(.ea-prose, body.page-content .content-body) :where(h1) {
-    --ea-prose-element-scale: 1.714;
+    --ea-prose-element-scale: 1.867;
     font-size: calc(var(--ea-prose-element-scale) * 1em);
     letter-spacing: var(--heading-letter-spacing);
-    line-height: 1.3;
+    line-height: 1.25;
     margin-block-start: var(--ea-prose-spacing);
 }
 :where(.ea-prose, body.page-content .content-body) :where(h2) {
-    --ea-prose-element-scale: 1.429;
+    --ea-prose-element-scale: 1.4;
     font-size: calc(var(--ea-prose-element-scale) * 1em);
     letter-spacing: var(--heading-letter-spacing);
     line-height: 1.4;
     margin-block-start: calc(var(--ea-prose-spacing) * 1.4);
 }
 :where(.ea-prose, body.page-content .content-body) :where(h3) {
-    --ea-prose-element-scale: 1.143;
+    --ea-prose-element-scale: 1.2;
     font-size: calc(var(--ea-prose-element-scale) * 1em);
     line-height: 1.45;
     margin-block-start: var(--ea-prose-spacing);
@@ -543,9 +543,17 @@
     :where(:is(li, blockquote, td, th, dd, figure, details) > :first-child) {
     margin-block-start: 0;
 }
+/* top margins don't collapse in flex and grid containers, so they would push
+   their items out of line (e.g. a heading next to a button); '.row' is left
+   out because Bootstrap uses that margin for its vertical gutter */
+:where(.ea-prose, body.page-content .content-body)
+    :where(:is(.d-flex, .d-inline-flex, .d-grid, .d-inline-grid, .hstack, .vstack) > *) {
+    margin-block-start: 0;
+}
 
-/* Undo all the previous rules for opt-outs and for components: this must be the
-   last prose rule (except for the following '::marker' one) because all prose rules have the
+/* Undo all the previous rules for opt-outs and for components: this must be
+   after all the prose rules (except for the following '::marker' one and the
+   gaps above the elements without prose styles) because all prose rules have the
    same zero specificity. 'revert-layer' rolls each property back to the value
    of the previous layers (Bootstrap and base.css), as if prose didn't exist.
 
@@ -863,4 +871,198 @@
     )::marker {
     color: revert-layer;
     font-weight: revert-layer;
+}
+
+/* the elements without prose styles (<div>, <section>, components, etc.) get
+   the gap of a paragraph when they follow a text block, and the gap below a
+   heading when they follow a heading, so they never stick to the text above
+   them. These rules must stay after the 'revert-layer' one, which would undo
+   them for components. The children of Bootstrap flex and grid containers are
+   left out, because a top margin would misalign them */
+:where(.ea-prose, body.page-content .content-body)
+    :where(
+        :is(
+                p,
+                ul,
+                ol,
+                dl,
+                blockquote,
+                figure,
+                picture,
+                details,
+                address,
+                pre,
+                table,
+                .ea-prose-scroll,
+                .footnotes,
+                [data-footnotes]
+            )
+            + :not(
+                p,
+                ul,
+                ol,
+                dl,
+                blockquote,
+                figure,
+                picture,
+                details,
+                address,
+                pre,
+                table,
+                .ea-prose-scroll,
+                .footnotes,
+                [data-footnotes],
+                h1,
+                h2,
+                h3,
+                h4,
+                h5,
+                h6,
+                hr,
+                img,
+                video,
+                math
+            )
+    ):not(
+        :where(
+                .ea-not-prose *,
+                [data-ea-not-prose] *,
+                :is(
+                        .accordion,
+                        .alert,
+                        .badge,
+                        .breadcrumb,
+                        .btn,
+                        .btn-group,
+                        .btn-toolbar,
+                        .card,
+                        .carousel,
+                        .dropdown,
+                        .dropdown-menu,
+                        .input-group,
+                        .list-group,
+                        .modal,
+                        .nav,
+                        .navbar,
+                        .offcanvas,
+                        .pagination,
+                        .popover,
+                        .table,
+                        .toast,
+                        .tooltip,
+                        .h1,
+                        .h2,
+                        .h3,
+                        .h4,
+                        .h5,
+                        .h6,
+                        .display-1,
+                        .display-2,
+                        .display-3,
+                        .display-4,
+                        .display-5,
+                        .display-6,
+                        .list-unstyled,
+                        .list-inline,
+                        .blockquote,
+                        .figure,
+                        .img-thumbnail,
+                        .datagrid,
+                        .content-panel,
+                        .list-pagination,
+                        .ea-sidebar,
+                        .form-tabs-tablist,
+                        form
+                    )
+                    *,
+                :is(.d-flex, .d-inline-flex, .d-grid, .d-inline-grid, .hstack, .vstack, .row) > *
+            )
+    ) {
+    margin-block-start: var(--ea-prose-spacing);
+}
+:where(.ea-prose, body.page-content .content-body)
+    :where(
+        :is(h1, h2, h3, h4, h5, h6)
+            + :not(
+                p,
+                ul,
+                ol,
+                dl,
+                blockquote,
+                figure,
+                picture,
+                details,
+                address,
+                pre,
+                table,
+                .ea-prose-scroll,
+                .footnotes,
+                [data-footnotes],
+                h1,
+                h2,
+                h3,
+                h4,
+                h5,
+                h6,
+                hr,
+                img,
+                video,
+                math
+            )
+    ):not(
+        :where(
+                .ea-not-prose *,
+                [data-ea-not-prose] *,
+                :is(
+                        .accordion,
+                        .alert,
+                        .badge,
+                        .breadcrumb,
+                        .btn,
+                        .btn-group,
+                        .btn-toolbar,
+                        .card,
+                        .carousel,
+                        .dropdown,
+                        .dropdown-menu,
+                        .input-group,
+                        .list-group,
+                        .modal,
+                        .nav,
+                        .navbar,
+                        .offcanvas,
+                        .pagination,
+                        .popover,
+                        .table,
+                        .toast,
+                        .tooltip,
+                        .h1,
+                        .h2,
+                        .h3,
+                        .h4,
+                        .h5,
+                        .h6,
+                        .display-1,
+                        .display-2,
+                        .display-3,
+                        .display-4,
+                        .display-5,
+                        .display-6,
+                        .list-unstyled,
+                        .list-inline,
+                        .blockquote,
+                        .figure,
+                        .img-thumbnail,
+                        .datagrid,
+                        .content-panel,
+                        .list-pagination,
+                        .ea-sidebar,
+                        .form-tabs-tablist,
+                        form
+                    )
+                    *,
+                :is(.d-flex, .d-inline-flex, .d-grid, .d-inline-grid, .hstack, .vstack, .row) > *
+            )
+    ) {
+    margin-block-start: calc(var(--ea-prose-spacing) * 0.875);
 }

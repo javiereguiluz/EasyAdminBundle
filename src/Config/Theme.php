@@ -202,8 +202,9 @@ final class Theme
      * the bundled font is used instead. A null value keeps the default font.
      *
      * $baseWeight is the font weight of regular text (by default, each bundled
-     * font defines a weight slightly above 400 so all of them look equally bold,
-     * and the other fonts use 400). In-between weights (e.g. 430) only work as
+     * font defines its own weights for regular, medium, semibold and bold text so
+     * all of them look equally bold, and the other fonts use 400, 500, 600 and
+     * 700). In-between weights (e.g. 430) only work as
      * expected with variable fonts, such as the bundled ones; with fonts that
      * have static weights, browsers use the 500 weight for values from 401 to 500.
      *

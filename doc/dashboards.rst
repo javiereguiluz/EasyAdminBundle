@@ -350,8 +350,9 @@ EasyAdmin applies some optimizations to make fonts fast and stable:
   ready;
 * The languages not supported by the selected font (e.g. Arabic, Hebrew or
   Chinese) are displayed with the fonts of the operating system.
-* Each bundled font defines its own font weight for regular text (a bit more
-  than ``400``), so all of them look equally bold;
+* Each bundled font defines its own font weights for regular, medium,
+  semibold and bold text, so all of them look equally bold (e.g. Rubik is a
+  heavy font, so it uses lighter weights than the other fonts);
 * All fonts (including the ones of Google Fonts and the system fonts) are
   scaled with the ``font-size-adjust`` CSS property so their lowercase letters
   have the same height and they look the same size. To change this, override

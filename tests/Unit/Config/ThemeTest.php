@@ -343,14 +343,17 @@ class ThemeTest extends TestCase
     }
 
     #[DataProvider('provideBundledBaseFonts')]
-    public function testBundledBaseFont(Font $font, string $fontFamily, string $fileName, string $textWeight): void
+    /**
+     * @param array{string, string, string, string} $fontWeights
+     */
+    public function testBundledBaseFont(Font $font, string $fontFamily, string $fileName, array $fontWeights): void
     {
         $themeDto = Theme::new()->font(base: $font)->getAsDto();
         $cssVariables = $themeDto->getCssVariables()['common'];
 
         $this->assertSame($font, $themeDto->getBaseFont());
         $this->assertSame(sprintf('"%1$s", "%1$s Fallback", var(--font-family-system-sans-serif)', $fontFamily), $cssVariables['--font-family-sans-serif']);
-        $this->assertSame($textWeight, $cssVariables['--font-weight-normal']);
+        $this->assertSame($fontWeights, [$cssVariables['--font-weight-normal'], $cssVariables['--font-weight-medium'], $cssVariables['--font-weight-semibold'], $cssVariables['--font-weight-bold']]);
         $this->assertArrayNotHasKey('--font-family-monospace', $cssVariables);
         $this->assertSame([sprintf('fonts/%s-latin-wght-normal.woff2', $fileName)], $themeDto->getFontPreloadPaths());
         $this->assertNull($themeDto->getRemoteFontStylesheetUrl());
@@ -358,10 +361,10 @@ class ThemeTest extends TestCase
 
     public static function provideBundledBaseFonts(): iterable
     {
-        yield [Font::Inter, 'Inter Variable', 'inter', '435'];
-        yield [Font::IbmPlexSans, 'IBM Plex Sans Variable', 'ibm-plex-sans', '435'];
-        yield [Font::Rubik, 'Rubik Variable', 'rubik', '390'];
-        yield [Font::AtkinsonHyperlegibleNext, 'Atkinson Hyperlegible Next Variable', 'atkinson-hyperlegible-next', '410'];
+        yield [Font::Inter, 'Inter Variable', 'inter', ['435', '500', '600', '700']];
+        yield [Font::IbmPlexSans, 'IBM Plex Sans Variable', 'ibm-plex-sans', ['435', '480', '565', '655']];
+        yield [Font::Rubik, 'Rubik Variable', 'rubik', ['390', '425', '475', '550']];
+        yield [Font::AtkinsonHyperlegibleNext, 'Atkinson Hyperlegible Next Variable', 'atkinson-hyperlegible-next', ['410', '450', '550', '665']];
     }
 
     public function testBundledMonospaceFont(): void
@@ -384,6 +387,9 @@ class ThemeTest extends TestCase
         $this->assertSame([
             '--font-family-sans-serif' => 'var(--font-family-system-sans-serif)',
             '--font-weight-normal' => '400',
+            '--font-weight-medium' => '500',
+            '--font-weight-semibold' => '600',
+            '--font-weight-bold' => '700',
             '--font-family-monospace' => 'var(--font-family-system-monospace)',
         ], $themeDto->getCssVariables()['common']);
         $this->assertSame([], $themeDto->getFontPreloadPaths());
@@ -399,6 +405,7 @@ class ThemeTest extends TestCase
         $this->assertSame('"Open Sans", var(--font-family-system-sans-serif)', $cssVariables['--font-family-sans-serif']);
         // Bunny Fonts serves static weights, so in-between weights would fall back to 400 anyway
         $this->assertSame('400', $cssVariables['--font-weight-normal']);
+        $this->assertSame('500', $cssVariables['--font-weight-medium']);
         $this->assertSame('"Fira Code", var(--font-family-system-monospace)', $cssVariables['--font-family-monospace']);
         $this->assertSame([], $themeDto->getFontPreloadPaths());
         $this->assertSame('https://fonts.bunny.net/css2?family=Open+Sans:wght@400;500;600&family=Fira+Code:wght@400;500;600&display=swap', $themeDto->getRemoteFontStylesheetUrl());

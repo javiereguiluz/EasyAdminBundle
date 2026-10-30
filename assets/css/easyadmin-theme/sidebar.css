@@ -364,10 +364,10 @@ span.icon.ea-sidebar-item-chevron svg {
         display: none;
     }
 
-    body.ea-sidebar-width-compact .ea-sidebar-group + .ea-sidebar-group {
+    body.ea-sidebar-width-compact .ea-sidebar .ea-sidebar-group + .ea-sidebar-group {
         margin-block-start: var(--ea-sp-8);
     }
-    body.ea-sidebar-width-compact .ea-sidebar-group-label {
+    body.ea-sidebar-width-compact .ea-sidebar .ea-sidebar-group-label {
         block-size: 0;
         margin: 0;
         overflow: hidden;
@@ -376,31 +376,39 @@ span.icon.ea-sidebar-item-chevron svg {
 
     /* hide everything except the icon in top-level items */
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item
         > .ea-sidebar-item-link
         .ea-sidebar-item-label,
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item
         > .ea-sidebar-item-link
         .ea-sidebar-item-chevron,
-    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item > .ea-sidebar-item-link .ea-sidebar-badge {
+    body.ea-sidebar-width-compact
+        .ea-sidebar
+        .ea-sidebar-group-items
+        > .ea-sidebar-item
+        > .ea-sidebar-item-link
+        .ea-sidebar-badge {
         display: none;
     }
 
-    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item {
+    body.ea-sidebar-width-compact .ea-sidebar .ea-sidebar-group-items > .ea-sidebar-item {
         border-radius: 0;
         padding: var(--ea-sp-3) 0;
     }
     /* center the icon tile in the rail, whatever the rail width is */
-    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item > .ea-sidebar-item-link {
+    body.ea-sidebar-width-compact .ea-sidebar .ea-sidebar-group-items > .ea-sidebar-item > .ea-sidebar-item-link {
         align-items: center;
         justify-content: center;
         padding: 0;
     }
 
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item
         > .ea-sidebar-item-link
@@ -419,6 +427,7 @@ span.icon.ea-sidebar-item-chevron svg {
     /* hovering the item reveals a tile slightly larger than the icon box,
        growing and tinting in behind the icon */
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item
         > .ea-sidebar-item-link
@@ -436,6 +445,7 @@ span.icon.ea-sidebar-item-chevron svg {
     /* badges are hidden in compact mode, so items with a badge show a small dot
        on the corner of their icon instead */
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item:has(> .ea-sidebar-item-link .ea-sidebar-badge)
         .ea-sidebar-item-icon::after {
@@ -455,30 +465,35 @@ span.icon.ea-sidebar-item-chevron svg {
        its darker text color as the border, so hues stay distinguishable at this
        size); badges without a semantic variant use the default dot colors */
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item:has(> .ea-sidebar-item-link .ea-sidebar-badge.badge-primary) {
         --sidebar-badge-dot-bg: var(--badge-primary-bg);
         --sidebar-badge-dot-border-color: var(--badge-primary-color);
     }
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item:has(> .ea-sidebar-item-link .ea-sidebar-badge.badge-success) {
         --sidebar-badge-dot-bg: var(--badge-success-bg);
         --sidebar-badge-dot-border-color: var(--badge-success-color);
     }
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item:has(> .ea-sidebar-item-link .ea-sidebar-badge.badge-warning) {
         --sidebar-badge-dot-bg: var(--badge-warning-bg);
         --sidebar-badge-dot-border-color: var(--badge-warning-color);
     }
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item:has(> .ea-sidebar-item-link .ea-sidebar-badge.badge-danger) {
         --sidebar-badge-dot-bg: var(--badge-danger-bg);
         --sidebar-badge-dot-border-color: var(--badge-danger-color);
     }
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item:has(> .ea-sidebar-item-link .ea-sidebar-badge.badge-info) {
         --sidebar-badge-dot-bg: var(--badge-info-bg);
@@ -487,6 +502,7 @@ span.icon.ea-sidebar-item-chevron svg {
     /* in dark mode the pale badge backgrounds are semi-transparent and unreadable
        at this size, so the dot is filled with the solid border color instead */
     body.ea-dark-scheme.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item:has(> .ea-sidebar-item-link .ea-sidebar-badge)
         .ea-sidebar-item-icon::after {
@@ -496,6 +512,7 @@ span.icon.ea-sidebar-item-chevron svg {
        'vertical-align: sub' of SVG icons push it down a few pixels otherwise);
        positioning it keeps the glyph painted above the hover tile */
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item
         > .ea-sidebar-item-link
@@ -507,6 +524,7 @@ span.icon.ea-sidebar-item-chevron svg {
         position: relative;
     }
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item
         > .ea-sidebar-item-link
@@ -515,17 +533,20 @@ span.icon.ea-sidebar-item-chevron svg {
         vertical-align: middle;
     }
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item:has(> .ea-sidebar-item-link:hover):not(.is-active),
-    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item.is-active {
+    body.ea-sidebar-width-compact .ea-sidebar .ea-sidebar-group-items > .ea-sidebar-item.is-active {
         background: none;
     }
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item
         > .ea-sidebar-item-link:hover
         .ea-sidebar-item-icon::before,
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item
         > .ea-sidebar-item-link:focus-visible
@@ -534,6 +555,7 @@ span.icon.ea-sidebar-item-chevron svg {
         scale: 1;
     }
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item.is-active
         > .ea-sidebar-item-link
@@ -541,6 +563,7 @@ span.icon.ea-sidebar-item-chevron svg {
         color: var(--sidebar-menu-active-item-color);
     }
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item.is-active
         > .ea-sidebar-item-link
@@ -551,6 +574,7 @@ span.icon.ea-sidebar-item-chevron svg {
 
     /* tooltip with the item label, displayed on the side of the icon */
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item:not(.has-submenu)
         .ea-sidebar-item-tooltip {
@@ -574,10 +598,12 @@ span.icon.ea-sidebar-item-chevron svg {
         z-index: calc(var(--zindex-modal-backdrop) + 2);
     }
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item:not(.has-submenu):hover
         .ea-sidebar-item-tooltip,
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item:not(.has-submenu):focus-within
         .ea-sidebar-item-tooltip {
@@ -587,7 +613,11 @@ span.icon.ea-sidebar-item-chevron svg {
     /* submenus become a flyout panel displayed on the side of the icon; the panel
        overlaps the rail a bit, so the pointer can never fall in a gap between the
        icon and the panel that would close it */
-    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item.has-submenu > .ea-sidebar-submenu {
+    body.ea-sidebar-width-compact
+        .ea-sidebar
+        .ea-sidebar-group-items
+        > .ea-sidebar-item.has-submenu
+        > .ea-sidebar-submenu {
         display: block;
         grid-template-rows: none;
         inline-size: max-content;
@@ -602,8 +632,13 @@ span.icon.ea-sidebar-item-chevron svg {
         visibility: hidden;
         z-index: calc(var(--zindex-modal-backdrop) + 2);
     }
-    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item.has-submenu:hover > .ea-sidebar-submenu,
     body.ea-sidebar-width-compact
+        .ea-sidebar
+        .ea-sidebar-group-items
+        > .ea-sidebar-item.has-submenu:hover
+        > .ea-sidebar-submenu,
+    body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item.has-submenu:focus-within
         > .ea-sidebar-submenu {
@@ -612,6 +647,7 @@ span.icon.ea-sidebar-item-chevron svg {
         visibility: visible;
     }
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item.has-submenu
         > .ea-sidebar-submenu
@@ -625,7 +661,11 @@ span.icon.ea-sidebar-item-chevron svg {
         padding: var(--ea-sp-4);
     }
 
-    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item.has-submenu .ea-sidebar-submenu-title {
+    body.ea-sidebar-width-compact
+        .ea-sidebar
+        .ea-sidebar-group-items
+        > .ea-sidebar-item.has-submenu
+        .ea-sidebar-submenu-title {
         color: var(--sidebar-menu-header-color);
         display: block;
         font-size: var(--font-size-sm);
@@ -634,12 +674,17 @@ span.icon.ea-sidebar-item-chevron svg {
     }
 
     /* no vertical guide line inside the flyout */
-    body.ea-sidebar-width-compact .ea-sidebar-group-items > .ea-sidebar-item.has-submenu .ea-sidebar-submenu-items {
+    body.ea-sidebar-width-compact
+        .ea-sidebar
+        .ea-sidebar-group-items
+        > .ea-sidebar-item.has-submenu
+        .ea-sidebar-submenu-items {
         border-inline-start: 0;
         margin: 0;
         padding-inline-start: 0;
     }
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item.has-submenu
         .ea-sidebar-submenu-items
@@ -648,6 +693,7 @@ span.icon.ea-sidebar-item-chevron svg {
         padding-inline: 0;
     }
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item.has-submenu
         .ea-sidebar-submenu-items
@@ -657,6 +703,7 @@ span.icon.ea-sidebar-item-chevron svg {
         padding: var(--ea-sp-3) var(--ea-sp-4);
     }
     body.ea-sidebar-width-compact
+        .ea-sidebar
         .ea-sidebar-group-items
         > .ea-sidebar-item.has-submenu
         .ea-sidebar-submenu-items

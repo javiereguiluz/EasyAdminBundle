@@ -135,8 +135,11 @@ body.ea-dark-scheme .form-widget .form-select {
     box-shadow: var(--form-input-hover-shadow);
     outline: 0;
 }
+/* the border color replaces the hardcoded blue of Bootstrap, which is displayed
+   in checkboxes and radio buttons that aren't inside a form widget */
 .form-check-input:checked {
     background-color: var(--form-type-check-input-checked-bg);
+    border-color: var(--form-type-check-input-checked-bg);
 }
 .form-check-input:checked[type="checkbox"] {
     --bs-form-check-bg-image: var(--ea-primary-foreground-check-icon);
