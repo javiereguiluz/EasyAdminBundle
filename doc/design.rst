@@ -716,10 +716,24 @@ etc.) so they look good without writing any CSS. These styles are called
     {% endblock %}
 
 The automatic styles of custom pages require the ``page-content`` CSS class
-that the template adds to the ``<body>`` element. If you override the
-``body_class`` block, keep that class with ``{{ parent() }}``. To keep the
-previous unstyled design of a custom page, wrap the contents of its ``main``
-block in a ``<div data-ea-not-prose>`` element.
+that the ``@EasyAdmin/page/content.html.twig`` template adds to the ``<body>``
+element. If you override the ``body_class`` block, keep that class with
+``{{ parent() }}``. Templates that extend ``@EasyAdmin/layout.html.twig``
+directly don't have that class, so their contents aren't styled. Make them
+extend ``@EasyAdmin/page/content.html.twig`` instead (it extends the same
+layout, so all its blocks keep working) or add the ``ea-prose`` CSS class to
+the element that wraps the contents. To keep the previous unstyled design of a
+custom page, wrap the contents of its ``main`` block in a
+``<div data-ea-not-prose>`` element.
+
+.. tip::
+
+    If you created custom pages with previous EasyAdmin versions, you probably
+    added your own CSS to style their headings, paragraphs, lists, tables,
+    links, etc. Now you can remove that CSS. Your CSS isn't assigned to any
+    cascade layer (see the next section), so it always wins over these
+    styles: while it exists, your pages won't look like the rest of the
+    backend. Keep only the CSS of the elements that are unique to your pages.
 
 .. note::
 
@@ -771,7 +785,10 @@ The ``--prose-color`` text color is only applied to elements with the
 
 The colors are defined with the ``--prose-*`` theme variables (e.g.
 ``--prose-link-color``, ``--prose-code-color``, ``--prose-rule-color``) of the
-``variables-theme.css`` file, which you can also override. In addition, the
+``variables-theme.css`` file, which you can also override. Links are blue in
+these contents (``--prose-link-color``), so they stand out in long texts,
+while the links of the rest of the interface (e.g. in tables) use the text
+color. In addition, the
 ``--heading-font-weight`` theme variable defines the font weight of all the
 headings of the backend (page titles, form fieldsets and prose contents), the
 ``--heading-letter-spacing`` variable defines the letter spacing of the

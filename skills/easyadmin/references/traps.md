@@ -99,6 +99,7 @@ When in doubt, search `references/api.md`.
 |---|---|
 | `{{ ea.dashboardTitle }}`, `{% if ea.crud %}` | `{{ ea().dashboardTitle }}`, `{% if ea() and ea().crud %}` |
 | `<button class="btn btn-primary">` inside admin templates | `<twig:ea:Button>` and the other `<twig:ea:*>` components (props in `doc/components.rst`) |
+| `{% extends '@EasyAdmin/layout.html.twig' %}` in a custom page, plus CSS for its headings, lists and tables | `{% extends '@EasyAdmin/page/content.html.twig' %}`: it styles that HTML for you (see "Styling Custom Content" in `doc/design.rst`) |
 
 ## Tests
 

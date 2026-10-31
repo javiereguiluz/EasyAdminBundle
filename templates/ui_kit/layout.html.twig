@@ -216,6 +216,11 @@
         .ea-ui-kit-mockup-row:last-child {
             border-block-end: var(--border-width) solid var(--table-cell-border-color);
         }
+        /* wide enough for backend contents (e.g. tables), but it avoids the very long
+           lines of the full content width */
+        .ea-ui-kit-readable {
+            max-inline-size: 100ch;
+        }
         .ea-ui-kit-text-balance {
             text-wrap: balance;
         }

@@ -1407,6 +1407,13 @@ etc. Example:
         </table>
     {% endblock %}
 
+The HTML contents of the ``main`` block (headings, paragraphs, lists, tables,
+links, etc.) are styled automatically, so they look like the rest of the
+backend without writing any CSS. Templates that extend
+``@EasyAdmin/layout.html.twig`` directly don't get these styles. Read
+:ref:`how to style custom content <design-prose>` to learn more about these
+styles and how to disable them.
+
 .. _custom-pages-symfony-forms:
 
 Rendering Symfony Forms in Custom Pages

@@ -77,7 +77,8 @@
         {% if example.description %}<p>{{ example.description }}</p>{% endif %}
 
         <div class="ea-ui-kit-preview">
-            <div class="ea-ui-kit-preview-content" data-component="{{ component_dir_name }}">
+            {# examples are excluded from the prose styles of this page, so they look as in any backend page #}
+            <div class="ea-ui-kit-preview-content ea-not-prose" data-component="{{ component_dir_name }}">
                 {{ include(example.template) }}
             </div>
         </div>

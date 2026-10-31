@@ -203,7 +203,8 @@
     --datalist-label-color: var(--gray-500);
     --datalist-value-color: var(--gray-600);
     --pagination-color: var(--gray-600);
-    --pagination-hover-border-color: var(--gray-300);
+    --pagination-hover-bg: var(--gray-100);
+    --pagination-hover-border-color: var(--gray-300); /* deprecated: kept for backward compatibility, unused internally */
     --pagination-disabled-color: var(--gray-400);
     --pagination-active-bg: transparent;
     --pagination-active-color: var(--text-color);
@@ -584,7 +585,10 @@
     --prose-color: var(--text-color);
     --prose-heading-color: var(--text-color);
     --prose-lead-color: var(--text-muted);
-    --prose-link-color: var(--link-color);
+    /* unlike the links of the interface (e.g. in tables), the links of contents are
+       colored, so they stand out in long texts */
+    --prose-link-color: var(--blue-700);
+    --prose-link-underline-color: var(--link-underline-color);
     --prose-bold-color: currentColor;
     --prose-counter-color: var(--text-muted);
     --prose-bullet-color: var(--gray-400);
@@ -723,7 +727,8 @@
     --datalist-label-color: var(--gray-400);
     --datalist-value-color: var(--gray-300);
     --pagination-color: var(--gray-400);
-    --pagination-hover-border-color: var(--gray-600);
+    --pagination-hover-bg: var(--gray-800);
+    --pagination-hover-border-color: var(--gray-600); /* deprecated: kept for backward compatibility, unused internally */
     --pagination-active-bg: transparent;
     --pagination-active-color: var(--text-color);
     --field-country-flag-border-color: var(--gray-600);
@@ -1038,6 +1043,7 @@
     --link-hover-decoration: none;
     --link-underline-color: var(--gray-600);
 
+    --prose-link-color: var(--blue-300);
     --prose-bullet-color: var(--gray-600);
     --prose-th-border-color: var(--gray-700);
     --prose-mark-bg: color-mix(in oklab, var(--yellow-500) 35%, transparent);
@@ -1121,7 +1127,7 @@
     --bs-pagination-focus-outline: 0;
     --bs-pagination-hover-color: var(--text-color);
     --bs-pagination-hover-bg: var(--body-bg);
-    --bs-pagination-hover-border-color: var(--pagination-hover-border-color);
+    --bs-pagination-hover-border-color: transparent;
     --bs-pagination-disabled-color: var(--text-muted);
     --bs-pagination-disabled-bg: var(--body-bg);
     --bs-pagination-disabled-border-color: transparent;

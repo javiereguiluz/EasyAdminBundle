@@ -77,6 +77,16 @@ contents in an element with the `data-ea-not-prose` attribute:
 {% endblock %}
 ```
 
+Templates that extend `@EasyAdmin/layout.html.twig` directly don't get these
+styles. To get them, extend `@EasyAdmin/page/content.html.twig` instead (it extends
+the same layout, so all blocks keep working) or add the `ea-prose` CSS class to the
+element that wraps the contents.
+
+If you added your own CSS to style the headings, lists, tables, links, etc. of your
+custom pages, consider removing it. Your CSS isn't assigned to any cascade layer, so
+it always wins over the new styles and your pages won't look like the rest of the
+backend while it exists.
+
 Other related design changes:
 
 * Headings use the `600` font weight instead of `700` and the large ones use a
@@ -87,6 +97,8 @@ Other related design changes:
   `--ea-prose-line-height` CSS variables;
 * Text is darker in light mode (`--gray-950`) and lighter in dark mode (`--gray-200`,
   muted `--gray-400`); links use the new `--link-font-weight` variable (`400`);
+* Links of these contents are blue (`--prose-link-color`) with a light gray
+  underline (`--prose-link-underline-color`) that takes the link color on hover;
 * The title and description styles of modal windows only apply to the `h4` and
   `p` elements written directly in the modal body, not to the elements nested
   inside other elements.

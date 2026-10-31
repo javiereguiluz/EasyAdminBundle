@@ -115,7 +115,7 @@
     color: var(--prose-link-color);
     font-weight: var(--link-font-weight);
     text-decoration-line: underline;
-    text-decoration-color: color-mix(in oklab, currentColor 30%, transparent);
+    text-decoration-color: var(--prose-link-underline-color);
     text-underline-offset: 0.2em;
 }
 :where(.ea-prose, body.page-content .content-body) :where(a[href]:hover) {

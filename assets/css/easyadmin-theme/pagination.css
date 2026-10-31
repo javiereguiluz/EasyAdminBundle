@@ -35,8 +35,19 @@
     }
 }
 .page-item .page-link {
+    /* like the buttons and the shadcn/ui pagination: the chevron of the previous/next
+       links is centered on the label and separated from it by a small fixed gap */
+    align-items: center;
+    display: flex;
     font-weight: var(--font-weight-normal);
+    gap: var(--ea-sp-2);
     white-space: nowrap;
+}
+/* the text box includes the space of the descenders, so its center is below the
+   visual center of the label; this moves the chevrons up to the center of the
+   capital letters and numbers */
+.page-item .page-link .icon {
+    translate: 0 -0.075em;
 }
 .page-item.active .page-link,
 .page-item.active .page-link:focus,
@@ -68,14 +79,21 @@
     border-radius: var(--bs-pagination-border-radius);
     color: inherit;
     margin: 0 1px;
+    /* like the tabs and the shadcn/ui ghost buttons, hover shows a background (not a
+       border) that appears quickly; Bootstrap's 150ms ease-in-out transition of the
+       border made it look slow to appear and to disappear */
+    transition: background-color var(--ea-duration-fast) var(--ea-ease-out);
 }
 /* needed to override some Bootstrap styles */
 .page-item:not(:first-child) .page-link {
     margin: 0 1px;
 }
-.page-item .page-link:focus,
-.page-item .page-link:hover {
-    border-color: var(--pagination-hover-border-color);
+.page-item:not(.active, .disabled) .page-link:hover {
+    background: var(--pagination-hover-bg);
+}
+.page-item .page-link:focus-visible {
+    outline: 2px solid var(--ea-primary-ring);
+    outline-offset: 1px;
 }
 
 @media (max-width: 768px) {
@@ -102,7 +120,7 @@
         padding-inline-start: calc(var(--bs-pagination-padding-x) / 2);
     }
     .pager .page-item-next .page-link {
-        text-align: right;
+        justify-content: flex-end;
         padding-inline-end: calc(var(--bs-pagination-padding-x) / 2);
     }
 }

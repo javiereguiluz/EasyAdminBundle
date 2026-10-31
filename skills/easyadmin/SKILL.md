@@ -33,9 +33,8 @@ you continue.
 
 Files next to this one:
 
-- [references/api.md](references/api.md): every public method of the config,
-  field, filter, attribute, controller and test classes, generated from the
-  source. If a method is not listed there, it does not exist.
+- [references/api.md](references/api.md): every public method of the config, field, filter,
+  attribute, controller and test classes, generated from the source. If a method is not listed there, it does not exist.
 - [references/patterns.md](references/patterns.md): copy-ready recipes for the most common tasks.
 - [references/traps.md](references/traps.md): method names that look right and are wrong.
 
@@ -60,11 +59,9 @@ Files next to this one:
 ## Workflow
 
 1. Check whether a dashboard exists: `grep -rl AbstractDashboardController src/`.
-2. Scaffold with the makers and then edit the generated classes:
-   `php bin/console make:admin:dashboard` and
-   `php bin/console make:admin:crud "App\Entity\Product"`. The CRUD maker
-   leaves `configureFields()` commented out and adds no `@extends` PHPDoc:
-   add both by hand.
+2. Scaffold with the makers and then edit the generated classes: `php bin/console make:admin:dashboard`
+   and `php bin/console make:admin:crud "App\Entity\Product"`. The CRUD maker
+   leaves `configureFields()` commented out and adds no `@extends` PHPDoc: add both by hand.
 3. Register every CRUD controller in the dashboard's `configureMenuItems()`.
 4. Before writing a method you have not seen in this skill, in
    `references/api.md` or in the source, verify it exists:
@@ -88,7 +85,7 @@ the same pages are installed locally under `vendor/easycorp/easyadmin-bundle/doc
 | Filters | `vendor/easycorp/easyadmin-bundle/doc/filters.rst` |
 | Roles, voters, entity permissions, impersonation, expressions | `vendor/easycorp/easyadmin-bundle/doc/security.rst` |
 | Functional tests | `vendor/easycorp/easyadmin-bundle/doc/tests.rst` and `vendor/easycorp/easyadmin-bundle/src/Test/Trait/` |
-| Template overrides, CSS, icons, cascade layers | `vendor/easycorp/easyadmin-bundle/doc/design.rst` |
+| Template overrides, CSS, icons, cascade layers, typography of custom pages | `vendor/easycorp/easyadmin-bundle/doc/design.rst` |
 | Twig components (`<twig:ea:*>`) | `vendor/easycorp/easyadmin-bundle/doc/components.rst` |
 | Events and entity lifecycle | `vendor/easycorp/easyadmin-bundle/doc/events.rst` |
 | Anything that "used to work" in EasyAdmin 4 | `vendor/easycorp/easyadmin-bundle/UPGRADE.md` |
@@ -351,12 +348,14 @@ the same pages are installed locally under `vendor/easycorp/easyadmin-bundle/doc
 - The `ea` Twig global was removed; call the `ea()` function, which returns
   `null` outside the admin. `ea_url()` returns the URL generator. <!-- src/Twig/EasyAdminTwigExtension.php::getFunctions; UPGRADE.md:173-191 -->
 - Override page templates with `Crud::overrideTemplate('crud/index', 'admin/product/index.html.twig')`
-  and field templates with `->setTemplatePath()`. The `new` and `edit` pages
-  render form fields through Symfony form themes (`Crud::addFormTheme()`),
-  not through field templates. <!-- src/Config/Crud.php::overrideTemplate; src/Config/Crud.php::addFormTheme; src/Field/FieldTrait.php::setTemplatePath; doc/fields.rst:1066-1069 -->
+  and field templates with `->setTemplatePath()`. The `new` and `edit` pages render form fields
+  through Symfony form themes (`Crud::addFormTheme()`), not through field templates. <!-- src/Config/Crud.php::overrideTemplate; src/Config/Crud.php::addFormTheme; src/Field/FieldTrait.php::setTemplatePath; doc/fields.rst:1066-1069 -->
 - Backend CSS lives in cascade layers (`vendor`, `ea`, `ea-overrides`), so
   unlayered custom CSS wins without `!important`. Override design tokens on
   `:root, .ea-dark-scheme`, not only on `:root`. <!-- UPGRADE.md:234-257; doc/design.rst:570-580 -->
+- Custom pages extend `@EasyAdmin/page/content.html.twig`, not `@EasyAdmin/layout.html.twig`: only the former styles the
+  HTML of the `main` block (headings, lists, tables, blue links). Elsewhere, add the `ea-prose` class (`ea-not-prose` opts out).
+  Don't write CSS for those elements: unlayered CSS beats these styles. <!-- templates/page/content.html.twig; doc/design.rst:718-736 -->
 - Use the shipped Twig components in custom templates: `<twig:ea:Button>`,
   `<twig:ea:Badge>`, `<twig:ea:Alert>`, `<twig:ea:Icon>`, `<twig:ea:Modal>`,
   `<twig:ea:Pagination>`, `<twig:ea:Switch>`, `<twig:ea:Tabs>`,
@@ -493,6 +492,7 @@ source_contains: src/Controller/AbstractCrudController.php | isCsrfTokenValid(Bo
 source_contains: src/Orm/EntityRepository.php | ->from($entityDto->getFqcn(), 'entity')
 source_contains: src/Config/Actions.php | $this->dto->removeAction($pageName, Action::BATCH_DELETE);
 source_contains: templates/crud/includes/_action_confirmation_modal.html.twig | csrf_token('ea-delete')
+source_contains: templates/page/content.html.twig | {% block body_class 'page-content' %}
 source_contains: doc/security.rst | is_granted($permission, $item)
 source_contains: doc/actions.rst | controller_resolver.auto_mapping
 source_not_contains: templates/components/Button.html.twig | csrf_token
